@@ -4,7 +4,7 @@
  * amounts by this code and normalised to exactly 100%.
  */
 
-import type { BudgetCategory, Expense } from '@/schemas';
+import type { BudgetCategory, Expense, Vendor } from '@/schemas';
 
 /** Format a number as INR with en-IN grouping (e.g. ₹1,50,000). */
 export function formatINR(amount: number): string {

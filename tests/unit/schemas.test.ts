@@ -43,7 +43,7 @@ describe('eventInputSchema', () => {
     const result = eventInputSchema.safeParse({ ...validInput, date: '2024-01-01' });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toContain('Event date cannot be in the past');
+      expect(result.error.issues[0].message).toContain('Celebration date cannot be in the past');
     }
   });
 

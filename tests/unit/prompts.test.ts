@@ -46,7 +46,7 @@ describe('AI Prompts', () => {
   it('blueprint prompt includes today date in IST and days remaining', () => {
     const prompt = buildBlueprintPrompt(sampleRequest);
     const today = getTodayString();
-    expect(prompt).toContain(`Today's Date: ${today}`);
+    expect(prompt).toContain(`Today's Date (IST): ${today}`);
     expect(prompt).toContain('Days Remaining Until Event:');
   });
 

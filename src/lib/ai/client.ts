@@ -25,9 +25,9 @@ import {
 } from './prompts';
 
 // Pre-computed JSON schemas generated from Zod schemas for reliable structured output
-const blueprintJsonSchema = z.toJSONSchema(aiBlueprintSchema);
-const refinementJsonSchema = z.toJSONSchema(aiRefinementSchema);
-const ideasJsonSchema = z.toJSONSchema(aiIdeasSchema);
+const blueprintJsonSchema = z.toJSONSchema(aiBlueprintSchema, { io: 'input' });
+const refinementJsonSchema = z.toJSONSchema(aiRefinementSchema, { io: 'input' });
+const ideasJsonSchema = z.toJSONSchema(aiIdeasSchema, { io: 'input' });
 
 export class GeminiError extends Error {
   constructor(

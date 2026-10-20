@@ -108,8 +108,8 @@ export function buildTimelineTasks(
     let daysBefore = item.daysBeforeEvent;
     let priority = item.priority;
 
-    // Clamp tasks so none is due before today
-    if (rawDue < todayStr) {
+    // Clamp tasks so none is due before today when event is in future
+    if (rawDue < todayStr && todayStr <= eventDate) {
       rawDue = todayStr;
       daysBefore = Math.max(0, daysBetween(todayStr, eventDate));
       priority = 'high';

@@ -35,6 +35,7 @@ describe('mergeBlueprintRefinement', () => {
     vendorCategories: [
       {
         category: 'Venue',
+        budgetCategory: 'Venue',
         description: 'Banquet manager',
         estimatedBudgetPercentage: 40,
         tips: ['Check monsoon cover'],
