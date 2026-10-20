@@ -263,8 +263,8 @@ export function BudgetTab({
   const handleConfirmReassignAndRemove = () => {
     if (!categoryToRemove) return;
 
-    let targetId = reassignTargetCatId;
-    let targetCategories = [...tempCategories];
+    const targetId = reassignTargetCatId;
+    const targetCategories = [...tempCategories];
 
     // If target is Uncategorised and it doesn't exist yet, add it with 0%
     if (targetId === 'cat-uncategorised') {
@@ -298,7 +298,6 @@ export function BudgetTab({
 
     setTempCategories(finalCats);
     setCategoryToRemove(null);
-  };
   };
 
   return (
@@ -920,7 +919,7 @@ export function BudgetTab({
       {undoExpense && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-stone-200 animate-in fade-in slide-in-from-bottom-2">
           <span className="text-xs font-medium">
-            Expense "{undoExpense.description}" deleted
+            Expense &ldquo;{undoExpense.description}&rdquo; deleted
           </span>
           <button
             onClick={handleUndoDeleteExpense}

@@ -578,7 +578,7 @@ export function VendorsTab({
       {undoVendor && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-stone-200 animate-in fade-in slide-in-from-bottom-2">
           <span className="text-xs font-medium">
-            Vendor "{undoVendor.category}" deleted
+            Vendor &ldquo;{undoVendor.category}&rdquo; deleted
           </span>
           <button
             onClick={handleUndoDeleteVendor}
