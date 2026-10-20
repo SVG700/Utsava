@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-forest-50: #e8f3ee;
+  --color-forest-100: #d1e7dc;
+  --color-forest-200: #a4cfba;
+  --color-forest-300: #77b797;
+  --color-forest-400: #4a9f75;
+  --color-forest-500: #2b8458;
+  --color-forest-600: #1d6945;
+  --color-forest-700: #134e3a;
+  --color-forest-800: #0f3e2e;
+  --color-forest-900: #0a2b20;
+  --color-forest-950: #051913;
+
+  --color-sand-50: #faf8f5;
+  --color-sand-100: #f4f1ea;
+  --color-sand-200: #e8e2d7;
+  --color-sand-300: #dcd4c5;
+  --color-sand-400: #c2b6a0;
+  --color-sand-500: #a7977b;
+  --color-sand-600: #89795f;
+  --color-sand-700: #6c5f4b;
+  --color-sand-800: #4e4436;
+  --color-sand-900: #332c23;
+  --color-sand-950: #1d1914;
+
+  --shadow-soft: 0 1px 3px rgba(19, 78, 58, 0.04), 0 6px 16px rgba(19, 78, 58, 0.03);
+  --shadow-card: 0 2px 8px rgba(19, 78, 58, 0.04), 0 12px 28px rgba(19, 78, 58, 0.06);
+  --shadow-elevated: 0 4px 12px rgba(19, 78, 58, 0.06), 0 20px 40px rgba(19, 78, 58, 0.08);
+}
+
+:root {
+  /* Utsava Warm Ivory & Deep Forest Brand Theme */
+  --background: #faf8f5;
+  --foreground: #1c2420;
+  --card: #ffffff;
+  --card-foreground: #1c2420;
+  --card-muted: #f4f1ea;
+
+  /* Forest Green Primary Palette */
+  --primary: #134e3a; /* Deep Forest Emerald */
+  --primary-hover: #0f3e2e;
+  --primary-active: #09281e;
+  --primary-foreground: #ffffff;
+  --primary-light: #e8f3ee;
+  --primary-subtle: #d1e7dc;
+
+  /* Warm Gold / Champagne Accent */
+  --accent: #c48a3f;
+  --accent-hover: #ab7532;
+  --accent-foreground: #ffffff;
+  --accent-light: #fbf4ea;
+
+  /* Secondary / Neutral Surfaces */
+  --secondary: #f0ece3;
+  --secondary-foreground: #2d3832;
+
+  /* Muted Text & Borders */
+  --muted: #f2eee6;
+  --muted-foreground: #606d66;
+  --border: #e6e0d4;
+  --border-subtle: #f0ece2;
+
+  /* Interactive rings & radii */
+  --ring: #134e3a;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+
+.dark {
+  --background: #111614;
+  --foreground: #f3f5f4;
+  --card: #18201c;
+  --card-foreground: #f3f5f4;
+  --card-muted: #1e2823;
+
+  /* Forest Green in Dark Mode */
+  --primary: #2dd4bf;
+  --primary-hover: #14b8a6;
+  --primary-active: #0d9488;
+  --primary-foreground: #042f2e;
+  --primary-light: #132a24;
+  --primary-subtle: #1c3d34;
+
+  /* Warm Gold Dark Accent */
+  --accent: #eab368;
+  --accent-hover: #d89e52;
+  --accent-foreground: #1c150c;
+  --accent-light: #2c2214;
+
+  /* Neutral Surfaces */
+  --secondary: #222d27;
+  --secondary-foreground: #e1e7e4;
+
+  --muted: #202b25;
+  --muted-foreground: #94a19b;
+  --border: #2c3a33;
+  --border-subtle: #222d27;
+  --ring: #2dd4bf;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom focus ring for WCAG AA accessibility */
+*:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Smooth micro-transitions */
+.transition-luxury {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print styles for exportable coordinator checklists */
+@media print {
+  header, nav, footer, button, .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .page-break {
+    page-break-after: always;
+  }
+}
