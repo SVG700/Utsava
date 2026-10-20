@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'accent' | 'danger';
@@ -9,7 +10,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className = '', variant = 'primary', size = 'md', isLoading = false, children, disabled, ...props }, ref) => {
     const base =
-      'inline-flex items-center justify-center font-medium transition-all duration-200 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#134e3a] dark:focus-visible:ring-[#2dd4bf] disabled:opacity-50 disabled:pointer-events-none cursor-pointer select-none active:scale-[0.98]';
+      'inline-flex items-center justify-center font-medium transition-colors duration-150 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#134e3a] dark:focus-visible:ring-[#2dd4bf] disabled:opacity-50 disabled:pointer-events-none cursor-pointer select-none';
 
     const variants = {
       primary:
@@ -36,7 +37,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || isLoading}
-        className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
+        className={cn(base, variants[variant], sizes[size], className)}
         {...props}
       >
         {isLoading && (

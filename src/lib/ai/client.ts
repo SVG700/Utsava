@@ -59,14 +59,18 @@ function getGeminiClient(customKey?: string | null): GoogleGenAI {
   return new GoogleGenAI({ apiKey });
 }
 
-let activeModelOverride: string | null = null;
-
-export function getModelName(): string {
-  return activeModelOverride || process.env.GEMINI_MODEL?.trim() || 'gemini-3.5-flash';
+export interface CallGeminiResult {
+  text: string;
+  modelUsed: string;
 }
 
-export function setModelFallback(model: string) {
-  activeModelOverride = model;
+export function getModelName(): string {
+  return process.env.GEMINI_MODEL?.trim() || 'gemini-3.5-flash';
+}
+
+export function setModelFallback(..._args: unknown[]) {
+  void _args;
+  // Deprecated: Per-call fallback is now automatically handled without mutating shared global state.
 }
 
 /**
@@ -154,8 +158,7 @@ async function callGemini(
       model !== 'gemini-3.5-flash-lite' &&
       attempt === 1
     ) {
-      console.warn(`Model ${model} daily free tier quota hit. Falling back to resilient model gemini-3.5-flash-lite...`);
-      setModelFallback('gemini-3.5-flash-lite');
+      console.warn(`Model ${model} daily free tier quota hit. Falling back to resilient model gemini-3.5-flash-lite for this call only...`);
       return callGemini(prompt, {
         ...options,
         attempt: attempt + 1,

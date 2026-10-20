@@ -277,14 +277,33 @@ export function PlannerHeader({
         <nav
           className="flex space-x-1 sm:space-x-2 overflow-x-auto border-t border-[#e8e2d7] dark:border-[#26332b] scrollbar-none"
           aria-label="Planner Tabs"
+          role="tablist"
         >
-          {tabs.map((tab) => {
+          {tabs.map((tab, idx) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
+                id={`tab-${tab.id}`}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`tabpanel-${tab.id}`}
+                tabIndex={isActive ? 0 : -1}
                 type="button"
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    const next = tabs[(idx + 1) % tabs.length];
+                    onTabChange(next.id);
+                    document.getElementById(`tab-${next.id}`)?.focus();
+                  } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    const prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+                    onTabChange(prev.id);
+                    document.getElementById(`tab-${prev.id}`)?.focus();
+                  }
+                }}
                 onClick={() => onTabChange(tab.id)}
                 className={`flex items-center gap-2 py-3.5 px-3.5 text-xs sm:text-sm font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   isActive

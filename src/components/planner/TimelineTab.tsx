@@ -231,6 +231,8 @@ export function TimelineTab({
               ].map((tab) => (
                 <button
                   key={tab.id}
+                  type="button"
+                  aria-pressed={statusFilter === tab.id}
                   onClick={() => setStatusFilter(tab.id as typeof statusFilter)}
                   className={`px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
                     statusFilter === tab.id
@@ -311,6 +313,7 @@ export function TimelineTab({
                   onClick={() => handleToggleCompleted(task.id)}
                   className="mt-0.5 text-stone-400 hover:text-forest-700 dark:hover:text-forest-400 transition-colors cursor-pointer shrink-0"
                   aria-label={task.completed ? 'Mark incomplete' : 'Mark complete'}
+                  title={`Mark task as ${task.completed ? 'incomplete' : 'complete'}: ${task.title}`}
                 >
                   {task.completed ? (
                     <CheckCircle2 className="w-5 h-5 text-forest-700 dark:text-forest-400 fill-forest-50 dark:fill-forest-950/60" />
@@ -383,14 +386,16 @@ export function TimelineTab({
                   <button
                     onClick={() => handleOpenEdit(task)}
                     className="p-1.5 text-stone-400 hover:text-forest-700 dark:hover:text-forest-400 rounded-lg hover:bg-forest-50 dark:hover:bg-forest-950/40 transition-colors"
-                    title="Edit task"
+                    title={`Edit task: ${task.title}`}
+                    aria-label={`Edit task: ${task.title}`}
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => handleRequestDeleteTask(task)}
                     className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-                    title="Delete task"
+                    title={`Delete task: ${task.title}`}
+                    aria-label={`Delete task: ${task.title}`}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>

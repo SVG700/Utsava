@@ -28,6 +28,7 @@ import { getChangedSections } from '@/lib/deepCompare';
 import { getRefinementHistory, saveRefinementHistory } from '@/lib/storage';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { apiRefinePlan, ApiError } from '@/lib/api';
 import { Badge } from '@/components/ui/Badge';
 
 interface RefineTabProps {
@@ -123,41 +124,7 @@ export function RefineTab({
     setErrorMessage(null);
 
     try {
-      const userKey = typeof window !== 'undefined' ? sessionStorage.getItem('utsava_gemini_key') : null;
-      const res = await fetch('/api/refine-plan', {
-        method: 'POST',
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(userKey ? { 'x-gemini-key': userKey } : {}),
-        },
-        body: JSON.stringify({
-          eventDetails: {
-            eventType: event.eventType,
-            name: event.name,
-            date: event.date,
-            city: event.city,
-            guestCount: event.guestCount,
-            totalBudget: event.totalBudget,
-            theme: event.theme,
-            dietaryPreferences: event.dietaryPreferences,
-            culturalPreferences: event.culturalPreferences,
-            accessibilityNeeds: event.accessibilityNeeds,
-            specialRequirements: event.specialRequirements,
-            subEvents: event.subEvents,
-          },
-          currentPlan: blueprint,
-          userRequest: text,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        setErrorMessage(data.message || 'Failed to refine plan. Please try again.');
-        setIsSubmitting(false);
-        return;
-      }
-
+      const data = await apiRefinePlan(event, blueprint, text, controller.signal);
       const refinement: AIRefinement = data.refinement;
 
       // Identify which sections genuinely changed using deep comparison
@@ -206,7 +173,13 @@ export function RefineTab({
         return;
       }
       console.error('Error refining plan:', err);
-      setErrorMessage('Network error during refinement. Please retry.');
+      setErrorMessage(
+        err instanceof ApiError
+          ? err.message
+          : err instanceof Error
+          ? err.message
+          : 'Network error during refinement. Please retry.'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -293,7 +266,11 @@ export function RefineTab({
 
       {/* Error Notice */}
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-300 text-xs text-rose-700 flex items-start gap-2">
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-300 text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2"
+        >
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <span>{errorMessage}</span>
         </div>

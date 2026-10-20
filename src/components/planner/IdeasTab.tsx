@@ -19,6 +19,7 @@ import { getEventIdeas, saveEventIdeas } from '@/lib/storage';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { apiGenerateIdeas, ApiError } from '@/lib/api';
 
 interface IdeasTabProps {
   event: StoredEvent;
@@ -67,40 +68,12 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
     setErrorMessage(null);
 
     try {
-      const userKey = typeof window !== 'undefined' ? sessionStorage.getItem('utsava_gemini_key') : null;
-      const res = await fetch('/api/generate-ideas', {
-        method: 'POST',
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(userKey ? { 'x-gemini-key': userKey } : {}),
-        },
-        body: JSON.stringify({
-          eventDetails: {
-            eventType: event.eventType,
-            name: event.name,
-            date: event.date,
-            city: event.city,
-            guestCount: event.guestCount,
-            totalBudget: event.totalBudget,
-            theme: event.theme,
-            dietaryPreferences: event.dietaryPreferences,
-            culturalPreferences: event.culturalPreferences,
-            accessibilityNeeds: event.accessibilityNeeds,
-            specialRequirements: event.specialRequirements,
-            subEvents: event.subEvents,
-          },
-          section,
-          existingIdeas: (ideasBySection[section] || []).map((i) => i.title),
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        setErrorMessage(data.message || 'Failed to generate ideas. Please try again.');
-        setIsLoading(false);
-        return;
-      }
+      const data = await apiGenerateIdeas(
+        event,
+        section,
+        (ideasBySection[section] || []).map((i) => i.title),
+        controller.signal
+      );
 
       const existing = ideasBySection[section] || [];
       const incoming: AIIdeas['ideas'] = data.ideas.ideas || [];
@@ -122,7 +95,13 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
         return;
       }
       console.error('Error fetching ideas:', err);
-      setErrorMessage('Network error while requesting ideas. Please try again.');
+      setErrorMessage(
+        err instanceof ApiError
+          ? err.message
+          : err instanceof Error
+          ? err.message
+          : 'Network error while requesting ideas. Please try again.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -166,6 +145,8 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
           return (
             <button
               key={sec.id}
+              type="button"
+              aria-pressed={isSelected}
               onClick={() => {
                 setSelectedSection(sec.id);
                 if (!ideasBySection[sec.id]) {
@@ -218,7 +199,11 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
 
       {/* Error message */}
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-300 text-xs text-rose-700 dark:text-rose-300">
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-300 text-xs text-rose-700 dark:text-rose-300"
+        >
           {errorMessage}
         </div>
       )}

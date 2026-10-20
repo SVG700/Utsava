@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
+import dynamic from 'next/dynamic';
 import {
   getEvent,
   saveEvent,
@@ -39,14 +40,38 @@ import type {
 } from '@/schemas';
 import { PlannerHeader, type PlannerTab } from './PlannerHeader';
 import { DashboardTab } from './DashboardTab';
-import { BudgetTab } from './BudgetTab';
-import { TimelineTab } from './TimelineTab';
-import { VendorsTab } from './VendorsTab';
-import { IdeasTab } from './IdeasTab';
-import { RefineTab } from './RefineTab';
-import { ExportTab } from './ExportTab';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
+import { apiGenerateBlueprint, ApiError } from '@/lib/api';
+import { GenerationProgressModal } from './GenerationProgressModal';
+
+function TabLoadingFallback({ label }: { label: string }) {
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-20 text-center animate-pulse">
+      <div className="w-8 h-8 border-2 border-[#134e3a] dark:border-[#2dd4bf] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+      <p className="text-sm font-medium text-stone-500 dark:text-stone-400">{label}</p>
+    </div>
+  );
+}
+
+const BudgetTab = dynamic(() => import('./BudgetTab').then((m) => m.BudgetTab), {
+  loading: () => <TabLoadingFallback label="Loading Budget Planner..." />,
+});
+const TimelineTab = dynamic(() => import('./TimelineTab').then((m) => m.TimelineTab), {
+  loading: () => <TabLoadingFallback label="Loading Timeline..." />,
+});
+const VendorsTab = dynamic(() => import('./VendorsTab').then((m) => m.VendorsTab), {
+  loading: () => <TabLoadingFallback label="Loading Vendor Directory..." />,
+});
+const IdeasTab = dynamic(() => import('./IdeasTab').then((m) => m.IdeasTab), {
+  loading: () => <TabLoadingFallback label="Loading Idea Studio..." />,
+});
+const RefineTab = dynamic(() => import('./RefineTab').then((m) => m.RefineTab), {
+  loading: () => <TabLoadingFallback label="Loading AI Copilot..." />,
+});
+const ExportTab = dynamic(() => import('./ExportTab').then((m) => m.ExportTab), {
+  loading: () => <TabLoadingFallback label="Loading Export..." />,
+});
 
 interface MainPlannerProps {
   eventId: string;
@@ -106,6 +131,14 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
     return () => clearTimeout(timer);
   }, [eventId, router]);
 
+  useEffect(() => {
+    if (event?.name) {
+      document.title = `${event.name} — Utsava AI Planner`;
+    } else {
+      document.title = 'Utsava — AI Celebration Planner';
+    }
+  }, [event?.name]);
+
   // Generate / Regenerate Blueprint from API
   const handleGenerateBlueprint = useCallback(async () => {
     if (!event || isGenerating) return;
@@ -118,45 +151,7 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
     setErrorMessage(null);
 
     try {
-      const userKey = typeof window !== 'undefined' ? sessionStorage.getItem('utsava_gemini_key') : null;
-      const res = await fetch('/api/generate-blueprint', {
-        method: 'POST',
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(userKey ? { 'x-gemini-key': userKey } : {}),
-        },
-        body: JSON.stringify({
-          eventType: event.eventType,
-          name: event.name,
-          date: event.date,
-          city: event.city,
-          guestCount: event.guestCount,
-          totalBudget: event.totalBudget,
-          theme: event.theme,
-          dietaryPreferences: event.dietaryPreferences,
-          culturalPreferences: event.culturalPreferences,
-          accessibilityNeeds: event.accessibilityNeeds,
-          specialRequirements: event.specialRequirements,
-          subEvents: event.subEvents,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (data.error === 'MISSING_API_KEY') {
-          setApiKeyMissing(true);
-          setErrorMessage(
-            'Gemini API key is not configured. Please set GEMINI_API_KEY in your .env.local file to enable AI generation.'
-          );
-        } else {
-          setErrorMessage(data.message || 'Failed to generate blueprint. Please try again.');
-        }
-        setIsGenerating(false);
-        return;
-      }
-
+      const data = await apiGenerateBlueprint(event, controller.signal);
       const generatedBlueprint: AIBlueprint = data.blueprint;
 
       // 1. Save blueprint
@@ -205,9 +200,18 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
         return;
       }
       console.error('Error generating blueprint:', err);
-      setErrorMessage(
-        'Network error or service unavailable. Please check your connection and retry.'
-      );
+      if (err instanceof ApiError && err.code === 'MISSING_API_KEY') {
+        setApiKeyMissing(true);
+        setErrorMessage(
+          'Gemini API key is not configured. Please set GEMINI_API_KEY in your .env.local file to enable AI generation.'
+        );
+      } else {
+        setErrorMessage(
+          err instanceof Error
+            ? err.message
+            : 'Network error or service unavailable. Please check your connection and retry.'
+        );
+      }
     } finally {
       setIsGenerating(false);
     }
@@ -378,76 +382,89 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
         apiKeyMissing={apiKeyMissing}
       />
 
+      {/* Generation Staged Progress Modal */}
+      <GenerationProgressModal
+        isOpen={isGenerating}
+        eventName={event.name}
+      />
+
       {/* Main Tab Content Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex-1 w-full">
-        {activeTab === 'dashboard' && (
-          <DashboardTab
-            event={event}
-            blueprint={blueprint}
-            categories={categories}
-            expenses={expenses}
-            tasks={tasks}
-            vendors={vendors}
-            onNavigateTab={setActiveTab}
-            onGenerateBlueprint={handleGenerateBlueprint}
-            isGeneratingBlueprint={isGenerating}
-          />
-        )}
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex-1 w-full">
+        <div
+          role="tabpanel"
+          id={`tabpanel-${activeTab}`}
+          aria-labelledby={`tab-${activeTab}`}
+          className="focus:outline-none"
+        >
+          {activeTab === 'dashboard' && (
+            <DashboardTab
+              event={event}
+              blueprint={blueprint}
+              categories={categories}
+              expenses={expenses}
+              tasks={tasks}
+              vendors={vendors}
+              onNavigateTab={setActiveTab}
+              onGenerateBlueprint={handleGenerateBlueprint}
+              isGeneratingBlueprint={isGenerating}
+            />
+          )}
 
-        {activeTab === 'budget' && (
-          <BudgetTab
-            event={event}
-            categories={categories}
-            expenses={expenses}
-            onUpdateCategories={handleUpdateCategories}
-            onUpdateExpenses={handleUpdateExpenses}
-          />
-        )}
+          {activeTab === 'budget' && (
+            <BudgetTab
+              event={event}
+              categories={categories}
+              expenses={expenses}
+              onUpdateCategories={handleUpdateCategories}
+              onUpdateExpenses={handleUpdateExpenses}
+            />
+          )}
 
-        {activeTab === 'timeline' && (
-          <TimelineTab
-            event={event}
-            tasks={tasks}
-            onUpdateTasks={handleUpdateTasks}
-          />
-        )}
+          {activeTab === 'timeline' && (
+            <TimelineTab
+              event={event}
+              tasks={tasks}
+              onUpdateTasks={handleUpdateTasks}
+            />
+          )}
 
-        {activeTab === 'vendors' && (
-          <VendorsTab
-            event={event}
-            blueprint={blueprint}
-            categories={categories}
-            vendors={vendors}
-            onUpdateVendors={handleUpdateVendors}
-          />
-        )}
+          {activeTab === 'vendors' && (
+            <VendorsTab
+              event={event}
+              blueprint={blueprint}
+              categories={categories}
+              vendors={vendors}
+              onUpdateVendors={handleUpdateVendors}
+            />
+          )}
 
-        {activeTab === 'ideas' && (
-          <IdeasTab
-            event={event}
-            onAddTask={handleAddTask}
-          />
-        )}
+          {activeTab === 'ideas' && (
+            <IdeasTab
+              event={event}
+              onAddTask={handleAddTask}
+            />
+          )}
 
-        {activeTab === 'refine' && (
-          <RefineTab
-            event={event}
-            blueprint={blueprint}
-            tasks={tasks}
-            onApplyRefinedPlan={handleApplyRefinedPlan}
-          />
-        )}
+          {activeTab === 'refine' && (
+            <RefineTab
+              event={event}
+              blueprint={blueprint}
+              tasks={tasks}
+              onApplyRefinedPlan={handleApplyRefinedPlan}
+            />
+          )}
 
-        {activeTab === 'export' && (
-          <ExportTab
-            event={event}
-            blueprint={blueprint}
-            categories={categories}
-            expenses={expenses}
-            tasks={tasks}
-            vendors={vendors}
-          />
-        )}
+          {activeTab === 'export' && (
+            <ExportTab
+              event={event}
+              blueprint={blueprint}
+              categories={categories}
+              expenses={expenses}
+              tasks={tasks}
+              vendors={vendors}
+            />
+          )}
+        </div>
       </main>
 
       {/* Error Feedback Modal */}

@@ -222,34 +222,36 @@ export function ExportTab({
           <h3 className="text-xs font-bold uppercase tracking-wider text-forest-900 dark:text-forest-300 border-b border-sand-200 dark:border-stone-800 pb-1.5">
             2. Budget Allocation & Spend (INR)
           </h3>
-          <table className="w-full text-xs text-left">
-            <thead>
-              <tr className="border-b border-sand-200 dark:border-stone-800 text-stone-500 text-[10px] uppercase font-semibold">
-                <th className="py-2.5">Category</th>
-                <th className="py-2.5 text-right">Target (%)</th>
-                <th className="py-2.5 text-right">Target Amount</th>
-                <th className="py-2.5 text-right">Actual Spent</th>
-                <th className="py-2.5 text-right">Variance</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
-              {categories.map((c) => {
-                const spent = categorySpends[c.id] ?? 0;
-                const diff = c.estimatedAmount - spent;
-                return (
-                  <tr key={c.id}>
-                    <td className="py-2.5 font-medium text-stone-900 dark:text-stone-100">{c.name}</td>
-                    <td className="py-2.5 text-right text-stone-600 dark:text-stone-400">{c.percentage}%</td>
-                    <td className="py-2.5 text-right text-stone-700 dark:text-stone-300">{formatINR(c.estimatedAmount)}</td>
-                    <td className="py-2.5 text-right font-medium text-stone-900 dark:text-stone-100">{formatINR(spent)}</td>
-                    <td className={`py-2.5 text-right font-semibold ${diff < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
-                      {diff < 0 ? `-${formatINR(Math.abs(diff))}` : formatINR(diff)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left min-w-[500px]">
+              <thead>
+                <tr className="border-b border-sand-200 dark:border-stone-800 text-stone-500 text-[10px] uppercase font-semibold">
+                  <th className="py-2.5">Category</th>
+                  <th className="py-2.5 text-right">Target (%)</th>
+                  <th className="py-2.5 text-right">Target Amount</th>
+                  <th className="py-2.5 text-right">Actual Spent</th>
+                  <th className="py-2.5 text-right">Variance</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
+                {categories.map((c) => {
+                  const spent = categorySpends[c.id] ?? 0;
+                  const diff = c.estimatedAmount - spent;
+                  return (
+                    <tr key={c.id}>
+                      <td className="py-2.5 font-medium text-stone-900 dark:text-stone-100">{c.name}</td>
+                      <td className="py-2.5 text-right text-stone-600 dark:text-stone-400">{c.percentage}%</td>
+                      <td className="py-2.5 text-right text-stone-700 dark:text-stone-300">{formatINR(c.estimatedAmount)}</td>
+                      <td className="py-2.5 text-right font-medium text-stone-900 dark:text-stone-100">{formatINR(spent)}</td>
+                      <td className={`py-2.5 text-right font-semibold ${diff < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
+                        {diff < 0 ? `-${formatINR(Math.abs(diff))}` : formatINR(diff)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Milestone Timeline Checklist */}
@@ -281,30 +283,32 @@ export function ExportTab({
           <h3 className="text-xs font-bold uppercase tracking-wider text-forest-900 dark:text-forest-300 border-b border-sand-200 dark:border-stone-800 pb-1.5">
             4. Vendor Status & Contacts
           </h3>
-          <table className="w-full text-xs text-left">
-            <thead>
-              <tr className="border-b border-sand-200 dark:border-stone-800 text-stone-500 text-[10px] uppercase font-semibold">
-                <th className="py-2.5">Category</th>
-                <th className="py-2.5">Vendor Name</th>
-                <th className="py-2.5">Contact</th>
-                <th className="py-2.5 text-right">Quote</th>
-                <th className="py-2.5 text-right">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
-              {vendors.map((v) => (
-                <tr key={v.id}>
-                  <td className="py-2.5 font-medium text-stone-900 dark:text-stone-100">{v.category}</td>
-                  <td className="py-2.5 text-stone-700 dark:text-stone-300">{v.name || '—'}</td>
-                  <td className="py-2.5 text-stone-700 dark:text-stone-300">{v.contact || '—'}</td>
-                  <td className="py-2.5 text-right font-medium text-stone-900 dark:text-stone-100">{v.quote !== undefined ? formatINR(v.quote) : '—'}</td>
-                  <td className="py-2.5 text-right uppercase text-[10px] font-bold text-forest-800 dark:text-forest-400">
-                    {v.status}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left min-w-[500px]">
+              <thead>
+                <tr className="border-b border-sand-200 dark:border-stone-800 text-stone-500 text-[10px] uppercase font-semibold">
+                  <th className="py-2.5">Category</th>
+                  <th className="py-2.5">Vendor Name</th>
+                  <th className="py-2.5">Contact</th>
+                  <th className="py-2.5 text-right">Quote</th>
+                  <th className="py-2.5 text-right">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
+                {vendors.map((v) => (
+                  <tr key={v.id}>
+                    <td className="py-2.5 font-medium text-stone-900 dark:text-stone-100">{v.category}</td>
+                    <td className="py-2.5 text-stone-700 dark:text-stone-300">{v.name || '—'}</td>
+                    <td className="py-2.5 text-stone-700 dark:text-stone-300">{v.contact || '—'}</td>
+                    <td className="py-2.5 text-right font-medium text-stone-900 dark:text-stone-100">{v.quote !== undefined ? formatINR(v.quote) : '—'}</td>
+                    <td className="py-2.5 text-right uppercase text-[10px] font-bold text-forest-800 dark:text-forest-400">
+                      {v.status}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
