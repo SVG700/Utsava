@@ -118,7 +118,7 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
     setErrorMessage(null);
 
     try {
-      const userKey = typeof window !== 'undefined' ? localStorage.getItem('utsava_gemini_key') : null;
+      const userKey = typeof window !== 'undefined' ? sessionStorage.getItem('utsava_gemini_key') : null;
       const res = await fetch('/api/generate-blueprint', {
         method: 'POST',
         signal: controller.signal,
@@ -295,7 +295,8 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
     updatedBlueprint: AIBlueprint,
     updatedCategories: BudgetCategory[] | null,
     summary: string,
-    refinedTotalBudget?: number
+    refinedTotalBudget?: number,
+    changedSections?: string[]
   ) => {
     if (!event) return;
 
@@ -313,10 +314,43 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
     saveBlueprint(currentEvent.id, updatedBlueprint);
     setBlueprint(updatedBlueprint);
 
+    let activeCategories = categories;
     if (updatedCategories) {
       const finalCats = recalculateEstimates(updatedCategories, currentEvent.totalBudget);
       saveCategories(currentEvent.id, finalCats);
       setCategories(finalCats);
+      activeCategories = finalCats;
+    }
+
+    // When refinement includes a timeline, rebuild tasks preserving completion by title
+    if (changedSections?.includes('Timeline')) {
+      const newTasks = buildTimelineTasks(updatedBlueprint.timeline, currentEvent.date);
+      const mergedTasks = mergeTasksOnRegenerate(tasks, newTasks);
+      saveTasks(currentEvent.id, mergedTasks);
+      setTasks(mergedTasks);
+    }
+
+    // When refinement includes vendorCategories, merge into vendors without losing user data
+    if (changedSections?.includes('Vendor Categories')) {
+      const rawVendors: Vendor[] = updatedBlueprint.vendorCategories.map((vc) => {
+        const matchingCatId = vc.budgetCategory
+          ? activeCategories.find((c) => c.name.toLowerCase() === vc.budgetCategory?.toLowerCase())?.id ??
+            findMatchingCategoryId(vc.category, activeCategories)
+          : findMatchingCategoryId(vc.category, activeCategories);
+        return {
+          id: uuidv4(),
+          category: vc.category,
+          budgetCategoryId: matchingCatId,
+          name: '',
+          contact: '',
+          status: 'not-started',
+          notes: '',
+          suggestedByAI: true,
+        };
+      });
+      const mergedVendors = mergeVendorsOnRegenerate(vendors, rawVendors);
+      saveVendors(currentEvent.id, mergedVendors);
+      setVendors(mergedVendors);
     }
   };
 

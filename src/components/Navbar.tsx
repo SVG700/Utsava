@@ -41,7 +41,7 @@ export function Navbar() {
 
     const timer = setTimeout(() => {
       setIsDark(shouldBeDark);
-      const savedKey = localStorage.getItem('utsava_gemini_key');
+      const savedKey = typeof window !== 'undefined' ? sessionStorage.getItem('utsava_gemini_key') : null;
       if (savedKey) setApiKeyInput(savedKey);
     }, 0);
     return () => clearTimeout(timer);
@@ -63,14 +63,14 @@ export function Navbar() {
     e.preventDefault();
     const cleanKey = apiKeyInput.trim();
     if (cleanKey) {
-      localStorage.setItem('utsava_gemini_key', cleanKey);
+      sessionStorage.setItem('utsava_gemini_key', cleanKey);
       setKeySaved(true);
       setTimeout(() => {
         setKeySaved(false);
         setIsKeyModalOpen(false);
       }, 1000);
     } else {
-      localStorage.removeItem('utsava_gemini_key');
+      sessionStorage.removeItem('utsava_gemini_key');
       setIsKeyModalOpen(false);
     }
   };
@@ -222,8 +222,8 @@ export function Navbar() {
       <Modal
         isOpen={isKeyModalOpen}
         onClose={() => setIsKeyModalOpen(false)}
-        title="Google Gemini API Key"
-        description="Provide your Gemini API key for live AI generation. It is saved securely in your browser's local storage and used exclusively for your requests."
+        title="Google Gemini API Key (Session Only)"
+        description="Session-Only Key: For local testing without a server .env.local file, you can enter an API key for this browser session. It is stored only in sessionStorage (never written to permanent disk or localStorage), transmitted only over HTTPS headers to your backend, and automatically deleted when you close this browser tab."
       >
         <form onSubmit={handleSaveKey} className="space-y-4">
           <Input

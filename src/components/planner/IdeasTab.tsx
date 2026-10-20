@@ -14,6 +14,8 @@ import {
   Coins,
 } from 'lucide-react';
 import type { StoredEvent, AIIdeaSection, AIIdeas, TimelineTask } from '@/schemas';
+import { calculateDueDate } from '@/lib/dates';
+import { getEventIdeas, saveEventIdeas } from '@/lib/storage';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -38,7 +40,9 @@ const SECTIONS: Array<{
 
 export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
   const [selectedSection, setSelectedSection] = useState<AIIdeaSection>('food');
-  const [ideasBySection, setIdeasBySection] = useState<Record<string, AIIdeas['ideas']>>({});
+  const [ideasBySection, setIdeasBySection] = useState<Record<string, AIIdeas['ideas']>>(() => {
+    return getEventIdeas(event.id);
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [addedTitles, setAddedTitles] = useState<Record<string, boolean>>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -63,7 +67,7 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
     setErrorMessage(null);
 
     try {
-      const userKey = typeof window !== 'undefined' ? localStorage.getItem('utsava_gemini_key') : null;
+      const userKey = typeof window !== 'undefined' ? sessionStorage.getItem('utsava_gemini_key') : null;
       const res = await fetch('/api/generate-ideas', {
         method: 'POST',
         signal: controller.signal,
@@ -98,10 +102,21 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
         return;
       }
 
-      setIdeasBySection((prev) => ({
-        ...prev,
-        [section]: data.ideas.ideas,
-      }));
+      const existing = ideasBySection[section] || [];
+      const incoming: AIIdeas['ideas'] = data.ideas.ideas || [];
+      const newItems = incoming.filter(
+        (ni) => !existing.some((ei) => ei.title.trim().toLowerCase() === ni.title.trim().toLowerCase())
+      );
+      const combined = [...existing, ...newItems];
+
+      setIdeasBySection((prev) => {
+        const next = {
+          ...prev,
+          [section]: combined,
+        };
+        saveEventIdeas(event.id, next);
+        return next;
+      });
     } catch (err: unknown) {
       if (err instanceof Error && err.name === 'AbortError') {
         return;
@@ -119,7 +134,7 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
     onAddTask({
       title: `Plan idea: ${title}`,
       description: desc,
-      dueDate: event.date,
+      dueDate: calculateDueDate(event.date, 14),
       daysBeforeEvent: 14,
       priority: 'medium',
       completed: false,

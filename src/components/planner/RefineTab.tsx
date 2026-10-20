@@ -24,6 +24,8 @@ import type {
 } from '@/schemas';
 import { mergeBlueprintRefinement } from '@/lib/ai/mergePlan';
 import { buildBudgetCategories } from '@/lib/budget';
+import { getChangedSections } from '@/lib/deepCompare';
+import { getRefinementHistory, saveRefinementHistory } from '@/lib/storage';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -36,7 +38,8 @@ interface RefineTabProps {
     updatedBlueprint: AIBlueprint,
     updatedCategories: BudgetCategory[] | null,
     summary: string,
-    refinedTotalBudget?: number
+    refinedTotalBudget?: number,
+    changedSections?: string[]
   ) => void;
 }
 
@@ -78,7 +81,9 @@ export function RefineTab({
 }: RefineTabProps) {
   const [prompt, setPrompt] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [history, setHistory] = useState<RefinementHistoryItem[]>([]);
+  const [history, setHistory] = useState<RefinementHistoryItem[]>(() => {
+    return getRefinementHistory(event.id);
+  });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const abortControllerRef = React.useRef<AbortController | null>(null);
 
@@ -118,7 +123,7 @@ export function RefineTab({
     setErrorMessage(null);
 
     try {
-      const userKey = typeof window !== 'undefined' ? localStorage.getItem('utsava_gemini_key') : null;
+      const userKey = typeof window !== 'undefined' ? sessionStorage.getItem('utsava_gemini_key') : null;
       const res = await fetch('/api/refine-plan', {
         method: 'POST',
         signal: controller.signal,
@@ -155,15 +160,8 @@ export function RefineTab({
 
       const refinement: AIRefinement = data.refinement;
 
-      // Identify which sections changed
-      const changed: string[] = [];
-      if (refinement.themeAndDecor) changed.push('Theme & Decor');
-      if (refinement.budgetAllocation) changed.push('Budget Allocation');
-      if (refinement.activities) changed.push('Activities');
-      if (refinement.timeline) changed.push('Timeline');
-      if (refinement.vendorCategories) changed.push('Vendor Categories');
-      if (refinement.alternatives) changed.push('Alternatives');
-      if (refinement.totalBudget) changed.push('Total Budget');
+      // Identify which sections genuinely changed using deep comparison
+      const changed = getChangedSections(blueprint, refinement, event.totalBudget);
 
       // Merge into blueprint without touching unrelated sections
       const updatedBlueprint = mergeBlueprintRefinement(blueprint, refinement);
@@ -182,7 +180,7 @@ export function RefineTab({
         );
       }
 
-      // Add to conversation history
+      // Add to conversation history and persist to storage
       const historyItem: RefinementHistoryItem = {
         id: String(Date.now()),
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -191,12 +189,16 @@ export function RefineTab({
         changedSections: changed,
       };
 
-      setHistory((prev) => [historyItem, ...prev]);
+      const updatedHistory = [historyItem, ...history];
+      setHistory(updatedHistory);
+      saveRefinementHistory(event.id, updatedHistory);
+
       onApplyRefinedPlan(
         updatedBlueprint,
         newCategories,
         refinement.refinementSummary,
-        refinement.totalBudget
+        refinement.totalBudget,
+        changed
       );
       setPrompt('');
     } catch (err: unknown) {

@@ -13,7 +13,7 @@ export type BudgetCategory = z.infer<typeof budgetCategorySchema>;
 
 // ─── Expense Schema ─────────────────────────────────────────────
 export const expenseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string().min(1),
   categoryId: z.string(),
   description: z.string().min(1).max(200),
   amount: z.number().min(0),
@@ -28,7 +28,7 @@ export const TASK_PRIORITIES = ['high', 'medium', 'low'] as const;
 export type TaskPriority = (typeof TASK_PRIORITIES)[number];
 
 export const timelineTaskSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string().min(1),
   title: z.string().min(1).max(200),
   description: z.string().max(500).optional().default(''),
   dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -45,7 +45,7 @@ export const VENDOR_STATUSES = ['not-started', 'shortlisted', 'booked'] as const
 export type VendorStatus = (typeof VENDOR_STATUSES)[number];
 
 export const vendorSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string().min(1),
   category: z.string(),
   budgetCategoryId: z.string().optional(),
   name: z.string().max(200).optional().default(''),

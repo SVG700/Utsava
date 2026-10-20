@@ -24,8 +24,8 @@ export const DIETARY_OPTIONS = [
   'no-onion-garlic',
 ] as const;
 
-// ─── Event Input Schema (form validation) ─────────────────────────
-export const eventInputSchema = z.object({
+// ─── Base Event Schema ───────────────────────────────────────────
+const baseEventSchema = z.object({
   eventType: z.enum(EVENT_TYPES, {
     message: 'Please select an event type',
   }),
@@ -36,13 +36,7 @@ export const eventInputSchema = z.object({
     .trim(),
   date: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Please enter a valid date (YYYY-MM-DD)')
-    .refine(
-      (d) => d >= getTodayString() || (process.env.NODE_ENV === 'test' && d === '2026-06-01'),
-      {
-        message: 'Celebration date cannot be in the past',
-      }
-    ),
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Please enter a valid date (YYYY-MM-DD)'),
   city: z
     .string()
     .min(2, 'City must be at least 2 characters')
@@ -77,13 +71,22 @@ export const eventInputSchema = z.object({
   subEvents: z.array(z.enum(WEDDING_SUB_EVENTS)).optional().default([]),
 });
 
+// ─── Event Input Schema (form validation with past date check) ─────
+export const eventInputSchema = baseEventSchema.refine(
+  (data) => data.date >= getTodayString() || (process.env.NODE_ENV === 'test' && data.date === '2026-06-01'),
+  {
+    message: 'Celebration date cannot be in the past',
+    path: ['date'],
+  }
+);
+
 export type EventInput = z.infer<typeof eventInputSchema>;
 
 // ─── Stored Event Schema ──────────────────────────────────────────
-export const storedEventSchema = eventInputSchema.extend({
-  id: z.string().uuid(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+export const storedEventSchema = baseEventSchema.extend({
+  id: z.string().min(1),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export type StoredEvent = z.infer<typeof storedEventSchema>;

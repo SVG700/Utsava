@@ -60,6 +60,11 @@ export function BudgetTab({
   // Add/Edit Expense Modal state
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null);
+  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
+  const [undoExpense, setUndoExpense] = useState<Expense | null>(null);
+  const [categoryToRemove, setCategoryToRemove] = useState<{ id: string; name: string } | null>(null);
+  const [reassignTargetCatId, setReassignTargetCatId] = useState<string>('cat-uncategorised');
+  const undoTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [expenseForm, setExpenseForm] = useState({
     categoryId: categories[0]?.id || '',
     description: '',
@@ -154,9 +159,29 @@ export function BudgetTab({
     setIsExpenseModalOpen(false);
   };
 
-  // Delete Expense
-  const handleDeleteExpense = (id: string) => {
-    onUpdateExpenses(expenses.filter((e) => e.id !== id));
+  // Delete Expense with Confirmation and Undo
+  const handleRequestDeleteExpense = (exp: Expense) => {
+    setExpenseToDelete(exp);
+  };
+
+  const handleConfirmDeleteExpense = () => {
+    if (!expenseToDelete) return;
+    const exp = expenseToDelete;
+    onUpdateExpenses(expenses.filter((e) => e.id !== exp.id));
+    setExpenseToDelete(null);
+    setUndoExpense(exp);
+
+    if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
+    undoTimeoutRef.current = setTimeout(() => {
+      setUndoExpense(null);
+    }, 8000);
+  };
+
+  const handleUndoDeleteExpense = () => {
+    if (!undoExpense) return;
+    onUpdateExpenses([undoExpense, ...expenses]);
+    setUndoExpense(null);
+    if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
   };
 
   // Open Edit Categories Modal
@@ -205,8 +230,8 @@ export function BudgetTab({
     setNewCatName('');
   };
 
-  // Remove category from temp
-  const handleRemoveCategory = (catId: string) => {
+  // Execute actual removal of a category from tempCategories
+  const executeRemoveCategory = (catId: string) => {
     if (tempCategories.length <= 1) return;
     const remainingCats = tempCategories.filter((c) => c.id !== catId);
     const normalised = normalisePercentages(remainingCats.map((c) => c.percentage));
@@ -218,6 +243,62 @@ export function BudgetTab({
         estimatedAmount: amounts[i],
       }))
     );
+  };
+
+  // Handle remove category request: if expenses exist, prompt reassign/confirm
+  const handleRemoveCategory = (catId: string) => {
+    if (tempCategories.length <= 1) return;
+    const cat = tempCategories.find((c) => c.id === catId);
+    const linkedExpenses = expenses.filter((e) => e.categoryId === catId);
+
+    if (linkedExpenses.length > 0 && cat) {
+      setCategoryToRemove({ id: cat.id, name: cat.name });
+      setReassignTargetCatId('cat-uncategorised');
+    } else {
+      executeRemoveCategory(catId);
+    }
+  };
+
+  // Confirm reassigning expenses before category removal
+  const handleConfirmReassignAndRemove = () => {
+    if (!categoryToRemove) return;
+
+    let targetId = reassignTargetCatId;
+    let targetCategories = [...tempCategories];
+
+    // If target is Uncategorised and it doesn't exist yet, add it with 0%
+    if (targetId === 'cat-uncategorised') {
+      const exists = targetCategories.some((c) => c.id === 'cat-uncategorised');
+      if (!exists) {
+        targetCategories.push({
+          id: 'cat-uncategorised',
+          name: 'Uncategorised',
+          percentage: 0,
+          estimatedAmount: 0,
+          actualAmount: 0,
+        });
+      }
+    }
+
+    // Reassign all expenses currently in categoryToRemove.id to targetId
+    const updatedExpenses = expenses.map((e) =>
+      e.categoryId === categoryToRemove.id ? { ...e, categoryId: targetId } : e
+    );
+    onUpdateExpenses(updatedExpenses);
+
+    // Remove category from list
+    const remainingCats = targetCategories.filter((c) => c.id !== categoryToRemove.id);
+    const normalised = normalisePercentages(remainingCats.map((c) => c.percentage));
+    const amounts = percentagesToAmounts(normalised, event.totalBudget);
+    const finalCats = remainingCats.map((c, i) => ({
+      ...c,
+      percentage: normalised[i],
+      estimatedAmount: amounts[i],
+    }));
+
+    setTempCategories(finalCats);
+    setCategoryToRemove(null);
+  };
   };
 
   return (
@@ -577,7 +658,7 @@ export function BudgetTab({
                               <Edit2 className="w-3.5 h-3.5" />
                             </button>
                             <button
-                              onClick={() => handleDeleteExpense(exp.id)}
+                              onClick={() => handleRequestDeleteExpense(exp)}
                               className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                               title="Delete expense"
                             >
@@ -633,6 +714,7 @@ export function BudgetTab({
             <Input
               label="Amount (INR ₹)"
               type="number"
+              step="any"
               required
               min={0}
               placeholder="e.g. 50000"
@@ -699,7 +781,8 @@ export function BudgetTab({
                 <div className="flex items-center gap-1.5 w-24">
                   <input
                     type="number"
-                    min={1}
+                    step="any"
+                    min={0.1}
                     max={100}
                     value={c.percentage}
                     onChange={(e) => {
@@ -741,7 +824,8 @@ export function BudgetTab({
               />
               <input
                 type="number"
-                min={1}
+                step="any"
+                min={0.1}
                 max={50}
                 placeholder="%"
                 value={newCatPercentage}
@@ -764,6 +848,88 @@ export function BudgetTab({
           </div>
         </form>
       </Modal>
+
+      {/* Confirm Expense Deletion Modal */}
+      <Modal
+        isOpen={Boolean(expenseToDelete)}
+        onClose={() => setExpenseToDelete(null)}
+        title="Confirm Expense Deletion"
+        description="Are you sure you want to remove this expense record? You can also undo this action immediately after."
+        maxWidth="sm"
+      >
+        <div className="space-y-4">
+          {expenseToDelete && (
+            <div className="p-3 rounded-xl bg-sand-50 dark:bg-stone-900 border border-sand-200 dark:border-stone-800 text-xs space-y-1">
+              <p className="font-semibold text-stone-900 dark:text-stone-100">{expenseToDelete.description}</p>
+              <p className="text-stone-500">Amount: <strong className="text-stone-900 dark:text-stone-100">{formatINR(expenseToDelete.amount)}</strong></p>
+              <p className="text-stone-500">Date: {formatDisplayDate(expenseToDelete.date)}</p>
+            </div>
+          )}
+          <div className="flex justify-end gap-2.5">
+            <Button variant="outline" size="sm" onClick={() => setExpenseToDelete(null)}>
+              Cancel
+            </Button>
+            <Button variant="danger" size="sm" onClick={handleConfirmDeleteExpense}>
+              Delete Expense
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Category Removal & Expense Reassignment Modal */}
+      <Modal
+        isOpen={Boolean(categoryToRemove)}
+        onClose={() => setCategoryToRemove(null)}
+        title={`Reassign Expenses from "${categoryToRemove?.name}"`}
+        description="This category contains recorded expenses. Choose where to reassign them before removing the category, or move them to 'Uncategorised'."
+        maxWidth="md"
+      >
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300">
+              Reassign Expenses To
+            </label>
+            <select
+              value={reassignTargetCatId}
+              onChange={(e) => setReassignTargetCatId(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl border border-sand-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-xs text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-forest-600"
+            >
+              <option value="cat-uncategorised">Uncategorised (Default safe bucket)</option>
+              {tempCategories
+                .filter((c) => c.id !== categoryToRemove?.id)
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div className="flex justify-end gap-2.5 pt-2 border-t border-sand-200 dark:border-stone-800">
+            <Button variant="outline" size="sm" onClick={() => setCategoryToRemove(null)}>
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" onClick={handleConfirmReassignAndRemove}>
+              Reassign & Remove
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Floating Undo Notification for Deleted Expense */}
+      {undoExpense && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-stone-200 animate-in fade-in slide-in-from-bottom-2">
+          <span className="text-xs font-medium">
+            Expense "{undoExpense.description}" deleted
+          </span>
+          <button
+            onClick={handleUndoDeleteExpense}
+            className="text-xs font-bold text-emerald-400 dark:text-emerald-700 hover:underline cursor-pointer"
+          >
+            Undo
+          </button>
+        </div>
+      )}
     </div>
   );
 }

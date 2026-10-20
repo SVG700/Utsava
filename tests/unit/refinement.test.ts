@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mergeBlueprintRefinement } from '@/lib/ai/mergePlan';
+import { deepEqual, getChangedSections } from '@/lib/deepCompare';
 import type { AIBlueprint, AIRefinement } from '@/schemas';
 
 describe('mergeBlueprintRefinement', () => {
@@ -93,5 +94,51 @@ describe('mergeBlueprintRefinement', () => {
 
     expect(updated.themeAndDecor.mainTheme).toBe('Eco-Friendly Terracotta & Jasmine');
     expect(updated.budgetAllocation).toEqual(initialPlan.budgetAllocation);
+  });
+});
+
+describe('deepEqual and getChangedSections', () => {
+  it('deepEqual compares nested objects and arrays correctly', () => {
+    expect(deepEqual({ a: 1, b: [2, 3] }, { a: 1, b: [2, 3] })).toBe(true);
+    expect(deepEqual({ a: 1, b: [2, 3] }, { a: 1, b: [2, 4] })).toBe(false);
+    expect(deepEqual({ a: 1 }, { a: 1, b: 2 })).toBe(false);
+  });
+
+  it('getChangedSections only includes sections that actually changed', () => {
+    const mockPlan: AIBlueprint = {
+      themeAndDecor: {
+        mainTheme: 'Theme A',
+        colorPalette: ['#fff'],
+        decorIdeas: ['Drapes'],
+        description: 'Desc',
+      },
+      activities: [{ name: 'Game', description: 'Desc', estimatedDuration: '1h', suitableFor: 'All' }],
+      budgetAllocation: [{ category: 'Venue', percentage: 100, description: 'Venue' }],
+      timeline: [],
+      vendorCategories: [],
+      risksAndAssumptions: ['Risk 1'],
+      missingInfo: [],
+      alternatives: [],
+    };
+
+    // Refinement returns identical theme, but altered budgetAllocation
+    const refinement: AIRefinement = {
+      themeAndDecor: {
+        mainTheme: 'Theme A',
+        colorPalette: ['#fff'],
+        decorIdeas: ['Drapes'],
+        description: 'Desc',
+      },
+      budgetAllocation: [
+        { category: 'Venue', percentage: 60, description: 'Venue' },
+        { category: 'Catering', percentage: 40, description: 'Catering' },
+      ],
+      refinementSummary: 'Updated budget allocation only',
+    };
+
+    const changed = getChangedSections(mockPlan, refinement, 100000);
+    // Theme & Decor should NOT be listed because its content is identical
+    expect(changed).toContain('Budget Allocation');
+    expect(changed).not.toContain('Theme & Decor');
   });
 });

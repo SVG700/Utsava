@@ -14,6 +14,10 @@ import {
   saveTasks,
   getVendors,
   saveVendors,
+  getRefinementHistory,
+  saveRefinementHistory,
+  getEventIdeas,
+  saveEventIdeas,
 } from '@/lib/storage';
 import type { StoredEvent, AIBlueprint, BudgetCategory, Expense, TimelineTask, Vendor } from '@/schemas';
 
@@ -169,5 +173,60 @@ describe('Vendors storage', () => {
     ];
     saveVendors('event-1', vendors);
     expect(getVendors('event-1')).toEqual(vendors);
+  });
+});
+
+describe('Zod schema validation on storage reads', () => {
+  it('drops invalid or corrupted event records from getAllEvents', () => {
+    store['utsava_events'] = JSON.stringify([
+      testEvent,
+      { id: 'corrupt-1', name: '' },
+      { id: 'corrupt-2', totalBudget: -100 },
+      null,
+    ]);
+
+    const events = getAllEvents();
+    expect(events).toHaveLength(1);
+    expect(events[0].id).toBe(testEvent.id);
+  });
+
+  it('drops invalid expense records from getExpenses', () => {
+    store['utsava_expenses_event-corrupt'] = JSON.stringify([
+      { id: '1', categoryId: 'cat-0', description: 'Valid', amount: 500, date: '2026-01-15', notes: '' },
+      { id: '2', amount: 'not-a-number' },
+    ]);
+
+    const result = getExpenses('event-corrupt');
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('1');
+  });
+
+  it('saves and retrieves refinement history', () => {
+    const history = [
+      {
+        id: 'h-1',
+        timestamp: '10:30 AM',
+        userPrompt: 'Make decor sustainable',
+        summary: 'Updated decor to potted plants',
+        changedSections: ['Theme & Decor'],
+      },
+    ];
+    saveRefinementHistory('event-1', history);
+    expect(getRefinementHistory('event-1')).toEqual(history);
+  });
+
+  it('saves and retrieves ideas by section', () => {
+    const ideas = {
+      food: [
+        {
+          title: 'Live Chaat Counter',
+          description: 'Spicy pani puri stall',
+          estimatedCost: '₹200/guest',
+          sustainability: 'Banana leaf plates',
+        },
+      ],
+    };
+    saveEventIdeas('event-1', ideas);
+    expect(getEventIdeas('event-1')).toEqual(ideas);
   });
 });

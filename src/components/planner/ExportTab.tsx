@@ -16,6 +16,7 @@ import type {
 } from '@/schemas';
 import { formatINR, spendByCategory } from '@/lib/budget';
 import { formatDisplayDate } from '@/lib/dates';
+import { buildCsvString, downloadCsvFile } from '@/lib/csv';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 
@@ -42,81 +43,69 @@ export function ExportTab({
     window.print();
   };
 
-  // Helper to trigger browser CSV download
-  const downloadCSV = (filename: string, content: string) => {
-    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   // Export Budget to CSV
   const handleExportBudgetCsv = () => {
     const headers = ['Category', 'Percentage (%)', 'Estimated (INR)', 'Actual Spent (INR)', 'Balance (INR)', 'Status'];
-    const rows = categories.map((cat) => {
+    const rows: (string | number)[][] = categories.map((cat) => {
       const spent = categorySpends[cat.id] ?? 0;
       const balance = cat.estimatedAmount - spent;
       const status = spent > cat.estimatedAmount ? 'OVER BUDGET' : 'WITHIN BUDGET';
       return [
-        `"${cat.name}"`,
+        cat.name,
         cat.percentage,
         cat.estimatedAmount,
         spent,
         balance,
         status,
-      ].join(',');
+      ];
     });
 
     // Summary row
     const totalSpent = Object.values(categorySpends).reduce((s, v) => s + v, 0);
     const totalBalance = event.totalBudget - totalSpent;
     rows.push([
-      '"TOTAL EVENT BUDGET"',
+      'TOTAL EVENT BUDGET',
       100,
       event.totalBudget,
       totalSpent,
       totalBalance,
       totalSpent > event.totalBudget ? 'OVER BUDGET' : 'WITHIN BUDGET',
-    ].join(','));
+    ]);
 
-    const csvContent = [headers.join(','), ...rows].join('\n');
-    downloadCSV(`${event.name.replace(/[^a-z0-9]/gi, '_')}_Budget.csv`, csvContent);
+    const csvContent = buildCsvString(headers, rows);
+    downloadCsvFile(`${event.name.replace(/[^a-z0-9]/gi, '_')}_Budget.csv`, csvContent);
   };
 
   // Export Tasks to CSV
   const handleExportTasksCsv = () => {
     const headers = ['Task Title', 'Category', 'Due Date', 'Days Before Event', 'Priority', 'Status'];
     const rows = tasks.map((t) => [
-      `"${t.title.replace(/"/g, '""')}"`,
-      `"${t.category || ''}"`,
+      t.title,
+      t.category || '',
       t.dueDate,
       t.daysBeforeEvent,
       t.priority.toUpperCase(),
       t.completed ? 'COMPLETED' : 'PENDING',
-    ].join(','));
+    ]);
 
-    const csvContent = [headers.join(','), ...rows].join('\n');
-    downloadCSV(`${event.name.replace(/[^a-z0-9]/gi, '_')}_Timeline_Tasks.csv`, csvContent);
+    const csvContent = buildCsvString(headers, rows);
+    downloadCsvFile(`${event.name.replace(/[^a-z0-9]/gi, '_')}_Timeline_Tasks.csv`, csvContent);
   };
 
   // Export Vendors to CSV
   const handleExportVendorsCsv = () => {
     const headers = ['Category', 'Vendor Name', 'Contact Info', 'Quoted Amount (INR)', 'Status', 'Notes'];
     const rows = vendors.map((v) => [
-      `"${v.category}"`,
-      `"${(v.name || '').replace(/"/g, '""')}"`,
-      `"${(v.contact || '').replace(/"/g, '""')}"`,
+      v.category,
+      v.name || '',
+      v.contact || '',
       v.quote !== undefined ? v.quote : '',
       v.status.toUpperCase(),
-      `"${(v.notes || '').replace(/"/g, '""')}"`,
-    ].join(','));
+      v.notes || '',
+    ]);
 
-    const csvContent = [headers.join(','), ...rows].join('\n');
-    downloadCSV(`${event.name.replace(/[^a-z0-9]/gi, '_')}_Vendors.csv`, csvContent);
+    const csvContent = buildCsvString(headers, rows);
+    downloadCsvFile(`${event.name.replace(/[^a-z0-9]/gi, '_')}_Vendors.csv`, csvContent);
   };
 
   return (

@@ -49,6 +49,9 @@ export function TimelineTab({
   // Task Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<TimelineTask | null>(null);
+  const [undoTask, setUndoTask] = useState<TimelineTask | null>(null);
+  const undoTaskTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [taskForm, setTaskForm] = useState({
     title: '',
     description: '',
@@ -91,9 +94,29 @@ export function TimelineTab({
     setIsModalOpen(true);
   };
 
-  // Delete Task
-  const handleDeleteTask = (taskId: string) => {
-    onUpdateTasks(tasks.filter((t) => t.id !== taskId));
+  // Delete Task with confirmation and undo
+  const handleRequestDeleteTask = (task: TimelineTask) => {
+    setTaskToDelete(task);
+  };
+
+  const handleConfirmDeleteTask = () => {
+    if (!taskToDelete) return;
+    const t = taskToDelete;
+    onUpdateTasks(tasks.filter((item) => item.id !== t.id));
+    setTaskToDelete(null);
+    setUndoTask(t);
+
+    if (undoTaskTimeoutRef.current) clearTimeout(undoTaskTimeoutRef.current);
+    undoTaskTimeoutRef.current = setTimeout(() => {
+      setUndoTask(null);
+    }, 8000);
+  };
+
+  const handleUndoDeleteTask = () => {
+    if (!undoTask) return;
+    onUpdateTasks([...tasks, undoTask]);
+    setUndoTask(null);
+    if (undoTaskTimeoutRef.current) clearTimeout(undoTaskTimeoutRef.current);
   };
 
   // Save Task (Add or Edit)
@@ -365,7 +388,7 @@ export function TimelineTab({
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
-                    onClick={() => handleDeleteTask(task.id)}
+                    onClick={() => handleRequestDeleteTask(task)}
                     className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                     title="Delete task"
                   >
@@ -458,6 +481,47 @@ export function TimelineTab({
           </div>
         </form>
       </Modal>
+
+      {/* Confirm Task Deletion Modal */}
+      <Modal
+        isOpen={Boolean(taskToDelete)}
+        onClose={() => setTaskToDelete(null)}
+        title="Confirm Task Deletion"
+        description="Are you sure you want to delete this task? You can immediately undo this action."
+        maxWidth="sm"
+      >
+        <div className="space-y-4">
+          {taskToDelete && (
+            <div className="p-3 rounded-xl bg-sand-50 dark:bg-stone-900 border border-sand-200 dark:border-stone-800 text-xs space-y-1">
+              <p className="font-semibold text-stone-900 dark:text-stone-100">{taskToDelete.title}</p>
+              <p className="text-stone-500">Due: {formatDisplayDate(taskToDelete.dueDate)}</p>
+            </div>
+          )}
+          <div className="flex justify-end gap-2.5">
+            <Button variant="outline" size="sm" onClick={() => setTaskToDelete(null)}>
+              Cancel
+            </Button>
+            <Button variant="danger" size="sm" onClick={handleConfirmDeleteTask}>
+              Delete Task
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Floating Undo Notification for Deleted Task */}
+      {undoTask && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-stone-200 animate-in fade-in slide-in-from-bottom-2">
+          <span className="text-xs font-medium">
+            Task "{undoTask.title}" deleted
+          </span>
+          <button
+            onClick={handleUndoDeleteTask}
+            className="text-xs font-bold text-emerald-400 dark:text-emerald-700 hover:underline cursor-pointer"
+          >
+            Undo
+          </button>
+        </div>
+      )}
     </div>
   );
 }

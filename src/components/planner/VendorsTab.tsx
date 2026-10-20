@@ -45,6 +45,10 @@ export function VendorsTab({
   // Edit / Add Vendor Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingVendorId, setEditingVendorId] = useState<string | null>(null);
+  const [vendorToDelete, setVendorToDelete] = useState<Vendor | null>(null);
+  const [undoVendor, setUndoVendor] = useState<Vendor | null>(null);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
+  const undoVendorTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [vendorForm, setVendorForm] = useState({
     category: '',
     name: '',
@@ -90,18 +94,46 @@ export function VendorsTab({
     setIsModalOpen(true);
   };
 
-  // Delete Vendor
-  const handleDeleteVendor = (vendorId: string) => {
-    onUpdateVendors(vendors.filter((v) => v.id !== vendorId));
+  // Delete Vendor with confirmation and undo
+  const handleRequestDeleteVendor = (vendor: Vendor) => {
+    setVendorToDelete(vendor);
+  };
+
+  const handleConfirmDeleteVendor = () => {
+    if (!vendorToDelete) return;
+    const v = vendorToDelete;
+    onUpdateVendors(vendors.filter((item) => item.id !== v.id));
+    setVendorToDelete(null);
+    setUndoVendor(v);
+
+    if (undoVendorTimeoutRef.current) clearTimeout(undoVendorTimeoutRef.current);
+    undoVendorTimeoutRef.current = setTimeout(() => {
+      setUndoVendor(null);
+    }, 8000);
+  };
+
+  const handleUndoDeleteVendor = () => {
+    if (!undoVendor) return;
+    onUpdateVendors([undoVendor, ...vendors]);
+    setUndoVendor(null);
+    if (undoVendorTimeoutRef.current) clearTimeout(undoVendorTimeoutRef.current);
   };
 
   // Save Vendor
   const handleSaveVendor = (e: React.FormEvent) => {
     e.preventDefault();
+    setQuoteError(null);
     if (!vendorForm.category.trim()) return;
 
-    const quoteNum =
-      vendorForm.quote.trim() !== '' ? Number(vendorForm.quote) : undefined;
+    let quoteNum: number | undefined;
+    if (vendorForm.quote.trim() !== '') {
+      const parsed = Number(vendorForm.quote);
+      if (!Number.isFinite(parsed) || parsed < 0) {
+        setQuoteError('Quote must be a valid positive amount.');
+        return;
+      }
+      quoteNum = Math.round(parsed);
+    }
 
     if (editingVendorId) {
       const updated = vendors.map((v) =>
@@ -407,7 +439,7 @@ export function VendorsTab({
 
                 <div className="p-3 bg-sand-50/50 dark:bg-stone-900/50 border-t border-sand-100 dark:border-stone-800 flex justify-end gap-2">
                   <button
-                    onClick={() => handleDeleteVendor(v.id)}
+                    onClick={() => handleRequestDeleteVendor(v)}
                     className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                     title="Remove category"
                   >
@@ -451,14 +483,25 @@ export function VendorsTab({
               onChange={(e) => setVendorForm({ ...vendorForm, contact: e.target.value })}
             />
 
-            <Input
-              label="Quoted Amount (INR ₹)"
-              type="number"
-              min={0}
-              placeholder="e.g. 150000"
-              value={vendorForm.quote}
-              onChange={(e) => setVendorForm({ ...vendorForm, quote: e.target.value })}
-            />
+            <div className="space-y-1">
+              <Input
+                label="Quoted Amount (INR ₹)"
+                type="number"
+                step="any"
+                min={0}
+                placeholder="e.g. 150000"
+                value={vendorForm.quote}
+                onChange={(e) => {
+                  setQuoteError(null);
+                  setVendorForm({ ...vendorForm, quote: e.target.value });
+                }}
+              />
+              {quoteError && (
+                <p className="text-[11px] text-rose-600 dark:text-rose-400 font-medium">
+                  {quoteError}
+                </p>
+              )}
+            </div>
           </div>
 
           <div>
@@ -501,6 +544,50 @@ export function VendorsTab({
           </div>
         </form>
       </Modal>
+
+      {/* Confirm Vendor Deletion Modal */}
+      <Modal
+        isOpen={Boolean(vendorToDelete)}
+        onClose={() => setVendorToDelete(null)}
+        title="Confirm Vendor Deletion"
+        description="Are you sure you want to delete this vendor record? You can immediately undo this action."
+        maxWidth="sm"
+      >
+        <div className="space-y-4">
+          {vendorToDelete && (
+            <div className="p-3 rounded-xl bg-sand-50 dark:bg-stone-900 border border-sand-200 dark:border-stone-800 text-xs space-y-1">
+              <p className="font-semibold text-stone-900 dark:text-stone-100">{vendorToDelete.category}</p>
+              {vendorToDelete.name && <p className="text-stone-500">Name: {vendorToDelete.name}</p>}
+              {vendorToDelete.quote !== undefined && (
+                <p className="text-stone-500">Quote: {formatINR(vendorToDelete.quote)}</p>
+              )}
+            </div>
+          )}
+          <div className="flex justify-end gap-2.5">
+            <Button variant="outline" size="sm" onClick={() => setVendorToDelete(null)}>
+              Cancel
+            </Button>
+            <Button variant="danger" size="sm" onClick={handleConfirmDeleteVendor}>
+              Delete Vendor
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Floating Undo Notification for Deleted Vendor */}
+      {undoVendor && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-stone-200 animate-in fade-in slide-in-from-bottom-2">
+          <span className="text-xs font-medium">
+            Vendor "{undoVendor.category}" deleted
+          </span>
+          <button
+            onClick={handleUndoDeleteVendor}
+            className="text-xs font-bold text-emerald-400 dark:text-emerald-700 hover:underline cursor-pointer"
+          >
+            Undo
+          </button>
+        </div>
+      )}
     </div>
   );
 }

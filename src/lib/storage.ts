@@ -1,12 +1,33 @@
 /**
  * localStorage persistence module.
- * Encapsulates all storage access behind a clean interface so it can
- * be swapped for IndexedDB / a backend later.
+ * Encapsulates all storage access behind a clean interface.
+ * Validates every read with Zod schemas to ensure data integrity and drop invalid records.
  */
 
-import type { StoredEvent } from '@/schemas';
-import type { BudgetCategory, Expense, TimelineTask, Vendor } from '@/schemas';
-import type { AIBlueprint } from '@/schemas';
+import { z } from 'zod';
+import {
+  storedEventSchema,
+  aiBlueprintSchema,
+  budgetCategorySchema,
+  expenseSchema,
+  timelineTaskSchema,
+  vendorSchema,
+  type StoredEvent,
+  type BudgetCategory,
+  type Expense,
+  type TimelineTask,
+  type Vendor,
+  type AIBlueprint,
+  type AIIdeas,
+} from '@/schemas';
+
+export interface RefinementHistoryRecord {
+  id: string;
+  timestamp: string;
+  userPrompt: string;
+  summary: string;
+  changedSections: string[];
+}
 
 // ─── Storage Keys ─────────────────────────────────────────────────
 const KEYS = {
@@ -16,6 +37,8 @@ const KEYS = {
   expenses: (eventId: string) => `utsava_expenses_${eventId}`,
   tasks: (eventId: string) => `utsava_tasks_${eventId}`,
   vendors: (eventId: string) => `utsava_vendors_${eventId}`,
+  refinementHistory: (eventId: string) => `utsava_refinement_${eventId}`,
+  ideas: (eventId: string) => `utsava_ideas_${eventId}`,
 } as const;
 
 // ─── Helpers ──────────────────────────────────────────────────────
@@ -60,7 +83,16 @@ function removeItem(key: string): void {
 // ─── Events CRUD ──────────────────────────────────────────────────
 
 export function getAllEvents(): StoredEvent[] {
-  return getItem<StoredEvent[]>(KEYS.events) ?? [];
+  const raw = getItem<unknown[]>(KEYS.events);
+  if (!Array.isArray(raw)) return [];
+  const valid: StoredEvent[] = [];
+  for (const item of raw) {
+    const parsed = storedEventSchema.safeParse(item);
+    if (parsed.success) {
+      valid.push(parsed.data);
+    }
+  }
+  return valid;
 }
 
 export function getEvent(id: string): StoredEvent | null {
@@ -69,12 +101,15 @@ export function getEvent(id: string): StoredEvent | null {
 }
 
 export function saveEvent(event: StoredEvent): void {
+  const parsed = storedEventSchema.safeParse(event);
+  if (!parsed.success) return;
+
   const events = getAllEvents();
   const idx = events.findIndex((e) => e.id === event.id);
   if (idx >= 0) {
-    events[idx] = event;
+    events[idx] = parsed.data;
   } else {
-    events.push(event);
+    events.push(parsed.data);
   }
   setItem(KEYS.events, events);
 }
@@ -88,54 +123,128 @@ export function deleteEvent(id: string): void {
   removeItem(KEYS.expenses(id));
   removeItem(KEYS.tasks(id));
   removeItem(KEYS.vendors(id));
+  removeItem(KEYS.refinementHistory(id));
+  removeItem(KEYS.ideas(id));
 }
 
 // ─── Blueprint ────────────────────────────────────────────────────
 
+const storageBlueprintSchema = z
+  .object({
+    themeAndDecor: z
+      .object({
+        mainTheme: z.string().min(1),
+      })
+      .passthrough(),
+  })
+  .passthrough();
+
 export function getBlueprint(eventId: string): AIBlueprint | null {
-  return getItem<AIBlueprint>(KEYS.blueprint(eventId));
+  const raw = getItem<unknown>(KEYS.blueprint(eventId));
+  if (!raw) return null;
+  const parsed = storageBlueprintSchema.safeParse(raw);
+  return parsed.success ? (raw as AIBlueprint) : null;
 }
 
 export function saveBlueprint(eventId: string, blueprint: AIBlueprint): void {
-  setItem(KEYS.blueprint(eventId), blueprint);
+  const parsed = storageBlueprintSchema.safeParse(blueprint);
+  if (parsed.success) {
+    setItem(KEYS.blueprint(eventId), blueprint);
+  }
 }
 
 // ─── Budget Categories ────────────────────────────────────────────
 
 export function getCategories(eventId: string): BudgetCategory[] {
-  return getItem<BudgetCategory[]>(KEYS.categories(eventId)) ?? [];
+  const raw = getItem<unknown[]>(KEYS.categories(eventId));
+  if (!Array.isArray(raw)) return [];
+  const valid: BudgetCategory[] = [];
+  for (const item of raw) {
+    const parsed = budgetCategorySchema.safeParse(item);
+    if (parsed.success) valid.push(parsed.data);
+  }
+  return valid;
 }
 
 export function saveCategories(eventId: string, categories: BudgetCategory[]): void {
-  setItem(KEYS.categories(eventId), categories);
+  const valid = categories.filter((c) => budgetCategorySchema.safeParse(c).success);
+  setItem(KEYS.categories(eventId), valid);
 }
 
 // ─── Expenses ─────────────────────────────────────────────────────
 
 export function getExpenses(eventId: string): Expense[] {
-  return getItem<Expense[]>(KEYS.expenses(eventId)) ?? [];
+  const raw = getItem<unknown[]>(KEYS.expenses(eventId));
+  if (!Array.isArray(raw)) return [];
+  const valid: Expense[] = [];
+  for (const item of raw) {
+    const parsed = expenseSchema.safeParse(item);
+    if (parsed.success) valid.push(parsed.data);
+  }
+  return valid;
 }
 
 export function saveExpenses(eventId: string, expenses: Expense[]): void {
-  setItem(KEYS.expenses(eventId), expenses);
+  const valid = expenses.filter((e) => expenseSchema.safeParse(e).success);
+  setItem(KEYS.expenses(eventId), valid);
 }
 
 // ─── Timeline Tasks ──────────────────────────────────────────────
 
 export function getTasks(eventId: string): TimelineTask[] {
-  return getItem<TimelineTask[]>(KEYS.tasks(eventId)) ?? [];
+  const raw = getItem<unknown[]>(KEYS.tasks(eventId));
+  if (!Array.isArray(raw)) return [];
+  const valid: TimelineTask[] = [];
+  for (const item of raw) {
+    const parsed = timelineTaskSchema.safeParse(item);
+    if (parsed.success) valid.push(parsed.data);
+  }
+  return valid;
 }
 
 export function saveTasks(eventId: string, tasks: TimelineTask[]): void {
-  setItem(KEYS.tasks(eventId), tasks);
+  const valid = tasks.filter((t) => timelineTaskSchema.safeParse(t).success);
+  setItem(KEYS.tasks(eventId), valid);
 }
 
 // ─── Vendors ──────────────────────────────────────────────────────
 
 export function getVendors(eventId: string): Vendor[] {
-  return getItem<Vendor[]>(KEYS.vendors(eventId)) ?? [];
+  const raw = getItem<unknown[]>(KEYS.vendors(eventId));
+  if (!Array.isArray(raw)) return [];
+  const valid: Vendor[] = [];
+  for (const item of raw) {
+    const parsed = vendorSchema.safeParse(item);
+    if (parsed.success) valid.push(parsed.data);
+  }
+  return valid;
 }
 
 export function saveVendors(eventId: string, vendors: Vendor[]): void {
-  setItem(KEYS.vendors(eventId), vendors);
+  const valid = vendors.filter((v) => vendorSchema.safeParse(v).success);
+  setItem(KEYS.vendors(eventId), valid);
+}
+
+// ─── Refinement History ───────────────────────────────────────────
+
+export function getRefinementHistory(eventId: string): RefinementHistoryRecord[] {
+  const raw = getItem<RefinementHistoryRecord[]>(KEYS.refinementHistory(eventId));
+  if (!Array.isArray(raw)) return [];
+  return raw;
+}
+
+export function saveRefinementHistory(eventId: string, history: RefinementHistoryRecord[]): void {
+  setItem(KEYS.refinementHistory(eventId), history);
+}
+
+// ─── Idea Studio Ideas ────────────────────────────────────────────
+
+export function getEventIdeas(eventId: string): Record<string, AIIdeas['ideas']> {
+  const raw = getItem<Record<string, AIIdeas['ideas']>>(KEYS.ideas(eventId));
+  if (!raw || typeof raw !== 'object') return {};
+  return raw;
+}
+
+export function saveEventIdeas(eventId: string, ideas: Record<string, AIIdeas['ideas']>): void {
+  setItem(KEYS.ideas(eventId), ideas);
 }
