@@ -36,6 +36,7 @@ export const timelineTaskSchema = z.object({
   priority: z.enum(TASK_PRIORITIES),
   completed: z.boolean(),
   category: z.string().optional().default(''),
+  source: z.enum(['ai', 'user']).optional(),
 });
 
 export type TimelineTask = z.infer<typeof timelineTaskSchema>;
@@ -54,6 +55,7 @@ export const vendorSchema = z.object({
   status: z.enum(VENDOR_STATUSES),
   notes: z.string().max(500).optional().default(''),
   suggestedByAI: z.boolean().optional().default(false),
+  source: z.enum(['ai', 'user']).optional(),
 });
 
 export type Vendor = z.infer<typeof vendorSchema>;

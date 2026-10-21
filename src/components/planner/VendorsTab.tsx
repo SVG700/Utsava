@@ -146,6 +146,7 @@ export function VendorsTab({
               quote: quoteNum,
               status: vendorForm.status,
               notes: vendorForm.notes.trim(),
+              source: 'user' as const,
             }
           : v
       );
@@ -160,6 +161,7 @@ export function VendorsTab({
         status: vendorForm.status,
         notes: vendorForm.notes.trim(),
         suggestedByAI: false,
+        source: 'user' as const,
       };
       onUpdateVendors([...vendors, newVendor]);
     }

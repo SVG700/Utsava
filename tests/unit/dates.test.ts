@@ -267,4 +267,89 @@ describe('mergeTasksOnRegenerate', () => {
     expect(choreoTask).toBeDefined();
     expect(choreoTask?.completed).toBe(false);
   });
+
+  it('shows no task growth after 3 consecutive regenerations of the same plan', () => {
+    const rawAiTasks: Omit<TimelineTask, 'id'>[] = [
+      {
+        title: 'Finalize Banquet Hall and Pay Token',
+        description: 'Secure venue contract',
+        dueDate: '2026-11-01',
+        daysBeforeEvent: 90,
+        priority: 'high',
+        completed: false,
+        category: 'Venue',
+      },
+      {
+        title: 'Book Master Halwai for Royal Feasts',
+        description: 'Tasting session',
+        dueDate: '2026-11-15',
+        daysBeforeEvent: 75,
+        priority: 'medium',
+        completed: false,
+        category: 'Catering',
+      },
+      {
+        title: 'Order Eco-Friendly Seed Garlands',
+        description: 'Sustainable decor',
+        dueDate: '2026-12-01',
+        daysBeforeEvent: 45,
+        priority: 'low',
+        completed: false,
+        category: 'Decor',
+      },
+    ];
+
+    const gen1 = mergeTasksOnRegenerate([], rawAiTasks);
+    expect(gen1).toHaveLength(3);
+
+    const gen2 = mergeTasksOnRegenerate(gen1, rawAiTasks);
+    expect(gen2).toHaveLength(3);
+
+    const gen3 = mergeTasksOnRegenerate(gen2, rawAiTasks);
+    expect(gen3).toHaveLength(3);
+  });
+
+  it('carries over completed task to its fuzzy match instead of duplicating', () => {
+    const existing: TimelineTask[] = [
+      {
+        id: 'task-venue-completed',
+        title: 'Finalize Venue and Secure Booking',
+        description: 'Signed agreement',
+        dueDate: '2026-11-01',
+        daysBeforeEvent: 90,
+        priority: 'high',
+        completed: true,
+        category: 'Venue',
+        source: 'ai',
+      },
+    ];
+
+    const newAiTasks: Omit<TimelineTask, 'id'>[] = [
+      {
+        title: 'Finalize Venue and Booking',
+        description: 'New updated instructions',
+        dueDate: '2026-11-05',
+        daysBeforeEvent: 86,
+        priority: 'high',
+        completed: false,
+        category: 'Venue',
+      },
+      {
+        title: 'Select Wedding Photographer',
+        description: 'Portfolio check',
+        dueDate: '2026-11-20',
+        daysBeforeEvent: 70,
+        priority: 'medium',
+        completed: false,
+        category: 'Photography',
+      },
+    ];
+
+    const merged = mergeTasksOnRegenerate(existing, newAiTasks);
+    expect(merged).toHaveLength(2);
+    const venueTask = merged.find((t) => t.id === 'task-venue-completed');
+    expect(venueTask).toBeDefined();
+    expect(venueTask?.title).toBe('Finalize Venue and Booking');
+    expect(venueTask?.completed).toBe(true);
+  });
 });

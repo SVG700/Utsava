@@ -189,8 +189,9 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
         status: 'not-started',
         notes: '',
         suggestedByAI: true,
+        source: 'ai',
       }));
-      const preservedVendors = mergeVendorsOnRegenerate(vendors, rawVendors);
+      const preservedVendors = mergeVendorsOnRegenerate(vendors, rawVendors, finalCategories);
       saveVendors(event.id, preservedVendors);
       setVendors(preservedVendors);
 
@@ -288,6 +289,7 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
     const newTask: TimelineTask = {
       ...newTaskData,
       id: uuidv4(),
+      source: 'user',
     };
     const updated = [newTask, ...tasks];
     saveTasks(event.id, updated);
@@ -350,9 +352,10 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
           status: 'not-started',
           notes: '',
           suggestedByAI: true,
+          source: 'ai',
         };
       });
-      const mergedVendors = mergeVendorsOnRegenerate(vendors, rawVendors);
+      const mergedVendors = mergeVendorsOnRegenerate(vendors, rawVendors, activeCategories);
       saveVendors(currentEvent.id, mergedVendors);
       setVendors(mergedVendors);
     }

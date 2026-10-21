@@ -5,6 +5,7 @@
  */
 
 import type { BudgetCategory, Expense, Vendor } from '@/schemas';
+import { calculateTokenSimilarity } from './dates';
 
 /** Format a number as INR with en-IN grouping (e.g. ₹1,50,000). */
 export function formatINR(amount: number): string {
@@ -202,49 +203,90 @@ export function findMatchingCategoryId(
 }
 
 /**
+ * Determine whether a vendor contains user-customized information.
+ */
+export function hasUserVendorData(v: Vendor): boolean {
+  if (v.source === 'user') return true;
+  if (v.name && v.name.trim().length > 0) return true;
+  if (v.contact && v.contact.trim().length > 0) return true;
+  if (v.quote !== undefined && v.quote !== null) return true;
+  if (v.notes && v.notes.trim().length > 0) return true;
+  if (v.status !== 'not-started') return true;
+  return false;
+}
+
+/**
  * Merge existing vendors with newly suggested vendors on regeneration.
- * Preserves user customizations (name, contact, quote, status, notes).
+ * AI vendors without user data (no name/contact/quote/notes, status not-started)
+ * are dropped and replaced.
+ * Vendors with user data are kept and merged into the best-matching new AI vendor category
+ * (token similarity >= 0.6) so there is one card per category.
+ * Every vendor must have a valid budgetCategoryId (falls back to best match, else "cat-uncategorised").
  */
 export function mergeVendorsOnRegenerate(
   existingVendors: Vendor[],
-  newVendors: Vendor[]
+  newVendors: Vendor[],
+  categories?: BudgetCategory[]
 ): Vendor[] {
-  const existingByCat = new Map<string, Vendor>();
-  for (const v of existingVendors) {
-    existingByCat.set(v.category.trim().toLowerCase(), v);
+  const validCategoryIds = new Set(categories?.map((c) => c.id) ?? []);
+
+  function ensureValidBudgetCategoryId(v: Vendor): Vendor {
+    let catId = v.budgetCategoryId;
+    if (categories && categories.length > 0) {
+      if (!catId || !validCategoryIds.has(catId)) {
+        catId = findMatchingCategoryId(v.category, categories) || 'cat-uncategorised';
+      }
+    } else if (!catId) {
+      catId = 'cat-uncategorised';
+    }
+    return { ...v, budgetCategoryId: catId };
   }
 
-  const merged: Vendor[] = [];
-  const processedExistingIds = new Set<string>();
+  const finalNewVendors: Vendor[] = newVendors.map((nv) =>
+    ensureValidBudgetCategoryId({
+      ...nv,
+      source: nv.source || 'ai',
+      suggestedByAI: nv.suggestedByAI ?? true,
+    })
+  );
 
-  for (const nv of newVendors) {
-    const key = nv.category.trim().toLowerCase();
-    const existing = existingByCat.get(key);
-    if (existing) {
-      processedExistingIds.add(existing.id);
-      merged.push({
-        ...nv,
-        id: existing.id,
-        name: existing.name || nv.name,
-        contact: existing.contact || nv.contact,
-        quote: existing.quote !== undefined ? existing.quote : nv.quote,
-        status: existing.status !== 'not-started' ? existing.status : nv.status,
-        notes: existing.notes || nv.notes,
-        suggestedByAI: true,
-      });
+  const keptExisting = existingVendors.filter(hasUserVendorData);
+  const matchedNewIndices = new Set<number>();
+  const unmatchedKept: Vendor[] = [];
+
+  for (const kept of keptExisting) {
+    let bestIndex = -1;
+    let bestScore = -1;
+
+    for (let i = 0; i < finalNewVendors.length; i++) {
+      if (matchedNewIndices.has(i)) continue;
+      const candidate = finalNewVendors[i];
+
+      const sim = calculateTokenSimilarity(kept.category, candidate.category);
+      if (sim >= 0.6) {
+        if (sim > bestScore) {
+          bestScore = sim;
+          bestIndex = i;
+        }
+      }
+    }
+
+    if (bestIndex !== -1) {
+      matchedNewIndices.add(bestIndex);
+      const target = finalNewVendors[bestIndex];
+      target.id = kept.id;
+      target.name = kept.name || target.name;
+      target.contact = kept.contact || target.contact;
+      target.quote = kept.quote !== undefined ? kept.quote : target.quote;
+      target.status = kept.status !== 'not-started' ? kept.status : target.status;
+      target.notes = kept.notes || target.notes;
+      target.source = kept.source || 'user';
     } else {
-      merged.push(nv);
+      unmatchedKept.push(ensureValidBudgetCategoryId(kept));
     }
   }
 
-  // Preserve user-added custom vendors not in the new blueprint
-  for (const v of existingVendors) {
-    if (!processedExistingIds.has(v.id)) {
-      merged.push(v);
-    }
-  }
-
-  return merged;
+  return [...finalNewVendors, ...unmatchedKept];
 }
 
 /**

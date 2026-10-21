@@ -332,6 +332,113 @@ describe('mergeVendorsOnRegenerate', () => {
     expect(fireworks?.id).toBe('v-custom');
     expect(fireworks?.name).toBe('Local Pyrotechnics');
   });
+
+  it('shows no vendor growth after 3 consecutive regenerations of the same plan', () => {
+    const rawAiVendors: Vendor[] = [
+      {
+        id: 'ai-v1',
+        category: 'Venue & Lawns',
+        budgetCategoryId: 'cat-venue',
+        name: '',
+        contact: '',
+        status: 'not-started',
+        notes: '',
+        suggestedByAI: true,
+      },
+      {
+        id: 'ai-v2',
+        category: 'Royal Catering',
+        budgetCategoryId: 'cat-catering',
+        name: '',
+        contact: '',
+        status: 'not-started',
+        notes: '',
+        suggestedByAI: true,
+      },
+    ];
+
+    const gen1 = mergeVendorsOnRegenerate([], rawAiVendors);
+    expect(gen1).toHaveLength(2);
+
+    const gen2 = mergeVendorsOnRegenerate(gen1, rawAiVendors);
+    expect(gen2).toHaveLength(2);
+
+    const gen3 = mergeVendorsOnRegenerate(gen2, rawAiVendors);
+    expect(gen3).toHaveLength(2);
+  });
+
+  it('preserves user vendor quote and links to best-matching fuzzy vendor category', () => {
+    const existingVendors: Vendor[] = [
+      {
+        id: 'user-decor-id',
+        category: 'Mandap Floral Decor',
+        budgetCategoryId: 'cat-decor',
+        name: 'Shree Radhe Floral Arts',
+        contact: '+91 9999988888',
+        quote: 120000,
+        status: 'shortlisted',
+        notes: 'Includes entrance arch and stage',
+        suggestedByAI: true,
+        source: 'user',
+      },
+    ];
+
+    const newAiVendors: Vendor[] = [
+      {
+        id: 'ai-decor-new',
+        category: 'Floral Mandap Decor',
+        budgetCategoryId: 'cat-decor',
+        name: '',
+        contact: '',
+        status: 'not-started',
+        notes: '',
+        suggestedByAI: true,
+      },
+    ];
+
+    const merged = mergeVendorsOnRegenerate(existingVendors, newAiVendors);
+    expect(merged).toHaveLength(1);
+    expect(merged[0].id).toBe('user-decor-id');
+    expect(merged[0].name).toBe('Shree Radhe Floral Arts');
+    expect(merged[0].quote).toBe(120000);
+    expect(merged[0].status).toBe('shortlisted');
+  });
+
+  it('ensures every vendor has a valid budgetCategoryId or falls back to cat-uncategorised', () => {
+    const categories: BudgetCategory[] = [
+      { id: 'cat-catering', name: 'Catering & Food', percentage: 50, estimatedAmount: 50000, actualAmount: 0 },
+      { id: 'cat-venue', name: 'Venue & Banquet', percentage: 50, estimatedAmount: 50000, actualAmount: 0 },
+    ];
+
+    const existingVendors: Vendor[] = [];
+    const newAiVendors: Vendor[] = [
+      {
+        id: 'v-1',
+        category: 'Catering',
+        budgetCategoryId: undefined,
+        name: '',
+        contact: '',
+        status: 'not-started',
+        notes: '',
+        suggestedByAI: true,
+      },
+      {
+        id: 'v-2',
+        category: 'Acrobatic Fire Performers',
+        budgetCategoryId: undefined,
+        name: '',
+        contact: '',
+        status: 'not-started',
+        notes: '',
+        suggestedByAI: true,
+      },
+    ];
+
+    const merged = mergeVendorsOnRegenerate(existingVendors, newAiVendors, categories);
+    expect(merged).toHaveLength(2);
+    expect(merged[0].budgetCategoryId).toBe('cat-catering');
+    expect(merged[1].budgetCategoryId).toBe('cat-uncategorised');
+  });
 });
 
 describe('remapExpensesToNewCategories', () => {

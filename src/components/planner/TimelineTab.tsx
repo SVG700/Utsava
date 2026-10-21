@@ -138,6 +138,7 @@ export function TimelineTab({
               dueDate: computedDueDate,
               priority: taskForm.priority,
               category: taskForm.category.trim(),
+              source: 'user' as const,
             }
           : t
       );
@@ -152,6 +153,7 @@ export function TimelineTab({
         priority: taskForm.priority,
         completed: false,
         category: taskForm.category.trim(),
+        source: 'user' as const,
       };
       onUpdateTasks([...tasks, newTask]);
     }
