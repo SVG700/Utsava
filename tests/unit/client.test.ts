@@ -6,6 +6,10 @@ import {
   refinePlanWithGemini,
   generateIdeasWithGemini,
   GeminiError,
+  blueprintJsonSchema,
+  refinementJsonSchema,
+  ideasJsonSchema,
+  sanitizeSchemaForGemini,
 } from '@/lib/ai/client';
 import type { BlueprintRequest, RefinementRequest, IdeasRequest, AIBlueprint } from '@/schemas';
 
@@ -259,6 +263,46 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
         expect((err as GeminiError).statusCode).toBe(503);
       }
     });
+
+    it('retries once without responseJsonSchema when Gemini returns 400 INVALID_ARGUMENT', async () => {
+      // First attempt fails with 400 INVALID_ARGUMENT
+      mocks.generateContent.mockRejectedValueOnce(
+        new Error('400 Invalid argument: responseJsonSchema contains unsupported keyword')
+      );
+      // Second attempt succeeds without schema
+      mocks.generateContent.mockResolvedValueOnce({
+        candidates: [
+          {
+            content: {
+              parts: [{ text: JSON.stringify(sampleBlueprintData) }],
+            },
+          },
+        ],
+      });
+
+      const result = await generateBlueprintWithGemini(sampleBlueprintRequest);
+      expect(result.themeAndDecor.mainTheme).toBe('Royal Heritage Palace');
+      expect(mocks.generateContent).toHaveBeenCalledTimes(2);
+      expect(mocks.generateContent.mock.calls[0][0].config.responseJsonSchema).toBeDefined();
+      expect(mocks.generateContent.mock.calls[1][0].config.responseJsonSchema).toBeUndefined();
+    });
+
+    it('maps generic upstream API errors to fixed safe message without leaking upstream error details', async () => {
+      mocks.generateContent.mockRejectedValue(
+        new Error('Google upstream internal failure: {"error": {"code": 500, "message": "Backend crash with key 123"}}')
+      );
+
+      try {
+        await generateBlueprintWithGemini(sampleBlueprintRequest);
+        expect.unreachable();
+      } catch (err: unknown) {
+        expect(err).toBeInstanceOf(GeminiError);
+        expect((err as GeminiError).code).toBe('API_ERROR');
+        expect((err as GeminiError).message).toBe('AI service error. Please try again.');
+        expect((err as GeminiError).message).not.toContain('Google');
+        expect((err as GeminiError).message).not.toContain('Backend crash');
+      }
+    });
   });
 
   describe('refinePlanWithGemini', () => {
@@ -269,6 +313,7 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
     };
 
     const sampleRefinementResponse = {
+      changedSections: ['themeAndDecor'],
       refinementSummary: 'Updated decor to eco-friendly and added clay diyas.',
       themeAndDecor: {
         mainTheme: 'Royal Eco Palace',
@@ -319,6 +364,40 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
       const result = await refinePlanWithGemini(sampleRefineRequest);
       expect(result.refinementSummary).toContain('eco-friendly');
       expect(mocks.generateContent).toHaveBeenCalledTimes(2);
+    });
+
+    it('retries once and throws 422 NO_CHANGES if changedSections is empty on both attempts', async () => {
+      mocks.generateContent.mockResolvedValueOnce({
+        candidates: [
+          {
+            content: {
+              parts: [{ text: JSON.stringify({ changedSections: [], refinementSummary: 'No changes made.' }) }],
+            },
+          },
+        ],
+      });
+      mocks.generateContent.mockResolvedValueOnce({
+        candidates: [
+          {
+            content: {
+              parts: [{ text: JSON.stringify({ changedSections: [], refinementSummary: 'Still no changes.' }) }],
+            },
+          },
+        ],
+      });
+
+      try {
+        await refinePlanWithGemini(sampleRefineRequest);
+        expect.unreachable();
+      } catch (err: unknown) {
+        expect(err).toBeInstanceOf(GeminiError);
+        expect((err as GeminiError).code).toBe('NO_CHANGES');
+        expect((err as GeminiError).statusCode).toBe(422);
+        expect((err as GeminiError).message).toBe(
+          'No changes could be applied to your plan. Try a more specific request.'
+        );
+        expect(mocks.generateContent).toHaveBeenCalledTimes(2);
+      }
     });
   });
 
@@ -381,6 +460,69 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
       const result = await generateIdeasWithGemini(sampleIdeasRequest);
       expect(result.ideas).toHaveLength(1);
       expect(mocks.generateContent).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('Gemini JSON Schemas Sanitization', () => {
+    const forbiddenKeywords = new Set([
+      'minLength',
+      'maxLength',
+      'minItems',
+      'maxItems',
+      'minimum',
+      'maximum',
+      '$schema',
+      'default',
+    ]);
+
+    function findForbiddenKeys(schema: unknown, forbidden: Set<string>): string[] {
+      const matches: string[] = [];
+      function walk(current: unknown, path: string) {
+        if (Array.isArray(current)) {
+          current.forEach((item, index) => walk(item, `${path}[${index}]`));
+        } else if (current !== null && typeof current === 'object') {
+          for (const [key, val] of Object.entries(current as Record<string, unknown>)) {
+            if (forbidden.has(key)) {
+              matches.push(`${path}.${key}`);
+            }
+            walk(val, `${path}.${key}`);
+          }
+        }
+      }
+      walk(schema, 'root');
+      return matches;
+    }
+
+    it('ensures blueprintJsonSchema contains none of the forbidden keywords', () => {
+      expect(findForbiddenKeys(blueprintJsonSchema, forbiddenKeywords)).toEqual([]);
+    });
+
+    it('ensures refinementJsonSchema contains none of the forbidden keywords', () => {
+      expect(findForbiddenKeys(refinementJsonSchema, forbiddenKeywords)).toEqual([]);
+    });
+
+    it('ensures ideasJsonSchema contains none of the forbidden keywords', () => {
+      expect(findForbiddenKeys(ideasJsonSchema, forbiddenKeywords)).toEqual([]);
+    });
+
+    it('sanitizeSchemaForGemini recursively strips all forbidden keywords', () => {
+      const dirtySchema = {
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          title: { type: 'string', minLength: 3, maxLength: 50, default: 'Untitled' },
+          count: { type: 'number', minimum: 1, maximum: 100 },
+          tags: { type: 'array', minItems: 1, maxItems: 10, items: { type: 'string' } },
+          nested: {
+            type: 'object',
+            properties: {
+              subfield: { type: 'string', minLength: 1 },
+            },
+          },
+        },
+      };
+      const cleaned = sanitizeSchemaForGemini(dirtySchema);
+      expect(findForbiddenKeys(cleaned, forbiddenKeywords)).toEqual([]);
     });
   });
 });

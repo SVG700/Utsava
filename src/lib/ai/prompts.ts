@@ -166,8 +166,9 @@ INSTRUCTIONS:
    - "alternatives": [ { "original": string, "budgetFriendly": string, "sustainable": string, "accessible": string } ]
    - "risksAndAssumptions": string[]
    - "missingInfo": string[]
-3. ALWAYS include "refinementSummary": "Clear 1-2 sentence description of what was adjusted".
-4. Return valid JSON only.
+3. ALWAYS include "changedSections": string[] listing EVERY section modified (must be one or more of: "themeAndDecor", "activities", "budgetAllocation", "timeline", "vendorCategories", "risksAndAssumptions", "missingInfo", "alternatives", "totalBudget"). Every section listed in "changedSections" MUST be returned in full in the JSON.
+4. ALWAYS include "refinementSummary": string (concise, <= 300 characters, at most 2 sentences describing what was adjusted).
+5. Return valid JSON only.
 `.trim();
 }
 

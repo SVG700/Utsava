@@ -86,6 +86,7 @@ export function RefineTab({
     return getRefinementHistory(event.id);
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [neutralNotice, setNeutralNotice] = useState<string | null>(null);
   const abortControllerRef = React.useRef<AbortController | null>(null);
 
   React.useEffect(() => {
@@ -122,6 +123,7 @@ export function RefineTab({
 
     setIsSubmitting(true);
     setErrorMessage(null);
+    setNeutralNotice(null);
 
     try {
       const data = await apiRefinePlan(event, blueprint, text, controller.signal);
@@ -141,6 +143,13 @@ export function RefineTab({
 
       // Identify which sections genuinely changed using deep comparison
       const changed = getChangedSections(blueprint, refinement, event.totalBudget);
+
+      // Never show a success entry or "Sections updated" for sections that didn't really change
+      if (changed.length === 0) {
+        setNeutralNotice('No changes could be applied to your plan. Try a more specific request.');
+        setPrompt('');
+        return;
+      }
 
       // Merge into blueprint without touching unrelated sections
       const updatedBlueprint = mergeBlueprintRefinement(blueprint, refinement);
@@ -185,13 +194,20 @@ export function RefineTab({
         return;
       }
       console.error('Error refining plan:', err);
-      setErrorMessage(
-        err instanceof ApiError
-          ? err.message
-          : err instanceof Error
-          ? err.message
-          : 'Network error during refinement. Please retry.'
-      );
+      if (err instanceof ApiError && err.status === 422) {
+        setNeutralNotice(
+          err.message || 'No changes could be applied to your plan. Try a more specific request.'
+        );
+        setErrorMessage(null);
+      } else {
+        setErrorMessage(
+          err instanceof ApiError
+            ? err.message
+            : err instanceof Error
+            ? err.message
+            : 'Network error during refinement. Please retry.'
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -285,6 +301,18 @@ export function RefineTab({
         >
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <span>{errorMessage}</span>
+        </div>
+      )}
+
+      {/* Neutral Notice for 422 or no changes detected */}
+      {neutralNotice && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="p-4 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-200 flex items-start gap-2 animate-in fade-in"
+        >
+          <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+          <span>{neutralNotice}</span>
         </div>
       )}
 

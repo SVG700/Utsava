@@ -214,6 +214,77 @@ describe('API Route Handlers', () => {
       // Must not leak the secret key
       expect(JSON.stringify(json)).not.toContain('AIzaSyABC123XYZ');
     });
+
+    it('returns 400 when date is in the past (e.g. 2020-01-01)', async () => {
+      const pastBody = { ...validBlueprintBody, date: '2020-01-01' };
+      const req = new NextRequest('http://localhost:3000/api/generate-blueprint', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(pastBody),
+      });
+
+      const res = await handleGenerateBlueprint(req);
+      expect(res.status).toBe(400);
+      const json = await res.json();
+      expect(json.error).toBe('INVALID_REQUEST');
+      expect(JSON.stringify(json.details)).toContain('Celebration date cannot be in the past');
+    });
+
+    it('never leaks upstream Google error JSON in response body when Gemini API call fails', async () => {
+      mockAiClient.generateBlueprintWithGemini.mockRejectedValueOnce(
+        new mockAiClient.GeminiError('API_ERROR', 'AI service error. Please try again.', 502)
+      );
+
+      const req = new NextRequest('http://localhost:3000/api/generate-blueprint', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(validBlueprintBody),
+      });
+
+      const res = await handleGenerateBlueprint(req);
+      expect(res.status).toBe(502);
+      const json = await res.json();
+      const stringified = JSON.stringify(json);
+
+      expect(json.error).toBe('API_ERROR');
+      expect(json.message).toBe('AI service error. Please try again.');
+      expect(stringified).not.toContain('INVALID_ARGUMENT');
+      expect(stringified).not.toContain('generativelanguage.googleapis.com');
+      expect(stringified).not.toContain('"code": 400');
+    });
+
+    it('proves raw Google error JSON is not leaked in response body if an unhandled upstream error reaches route handler', async () => {
+      const googleRawErrorJson = JSON.stringify({
+        error: {
+          code: 400,
+          message: 'API key not valid. Please pass a valid API key.',
+          status: 'INVALID_ARGUMENT',
+          details: [{ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason: 'API_KEY_INVALID' }],
+        },
+      });
+
+      mockAiClient.generateBlueprintWithGemini.mockRejectedValueOnce(
+        new Error(`[GoogleGenerativeAI Error]: ${googleRawErrorJson}`)
+      );
+
+      const req = new NextRequest('http://localhost:3000/api/generate-blueprint', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(validBlueprintBody),
+      });
+
+      const res = await handleGenerateBlueprint(req);
+      expect(res.status).toBe(500);
+      const json = await res.json();
+      const stringified = JSON.stringify(json);
+
+      expect(json.error).toBe('INTERNAL_ERROR');
+      expect(json.message).toBe('Failed to generate blueprint. Please try again later.');
+      expect(stringified).not.toContain('API_KEY_INVALID');
+      expect(stringified).not.toContain('INVALID_ARGUMENT');
+      expect(stringified).not.toContain('API key not valid');
+      expect(stringified).not.toContain('GoogleGenerativeAI Error');
+    });
   });
 
   describe('/api/refine-plan', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { eventInputSchema, storedEventSchema } from '@/schemas';
+import { eventInputSchema, storedEventSchema, blueprintRequestSchema } from '@/schemas';
 import { aiBlueprintSchema, aiRefinementSchema, aiIdeasSchema } from '@/schemas';
 import { budgetCategorySchema, expenseSchema, timelineTaskSchema, vendorSchema } from '@/schemas';
 
@@ -71,6 +71,40 @@ describe('eventInputSchema', () => {
     if (result.success) {
       expect(result.data.dietaryPreferences).toEqual([]);
       expect(result.data.subEvents).toEqual([]);
+    }
+  });
+});
+
+describe('blueprintRequestSchema', () => {
+  const validBlueprintInput = {
+    eventType: 'birthday',
+    name: 'Aarav 30th Birthday',
+    date: '2026-12-25',
+    city: 'Bengaluru',
+    guestCount: 50,
+    totalBudget: 100000,
+    theme: 'Retro Bollywood',
+    dietaryPreferences: ['vegetarian'],
+    culturalPreferences: '',
+    accessibilityNeeds: '',
+    specialRequirements: '',
+    subEvents: [],
+  };
+
+  it('accepts valid future date request', () => {
+    const result = blueprintRequestSchema.safeParse(validBlueprintInput);
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects past date 2020-01-01 with validation error', () => {
+    const result = blueprintRequestSchema.safeParse({
+      ...validBlueprintInput,
+      date: '2020-01-01',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain('Celebration date cannot be in the past');
+      expect(result.error.issues[0].path).toEqual(['date']);
     }
   });
 });
@@ -160,6 +194,7 @@ describe('aiBlueprintSchema', () => {
 describe('aiRefinementSchema', () => {
   it('accepts partial changes with summary', () => {
     const result = aiRefinementSchema.safeParse({
+      changedSections: ['budgetAllocation'],
       budgetAllocation: [{ category: 'Venue', percentage: 25, description: 'Reduced' }],
       refinementSummary: 'Reduced venue budget by 5%',
     });
@@ -168,6 +203,7 @@ describe('aiRefinementSchema', () => {
 
   it('accepts record format for budgetAllocation and transforms to array without mangling keys', () => {
     const result = aiRefinementSchema.safeParse({
+      changedSections: ['totalBudget', 'budgetAllocation'],
       totalBudget: 2000000,
       budgetAllocation: {
         'Royal Palace Venue': 40,
@@ -191,9 +227,27 @@ describe('aiRefinementSchema', () => {
 
   it('requires refinementSummary', () => {
     const result = aiRefinementSchema.safeParse({
+      changedSections: ['budgetAllocation'],
       budgetAllocation: [{ category: 'Venue', percentage: 25, description: 'Reduced' }],
     });
     expect(result.success).toBe(false);
+  });
+
+  it('truncates 1,500-char refinementSummary to 1,000 characters without rejecting', () => {
+    const longSummary = 'A'.repeat(1500);
+    const result = aiRefinementSchema.safeParse({
+      changedSections: ['themeAndDecor'],
+      themeAndDecor: {
+        mainTheme: 'Eco Royal',
+      },
+      refinementSummary: longSummary,
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.refinementSummary).toHaveLength(1000);
+      expect(result.data.refinementSummary).toBe('A'.repeat(1000));
+    }
   });
 });
 

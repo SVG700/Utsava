@@ -56,6 +56,7 @@ describe('mergeBlueprintRefinement', () => {
 
   it('merges only changed sections without touching unrelated sections', () => {
     const refinement: AIRefinement = {
+      changedSections: ['budgetAllocation'],
       budgetAllocation: [
         { category: 'Venue', percentage: 30, description: 'Scaled down venue' },
         { category: 'Catering', percentage: 50, description: 'Expanded gourmet menu' },
@@ -97,6 +98,7 @@ describe('mergeBlueprintRefinement', () => {
 
   it('merges new theme and decor when updated', () => {
     const refinement: AIRefinement = {
+      changedSections: ['themeAndDecor'],
       themeAndDecor: {
         mainTheme: 'Eco-Friendly Terracotta & Jasmine',
         colorPalette: ['earthy-brown', 'mogra-white', 'sage-green'],
@@ -139,6 +141,7 @@ describe('deepEqual and getChangedSections', () => {
 
     // Refinement returns identical theme, but altered budgetAllocation
     const refinement: AIRefinement = {
+      changedSections: ['themeAndDecor', 'budgetAllocation'],
       themeAndDecor: {
         mainTheme: 'Theme A',
         colorPalette: ['#fff'],

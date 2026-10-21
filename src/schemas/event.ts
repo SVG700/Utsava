@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { getTodayString } from '@/lib/dates';
+import { isPastDate } from '@/lib/dates';
 
 // ─── Event Types ──────────────────────────────────────────────────
 export const EVENT_TYPES = ['wedding', 'birthday', 'community'] as const;
@@ -73,7 +73,7 @@ const baseEventSchema = z.object({
 
 // ─── Event Input Schema (form validation with past date check) ─────
 export const eventInputSchema = baseEventSchema.refine(
-  (data) => data.date >= getTodayString() || (process.env.NODE_ENV === 'test' && data.date === '2026-06-01'),
+  (data) => !isPastDate(data.date),
   {
     message: 'Celebration date cannot be in the past',
     path: ['date'],

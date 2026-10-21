@@ -26,12 +26,14 @@ export {
   refinementRequestSchema,
   ideasRequestSchema,
   AI_IDEA_SECTIONS,
+  REFINEMENT_SECTIONS,
 } from './ai';
 export type {
   AIBlueprint,
   AIRefinement,
   AIIdeas,
   AIIdeaSection,
+  RefinementSection,
   BlueprintRequest,
   RefinementRequest,
   IdeasRequest,

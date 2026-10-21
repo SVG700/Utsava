@@ -25,14 +25,57 @@ import {
 } from './prompts';
 
 // Pre-computed JSON schemas generated from Zod schemas for reliable structured output
-const blueprintJsonSchema = z.toJSONSchema(aiBlueprintSchema, { io: 'input' });
-const refinementJsonSchema = z.toJSONSchema(aiRefinementSchema, { io: 'input' });
-const ideasJsonSchema = z.toJSONSchema(aiIdeasSchema, { io: 'input' });
+export const FORBIDDEN_GEMINI_SCHEMA_KEYS = new Set([
+  'minLength',
+  'maxLength',
+  'minItems',
+  'maxItems',
+  'minimum',
+  'maximum',
+  '$schema',
+  'default',
+]);
+
+/**
+ * Recursively removes OpenAPI schema keywords unsupported by Gemini structured output:
+ * minLength, maxLength, minItems, maxItems, minimum, maximum, $schema, default.
+ */
+export function sanitizeSchemaForGemini(schema: unknown): unknown {
+  if (Array.isArray(schema)) {
+    return schema.map((item) => sanitizeSchemaForGemini(item));
+  }
+  if (schema !== null && typeof schema === 'object') {
+    const cleaned: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(schema as Record<string, unknown>)) {
+      if (!FORBIDDEN_GEMINI_SCHEMA_KEYS.has(key)) {
+        cleaned[key] = sanitizeSchemaForGemini(value);
+      }
+    }
+    return cleaned;
+  }
+  return schema;
+}
+
+export const blueprintJsonSchema = sanitizeSchemaForGemini(
+  z.toJSONSchema(aiBlueprintSchema, { io: 'input' })
+);
+export const refinementJsonSchema = sanitizeSchemaForGemini(
+  z.toJSONSchema(aiRefinementSchema, { io: 'input' })
+);
+export const ideasJsonSchema = sanitizeSchemaForGemini(
+  z.toJSONSchema(aiIdeasSchema, { io: 'input' })
+);
 
 export class GeminiError extends Error {
   constructor(
     message: string,
-    public readonly code: 'MISSING_KEY' | 'RATE_LIMIT' | 'TIMEOUT' | 'INVALID_RESPONSE' | 'API_ERROR',
+    public readonly code:
+      | 'MISSING_KEY'
+      | 'RATE_LIMIT'
+      | 'TIMEOUT'
+      | 'INVALID_RESPONSE'
+      | 'API_ERROR'
+      | 'NO_CHANGES',
     public readonly statusCode: number = 500
   ) {
     super(message);
@@ -149,6 +192,22 @@ async function callGemini(
     if (error instanceof GeminiError) throw error;
 
     const errMsg = error instanceof Error ? error.message : String(error);
+    const safeErrMsg = errMsg.replace(/key=[a-zA-Z0-9_\-]+/gi, 'key=[REDACTED]');
+    console.error('Gemini upstream call error:', safeErrMsg);
+
+    // If a call with a schema fails with 400 INVALID_ARGUMENT, retry once without responseJsonSchema (Zod still validates)
+    if (
+      responseJsonSchema &&
+      (errMsg.includes('400') ||
+        errMsg.toUpperCase().includes('INVALID_ARGUMENT') ||
+        errMsg.toLowerCase().includes('invalid argument'))
+    ) {
+      console.warn('Gemini returned 400 INVALID_ARGUMENT with responseJsonSchema; retrying once without schema...');
+      return callGemini(prompt, {
+        ...options,
+        responseJsonSchema: undefined,
+      });
+    }
 
     // Fallback to flash-lite if primary model FreeTier daily quota is exhausted
     if (
@@ -195,7 +254,7 @@ async function callGemini(
     }
 
     throw new GeminiError(
-      `Gemini API error: ${errMsg}`,
+      'AI service error. Please try again.',
       'API_ERROR',
       502
     );
@@ -274,6 +333,18 @@ export async function generateBlueprintWithGemini(
   return validation.data;
 }
 
+function hasValidChangedSections(refinement: AIRefinement): boolean {
+  if (!refinement.changedSections || refinement.changedSections.length === 0) {
+    return false;
+  }
+  for (const sec of refinement.changedSections) {
+    if (refinement[sec] === undefined || refinement[sec] === null) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /**
  * Refine an existing plan with Gemini with 1 automatic retry on schema validation failure.
  */
@@ -310,9 +381,18 @@ export async function refinePlanWithGemini(
   }
 
   const validation = aiRefinementSchema.safeParse(parsedJson);
-  if (!validation.success) {
-    const errorDetails = validation.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join(', ');
-    const retryPrompt = `${prompt}\n\nCORRECTION REQUIRED: Your previous JSON had schema validation errors: [${errorDetails}]. Please fix and return compliant JSON.`;
+  const isValidFirstAttempt = validation.success && hasValidChangedSections(validation.data);
+
+  if (!isValidFirstAttempt) {
+    const isChangedSectionsIssue =
+      (validation.success && !hasValidChangedSections(validation.data)) ||
+      (!validation.success && validation.error.issues.some((i) => i.path.includes('changedSections')));
+
+    const errorDetails = validation.success
+      ? 'The changedSections array was empty or listed sections were not provided in full.'
+      : validation.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join(', ');
+
+    const retryPrompt = `${prompt}\n\nCORRECTION REQUIRED: Your previous JSON had issues: [${errorDetails}]. You must specify non-empty 'changedSections' and include each of those sections in full. Please fix and return compliant JSON.`;
     rawText = await callGemini(retryPrompt, {
       customApiKey,
       responseJsonSchema: refinementJsonSchema,
@@ -331,12 +411,31 @@ export async function refinePlanWithGemini(
     const retryValidation = aiRefinementSchema.safeParse(retryParsed);
 
     if (!retryValidation.success) {
+      const isRetryChangedIssue = retryValidation.error.issues.some((i) =>
+        i.path.includes('changedSections')
+      );
+      if (isRetryChangedIssue || isChangedSectionsIssue) {
+        throw new GeminiError(
+          'No changes could be applied to your plan. Try a more specific request.',
+          'NO_CHANGES',
+          422
+        );
+      }
       throw new GeminiError(
-        `AI refinement did not match expected schema: ${retryValidation.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(', ')}`,
+        `AI refinement did not match expected schema: ${retryValidation.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join(', ')}`,
         'INVALID_RESPONSE',
         502
       );
     }
+
+    if (!hasValidChangedSections(retryValidation.data)) {
+      throw new GeminiError(
+        'No changes could be applied to your plan. Try a more specific request.',
+        'NO_CHANGES',
+        422
+      );
+    }
+
     return retryValidation.data;
   }
 
