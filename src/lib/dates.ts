@@ -190,6 +190,7 @@ export function mergeTasksOnRegenerate(
       merged.push({
         ...nt,
         id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `task-${Date.now()}-${Math.random()}`,
+        completed: Boolean(nt.completed),
       });
     }
   }

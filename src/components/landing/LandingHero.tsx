@@ -116,7 +116,7 @@ export function LandingHero() {
                       </span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#fbf4ea] text-[#ab7532] border border-[#f0dfc4] shrink-0">
+                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#fbf4ea] dark:bg-[#281f13] text-[#8c531b] dark:text-[#f3c27a] border border-[#f0dfc4] dark:border-[#42321c] shrink-0">
                     in 68 days
                   </span>
                 </div>
@@ -172,7 +172,7 @@ export function LandingHero() {
                         <span className="font-semibold text-[#1c2420] dark:text-[#f3f5f4] block">
                           Finalize Mandap Floral Blueprint
                         </span>
-                        <span className="text-[10px] text-[#88968e]">
+                        <span className="text-[10px] text-[#55635c] dark:text-[#94a19b]">
                           Due 30 days before wedding
                         </span>
                       </div>

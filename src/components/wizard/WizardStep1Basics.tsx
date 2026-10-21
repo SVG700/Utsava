@@ -150,7 +150,7 @@ export function WizardStep1Basics({
             error={errors.city}
           />
           <div className="flex flex-wrap gap-1.5 pt-1">
-            <span className="text-[10px] text-[#88968e] font-semibold uppercase tracking-wider self-center mr-1">
+            <span className="text-[10px] text-[#55635c] dark:text-[#94a19b] font-semibold uppercase tracking-wider self-center mr-1">
               Popular:
             </span>
             {POPULAR_INDIAN_CITIES.slice(0, 5).map((city) => (

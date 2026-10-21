@@ -13,6 +13,8 @@ import {
   recalculateEstimates,
   slugifyCategory,
   mergeVendorsOnRegenerate,
+  remapExpensesToNewCategories,
+  findMatchingCategoryId,
 } from '@/lib/budget';
 import type { BudgetCategory, Expense, Vendor } from '@/schemas';
 
@@ -329,5 +331,91 @@ describe('mergeVendorsOnRegenerate', () => {
     expect(fireworks).toBeDefined();
     expect(fireworks?.id).toBe('v-custom');
     expect(fireworks?.name).toBe('Local Pyrotechnics');
+  });
+});
+
+describe('remapExpensesToNewCategories', () => {
+  const oldCategories: BudgetCategory[] = [
+    { id: 'cat-venue', name: 'Venue', percentage: 40, estimatedAmount: 200000, actualAmount: 100000 },
+    { id: 'cat-catering', name: 'Catering', percentage: 35, estimatedAmount: 175000, actualAmount: 50000 },
+    { id: 'cat-decor', name: 'Decor', percentage: 25, estimatedAmount: 125000, actualAmount: 30000 },
+  ];
+
+  const newCategories: BudgetCategory[] = [
+    { id: 'cat-venue', name: 'Venue', percentage: 50, estimatedAmount: 250000, actualAmount: 0 },
+    { id: 'cat-catering-royal', name: 'Catering', percentage: 30, estimatedAmount: 150000, actualAmount: 0 },
+    { id: 'cat-music', name: 'Music & Sound', percentage: 20, estimatedAmount: 100000, actualAmount: 0 },
+  ];
+
+  it('maps existing expenses to new categories by matching category name', () => {
+    const existingExpenses: Expense[] = [
+      { id: 'e-1', categoryId: 'cat-venue', description: 'Hall advance', amount: 80000, date: '2026-04-01', notes: '' },
+      { id: 'e-2', categoryId: 'cat-catering', description: 'Food advance', amount: 45000, date: '2026-04-02', notes: '' },
+    ];
+
+    const { updatedExpenses, finalCategories } = remapExpensesToNewCategories(
+      existingExpenses,
+      oldCategories,
+      newCategories
+    );
+
+    expect(updatedExpenses).toHaveLength(2);
+    // Hall matched Venue
+    expect(updatedExpenses[0].categoryId).toBe('cat-venue');
+    // Food matched Catering with new ID cat-catering-royal
+    expect(updatedExpenses[1].categoryId).toBe('cat-catering-royal');
+    // No uncategorised needed
+    expect(finalCategories.some((c) => c.id === 'cat-uncategorised')).toBe(false);
+  });
+
+  it('safely moves unmatched expenses to an Uncategorised category without deleting or misassigning', () => {
+    const existingExpenses: Expense[] = [
+      { id: 'e-1', categoryId: 'cat-venue', description: 'Hall advance', amount: 80000, date: '2026-04-01', notes: '' },
+      { id: 'e-decor', categoryId: 'cat-decor', description: 'Floral stage booking', amount: 30000, date: '2026-04-03', notes: '' },
+    ];
+
+    const { updatedExpenses, finalCategories } = remapExpensesToNewCategories(
+      existingExpenses,
+      oldCategories,
+      newCategories // note: newCategories does NOT have Decor
+    );
+
+    expect(updatedExpenses).toHaveLength(2);
+    expect(updatedExpenses[0].categoryId).toBe('cat-venue');
+
+    // Decor expense was routed to cat-uncategorised
+    expect(updatedExpenses[1].categoryId).toBe('cat-uncategorised');
+    expect(updatedExpenses[1].description).toBe('Floral stage booking');
+    expect(updatedExpenses[1].amount).toBe(30000);
+
+    // Uncategorised category was dynamically added to finalCategories
+    const uncat = finalCategories.find((c) => c.id === 'cat-uncategorised');
+    expect(uncat).toBeDefined();
+    expect(uncat?.name).toBe('Uncategorised');
+    expect(uncat?.percentage).toBe(0);
+  });
+});
+
+describe('findMatchingCategoryId', () => {
+  const categories: BudgetCategory[] = [
+    { id: 'cat-palace-venue', name: 'Palace Venue', percentage: 40, estimatedAmount: 400000, actualAmount: 0 },
+    { id: 'cat-catering', name: 'Catering & Beverages', percentage: 35, estimatedAmount: 350000, actualAmount: 0 },
+    { id: 'cat-decor', name: 'Floral Decor', percentage: 25, estimatedAmount: 250000, actualAmount: 0 },
+  ];
+
+  it('finds exact category by name (case-insensitive)', () => {
+    expect(findMatchingCategoryId('Palace Venue', categories)).toBe('cat-palace-venue');
+    expect(findMatchingCategoryId('palace venue', categories)).toBe('cat-palace-venue');
+  });
+
+  it('finds best matching category via token overlap', () => {
+    expect(findMatchingCategoryId('Decor', categories)).toBe('cat-decor');
+    expect(findMatchingCategoryId('Catering', categories)).toBe('cat-catering');
+  });
+
+  it('returns undefined if no match or empty input', () => {
+    expect(findMatchingCategoryId('', categories)).toBeUndefined();
+    expect(findMatchingCategoryId(undefined, categories)).toBeUndefined();
+    expect(findMatchingCategoryId('Pyrotechnics Fireworks', categories)).toBeUndefined();
   });
 });

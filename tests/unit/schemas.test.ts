@@ -166,6 +166,29 @@ describe('aiRefinementSchema', () => {
     expect(result.success).toBe(true);
   });
 
+  it('accepts record format for budgetAllocation and transforms to array without mangling keys', () => {
+    const result = aiRefinementSchema.safeParse({
+      totalBudget: 2000000,
+      budgetAllocation: {
+        'Royal Palace Venue': 40,
+        'Catering & Traditional Sweets': 35,
+        Decor: 25,
+      },
+      refinementSummary: 'Shifted allocation to traditional catering',
+    });
+    expect(result.success).toBe(true);
+    if (result.success && result.data.budgetAllocation) {
+      expect(result.data.totalBudget).toBe(2000000);
+      expect(result.data.budgetAllocation).toHaveLength(3);
+      expect(result.data.budgetAllocation[0]).toEqual({
+        category: 'Royal Palace Venue',
+        percentage: 40,
+        description: 'Allocation for Royal Palace Venue',
+      });
+      expect(result.data.budgetAllocation[1].category).toBe('Catering & Traditional Sweets');
+    }
+  });
+
   it('requires refinementSummary', () => {
     const result = aiRefinementSchema.safeParse({
       budgetAllocation: [{ category: 'Venue', percentage: 25, description: 'Reduced' }],

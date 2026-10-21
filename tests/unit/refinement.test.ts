@@ -79,6 +79,22 @@ describe('mergeBlueprintRefinement', () => {
     expect(updated.alternatives).toEqual(initialPlan.alternatives);
   });
 
+  it('merges record-shaped budget allocation by transforming to array without losing data', () => {
+    const rawRefinement = {
+      budgetAllocation: {
+        'Royal Palace Venue': 35,
+        'Gourmet Catering': 45,
+        'Floral Decor': 20,
+      },
+      refinementSummary: 'Updated allocations using raw record shape',
+    } as unknown as AIRefinement;
+
+    const updated = mergeBlueprintRefinement(initialPlan, rawRefinement);
+    expect(updated.budgetAllocation).toHaveLength(3);
+    expect(updated.budgetAllocation[0].category).toBe('Royal Palace Venue');
+    expect(updated.budgetAllocation[0].percentage).toBe(35);
+  });
+
   it('merges new theme and decor when updated', () => {
     const refinement: AIRefinement = {
       themeAndDecor: {

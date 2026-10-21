@@ -48,7 +48,7 @@ export function WizardLivePreview({ formData }: WizardLivePreviewProps) {
 
       {formData.subEvents && formData.subEvents.length > 0 && (
         <div className="space-y-1.5">
-          <span className="text-[10px] font-bold text-[#88968e] uppercase tracking-wider block">
+          <span className="text-[10px] font-bold text-[#55635c] dark:text-[#94a19b] uppercase tracking-wider block">
             Included Ceremonies ({formData.subEvents.length}):
           </span>
           <div className="flex flex-wrap gap-1">
@@ -65,7 +65,7 @@ export function WizardLivePreview({ formData }: WizardLivePreviewProps) {
       )}
 
       {/* Privacy Note */}
-      <p className="text-[11px] text-[#88968e] pt-2 border-t border-[#f0ece2] dark:border-[#243029]">
+      <p className="text-[11px] text-[#55635c] dark:text-[#94a19b] pt-2 border-t border-[#f0ece2] dark:border-[#243029]">
         🔒 Processed securely via Google Gemini. Saved locally on your device.
       </p>
     </Card>

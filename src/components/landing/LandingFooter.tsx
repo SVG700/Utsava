@@ -35,7 +35,7 @@ export function LandingFooter() {
             </a>
           </div>
 
-          <div className="text-[11px] text-[#88968e]">
+          <div className="text-[11px] text-[#55635c] dark:text-[#94a19b]">
             PromptWars 2026 • Challenge 5
           </div>
         </div>

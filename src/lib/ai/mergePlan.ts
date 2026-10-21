@@ -20,7 +20,15 @@ export function mergeBlueprintRefinement(
         }
       : currentPlan.themeAndDecor,
     activities: refinement.activities ?? currentPlan.activities,
-    budgetAllocation: refinement.budgetAllocation ?? currentPlan.budgetAllocation,
+    budgetAllocation: Array.isArray(refinement.budgetAllocation)
+      ? refinement.budgetAllocation
+      : refinement.budgetAllocation && typeof refinement.budgetAllocation === 'object'
+      ? Object.entries(refinement.budgetAllocation).map(([cat, pct]) => ({
+          category: cat,
+          percentage: Number(pct),
+          description: `Allocation for ${cat}`,
+        }))
+      : currentPlan.budgetAllocation,
     timeline: refinement.timeline ?? currentPlan.timeline,
     vendorCategories: refinement.vendorCategories ?? currentPlan.vendorCategories,
     risksAndAssumptions: refinement.risksAndAssumptions ?? currentPlan.risksAndAssumptions,

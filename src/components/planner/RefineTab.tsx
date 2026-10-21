@@ -125,7 +125,19 @@ export function RefineTab({
 
     try {
       const data = await apiRefinePlan(event, blueprint, text, controller.signal);
-      const refinement: AIRefinement = data.refinement;
+      const rawRefinement = data.refinement;
+      const refinement: AIRefinement = {
+        ...rawRefinement,
+        budgetAllocation: Array.isArray(rawRefinement.budgetAllocation)
+          ? rawRefinement.budgetAllocation
+          : rawRefinement.budgetAllocation && typeof rawRefinement.budgetAllocation === 'object'
+          ? Object.entries(rawRefinement.budgetAllocation).map(([cat, pct]) => ({
+              category: cat,
+              percentage: Number(pct),
+              description: `Allocation for ${cat}`,
+            }))
+          : undefined,
+      };
 
       // Identify which sections genuinely changed using deep comparison
       const changed = getChangedSections(blueprint, refinement, event.totalBudget);

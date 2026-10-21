@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { csvCell, buildCsvString } from '@/lib/csv';
+import { describe, it, expect, vi } from 'vitest';
+import { csvCell, buildCsvString, downloadCsvFile } from '@/lib/csv';
 
 describe('csvCell', () => {
   it('quotes standard strings and doubles internal quotes', () => {
@@ -48,5 +48,25 @@ describe('buildCsvString', () => {
     expect(result).toContain('"Category","Amount"');
     expect(result).toContain('"Venue","50000"');
     expect(result).toContain('"Catering","60000"');
+  });
+});
+
+describe('downloadCsvFile', () => {
+  it('creates object URL and triggers download link click without throwing', () => {
+    const createObjectURLMock = vi.fn().mockReturnValue('blob:http://localhost:3000/mock-uuid');
+    const revokeObjectURLMock = vi.fn();
+    global.URL.createObjectURL = createObjectURLMock;
+    global.URL.revokeObjectURL = revokeObjectURLMock;
+
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+    expect(() => {
+      downloadCsvFile('budget.csv', '\uFEFF"Category","Amount"\r\n"Venue","50000"');
+    }).not.toThrow();
+
+    expect(createObjectURLMock).toHaveBeenCalled();
+    expect(clickSpy).toHaveBeenCalled();
+
+    clickSpy.mockRestore();
   });
 });

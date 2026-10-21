@@ -194,7 +194,7 @@ export function EventWizard() {
                     ? 'bg-[#134e3a] text-white shadow-soft dark:bg-[#2dd4bf] dark:text-[#042f2e]'
                     : step > s.num
                     ? 'bg-[#e8f3ee] text-[#134e3a] dark:bg-[#1a2e26] dark:text-[#34d399]'
-                    : 'bg-[#f0ece3] text-[#788880] dark:bg-[#222d27] dark:text-[#6a7a72]'
+                    : 'bg-[#f0ece3] text-[#4d5953] dark:bg-[#222d27] dark:text-[#94a19b]'
                 }`}
               >
                 <span className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] bg-black/10 dark:bg-white/10 font-bold">

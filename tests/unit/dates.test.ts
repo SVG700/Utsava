@@ -10,6 +10,8 @@ import {
   isOverdue,
   sortTasks,
   daysUntilEvent,
+  mergeTasksOnRegenerate,
+  getTodayString,
 } from '@/lib/dates';
 import type { TimelineTask } from '@/schemas';
 
@@ -175,5 +177,94 @@ describe('daysUntilEvent', () => {
 
   it('returns negative for past events', () => {
     expect(daysUntilEvent('2026-01-01', '2026-01-15')).toBe(-14);
+  });
+});
+
+describe('getTodayString', () => {
+  it('returns YYYY-MM-DD formatted date string', () => {
+    const today = getTodayString();
+    expect(today).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    const parsed = parseDate(today);
+    expect(parsed).not.toBeNull();
+  });
+
+  it('respects UTSAVA_TODAY environment variable override if set', () => {
+    const original = process.env.UTSAVA_TODAY;
+    try {
+      process.env.UTSAVA_TODAY = '2026-11-15';
+      expect(getTodayString()).toBe('2026-11-15');
+    } finally {
+      if (original !== undefined) {
+        process.env.UTSAVA_TODAY = original;
+      } else {
+        delete process.env.UTSAVA_TODAY;
+      }
+    }
+  });
+});
+
+describe('mergeTasksOnRegenerate', () => {
+  it('preserves completed status of existing tasks when AI regenerates', () => {
+    const existing: TimelineTask[] = [
+      {
+        id: 'task-1',
+        title: 'Book Wedding Hall',
+        description: 'Selected Palace',
+        dueDate: '2026-08-01',
+        daysBeforeEvent: 120,
+        priority: 'high',
+        completed: true,
+        category: 'Venue',
+      },
+      {
+        id: 'task-user-custom',
+        title: 'Buy Silver Coins For Family',
+        description: 'Custom family gift',
+        dueDate: '2026-11-01',
+        daysBeforeEvent: 30,
+        priority: 'medium',
+        completed: false,
+        category: 'Gifts',
+      },
+    ];
+
+    const newAiTasks: Omit<TimelineTask, 'id'>[] = [
+      {
+        title: 'Book Wedding Hall',
+        description: 'New AI generated description',
+        dueDate: '2026-08-01',
+        daysBeforeEvent: 120,
+        priority: 'high',
+        completed: false,
+        category: 'Venue',
+      },
+      {
+        title: 'Hire Sangeet Choreographer',
+        description: 'Dance practice',
+        dueDate: '2026-10-01',
+        daysBeforeEvent: 60,
+        priority: 'medium',
+        completed: false,
+        category: 'Entertainment',
+      },
+    ];
+
+    const merged = mergeTasksOnRegenerate(existing, newAiTasks);
+
+    // Should have 3 tasks: merged Wedding Hall (completed: true, id: task-1), new Choreographer, and preserved user custom task
+    expect(merged).toHaveLength(3);
+
+    const hallTask = merged.find((t) => t.title === 'Book Wedding Hall');
+    expect(hallTask).toBeDefined();
+    expect(hallTask?.completed).toBe(true);
+    expect(hallTask?.id).toBe('task-1');
+
+    const customTask = merged.find((t) => t.id === 'task-user-custom');
+    expect(customTask).toBeDefined();
+    expect(customTask?.title).toBe('Buy Silver Coins For Family');
+
+    const choreoTask = merged.find((t) => t.title === 'Hire Sangeet Choreographer');
+    expect(choreoTask).toBeDefined();
+    expect(choreoTask?.completed).toBe(false);
   });
 });

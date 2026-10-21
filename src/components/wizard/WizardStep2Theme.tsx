@@ -65,7 +65,7 @@ export function WizardStep2Theme({
                       {isChecked ? '✓' : ''}
                     </span>
                   </div>
-                  <span className="text-[10px] text-[#88968e] block mt-0.5 line-clamp-1">
+                  <span className="text-[10px] text-[#55635c] dark:text-[#94a19b] block mt-0.5 line-clamp-1">
                     {sub.desc}
                   </span>
                 </button>
@@ -90,7 +90,7 @@ export function WizardStep2Theme({
           helperText="Gemini will design matching color palettes, floral suggestions, and styling rules."
         />
         <div className="flex flex-wrap gap-1.5 pt-1">
-          <span className="text-[10px] text-[#88968e] font-semibold uppercase tracking-wider self-center mr-1">
+          <span className="text-[10px] text-[#55635c] dark:text-[#94a19b] font-semibold uppercase tracking-wider self-center mr-1">
             Suggestions:
           </span>
           {[
