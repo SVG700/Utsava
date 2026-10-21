@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -20,9 +20,33 @@ import { Button } from './ui/Button';
 import { Modal } from './ui/Modal';
 import { Input } from './ui/Input';
 
+function subscribeToTheme(callback: () => void) {
+  if (typeof window === 'undefined' || typeof MutationObserver === 'undefined') {
+    return () => {};
+  }
+  const observer = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      if (m.attributeName === 'class') {
+        callback();
+      }
+    }
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  return () => observer.disconnect();
+}
+
+function getThemeSnapshot(): boolean {
+  if (typeof document === 'undefined') return false;
+  return document.documentElement.classList.contains('dark');
+}
+
+function getServerSnapshot(): boolean {
+  return false;
+}
+
 export function Navbar() {
   const pathname = usePathname();
-  const [isDark, setIsDark] = useState(false);
+  const isDark = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerSnapshot);
   const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [keySaved, setKeySaved] = useState(false);
@@ -39,23 +63,17 @@ export function Navbar() {
       document.documentElement.classList.remove('dark');
     }
 
-    const timer = setTimeout(() => {
-      setIsDark(shouldBeDark);
-      const savedKey = typeof window !== 'undefined' ? sessionStorage.getItem('utsava_gemini_key') : null;
-      if (savedKey) setApiKeyInput(savedKey);
-    }, 0);
-    return () => clearTimeout(timer);
+    const savedKey = typeof window !== 'undefined' ? sessionStorage.getItem('utsava_gemini_key') : null;
+    if (savedKey) setApiKeyInput(savedKey);
   }, []);
 
   const toggleTheme = () => {
-    if (isDark) {
+    if (document.documentElement.classList.contains('dark')) {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('utsava_theme', 'light');
-      setIsDark(false);
     } else {
       document.documentElement.classList.add('dark');
       localStorage.setItem('utsava_theme', 'dark');
-      setIsDark(true);
     }
   };
 

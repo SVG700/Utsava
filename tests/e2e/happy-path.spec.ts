@@ -498,4 +498,21 @@ test.describe('Utsava Celebration Planner End-to-End', () => {
     }
     await checkA11y('Planner page (dark)');
   });
+
+  test('theme toggle initialises from real state on dark reload and toggles cleanly', async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('utsava_theme', 'dark');
+    });
+
+    await page.goto('/');
+
+    await expect(page.locator('html')).toHaveClass(/dark/);
+    const themeBtn = page.locator('button[aria-label="Switch to light mode"]');
+    await expect(themeBtn).toBeVisible();
+
+    await themeBtn.click();
+    await expect(page.locator('html')).not.toHaveClass(/dark/);
+    const switchDarkBtn = page.locator('button[aria-label="Switch to dark mode"]');
+    await expect(switchDarkBtn).toBeVisible();
+  });
 });
