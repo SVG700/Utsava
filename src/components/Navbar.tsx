@@ -48,7 +48,12 @@ export function Navbar() {
   const pathname = usePathname();
   const isDark = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerSnapshot);
   const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
-  const [apiKeyInput, setApiKeyInput] = useState('');
+  const [apiKeyInput, setApiKeyInput] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('utsava_gemini_key') || '';
+    }
+    return '';
+  });
   const [keySaved, setKeySaved] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -62,9 +67,6 @@ export function Navbar() {
     } else {
       document.documentElement.classList.remove('dark');
     }
-
-    const savedKey = typeof window !== 'undefined' ? sessionStorage.getItem('utsava_gemini_key') : null;
-    if (savedKey) setApiKeyInput(savedKey);
   }, []);
 
   const toggleTheme = () => {
