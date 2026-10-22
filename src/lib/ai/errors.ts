@@ -1,6 +1,12 @@
 /** Machine-readable failure categories surfaced to API clients. */
 export type GeminiErrorCode =
-  'MISSING_KEY' | 'RATE_LIMIT' | 'TIMEOUT' | 'INVALID_RESPONSE' | 'API_ERROR' | 'NO_CHANGES';
+  | 'MISSING_KEY'
+  | 'RATE_LIMIT'
+  | 'TIMEOUT'
+  | 'INVALID_RESPONSE'
+  | 'API_ERROR'
+  | 'NO_CHANGES'
+  | 'SERVICE_BUSY';
 
 /** Error raised by the AI layer; its message is always safe to show to end users. */
 export class GeminiError extends Error {

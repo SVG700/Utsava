@@ -145,6 +145,14 @@ export async function callGemini(prompt: string, options: CallGeminiOptions = {}
       );
     }
 
+    if (isTransientError(errMsg)) {
+      throw new GeminiError(
+        'Gemini is experiencing high demand right now. Please try again in a minute.',
+        'SERVICE_BUSY',
+        503,
+      );
+    }
+
     throw new GeminiError('AI service error. Please try again.', 'API_ERROR', 502);
   } finally {
     clearTimeout(timeoutId);

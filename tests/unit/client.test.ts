@@ -254,6 +254,21 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
       expect(mocks.generateContent.mock.calls[2][0].model).toBe('gemini-3.5-flash-lite');
     });
 
+    it('reports SERVICE_BUSY when Gemini stays overloaded after all retries', async () => {
+      vi.useFakeTimers();
+      mocks.generateContent.mockRejectedValue(new Error('503 UNAVAILABLE: high demand'));
+
+      const outcome = generateBlueprintWithGemini(sampleBlueprintRequest).catch((err) => err);
+      await vi.runAllTimersAsync();
+      const err = await outcome;
+
+      expect(err).toBeInstanceOf(GeminiError);
+      expect((err as GeminiError).code).toBe('SERVICE_BUSY');
+      expect((err as GeminiError).statusCode).toBe(503);
+      expect((err as GeminiError).message).toMatch(/high demand/);
+      expect(mocks.generateContent).toHaveBeenCalledTimes(4); // first call + 3 backoff retries
+    });
+
     it('throws GeminiError with TIMEOUT when request is aborted or timed out', async () => {
       mocks.generateContent.mockRejectedValue(new Error('This operation was aborted by timeout'));
 
