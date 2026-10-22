@@ -85,7 +85,6 @@ describe('RefineTab Component', () => {
       <RefineTab
         event={sampleEvent}
         blueprint={sampleBlueprint}
-        tasks={[]}
         onApplyRefinedPlan={onApplyRefinedPlan}
       />,
     );
@@ -118,12 +117,7 @@ describe('RefineTab Component', () => {
     );
 
     render(
-      <RefineTab
-        event={sampleEvent}
-        blueprint={sampleBlueprint}
-        tasks={[]}
-        onApplyRefinedPlan={vi.fn()}
-      />,
+      <RefineTab event={sampleEvent} blueprint={sampleBlueprint} onApplyRefinedPlan={vi.fn()} />,
     );
 
     const input = screen.getByLabelText(/refinement request/i);

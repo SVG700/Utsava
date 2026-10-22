@@ -102,21 +102,8 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
       tasks: [{ ...task, id: uuidv4(), source: 'user' }, ...current.tasks],
     }));
 
-  const applyRefinedPlan = (
-    updatedBlueprint: RefinementChanges['blueprint'],
-    updatedCategories: RefinementChanges['categories'],
-    _summary: string,
-    refinedTotalBudget?: number,
-    changedSections?: string[],
-  ) =>
-    commit((current) =>
-      applyRefinement(current, {
-        blueprint: updatedBlueprint,
-        categories: updatedCategories,
-        totalBudget: refinedTotalBudget,
-        changedSections,
-      }),
-    );
+  const applyRefinedPlan = (changes: RefinementChanges) =>
+    commit((current) => applyRefinement(current, changes));
 
   return (
     <div className="min-h-screen flex flex-col pb-16">
@@ -177,12 +164,7 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
           )}
           {activeTab === 'ideas' && <IdeasTab event={event} onAddTask={addTaskFromIdea} />}
           {activeTab === 'refine' && (
-            <RefineTab
-              event={event}
-              blueprint={blueprint}
-              tasks={tasks}
-              onApplyRefinedPlan={applyRefinedPlan}
-            />
+            <RefineTab event={event} blueprint={blueprint} onApplyRefinedPlan={applyRefinedPlan} />
           )}
           {activeTab === 'export' && (
             <ExportTab
