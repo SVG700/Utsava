@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { reconcileCategoryEdits, UNCATEGORISED_ID } from '@/lib/budget';
 import { filterTasks, summarizeTasks, type TaskFilters } from '@/lib/timeline';
 import { calculateTokenSimilarity } from '@/lib/text';
+import { validateEventDate } from '@/components/planner/header/HeaderDialogs';
 import type { BudgetCategory, Expense, TimelineTask } from '@/schemas';
 
 const category = (id: string, percentage: number): BudgetCategory => ({
@@ -123,5 +124,17 @@ describe('calculateTokenSimilarity', () => {
   it('handles empty strings', () => {
     expect(calculateTokenSimilarity('', '')).toBe(1);
     expect(calculateTokenSimilarity('venue', '')).toBe(0);
+  });
+});
+
+describe('validateEventDate', () => {
+  it('accepts today and future dates', () => {
+    expect(validateEventDate('2026-10-10', '2026-10-10')).toBeNull();
+    expect(validateEventDate('2027-01-01', '2026-10-10')).toBeNull();
+  });
+
+  it('rejects malformed and past dates', () => {
+    expect(validateEventDate('10-10-2026', '2026-10-10')).toMatch(/valid date/);
+    expect(validateEventDate('2026-10-09', '2026-10-10')).toMatch(/past/);
   });
 });

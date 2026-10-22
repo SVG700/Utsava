@@ -15,7 +15,8 @@ import { usePlannerData } from '@/hooks/usePlannerData';
 import { useBlueprintGeneration } from '@/hooks/useBlueprintGeneration';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
-import { PlannerHeader, type PlannerTab } from './PlannerHeader';
+import { PlannerHeader } from './PlannerHeader';
+import type { PlannerTab } from './header/PlannerTabs';
 import { DashboardTab } from './DashboardTab';
 import { GenerationProgressModal } from './GenerationProgressModal';
 

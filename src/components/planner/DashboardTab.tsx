@@ -20,7 +20,7 @@ import {
 } from '@/lib/budget';
 import { isOverdue, getTodayString } from '@/lib/dates';
 import { Button } from '@/components/ui/Button';
-import type { PlannerTab } from './PlannerHeader';
+import type { PlannerTab } from './header/PlannerTabs';
 import { DashboardMetrics } from './dashboard/DashboardMetrics';
 import { DashboardBlueprintView } from './dashboard/DashboardBlueprintView';
 import { DashboardDeadlines } from './dashboard/DashboardDeadlines';

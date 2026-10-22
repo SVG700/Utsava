@@ -4,7 +4,7 @@ import { formatINR } from '@/lib/budget';
 import { Card, CardContent } from '@/components/ui/Card';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Badge } from '@/components/ui/Badge';
-import type { PlannerTab } from '../PlannerHeader';
+import type { PlannerTab } from '../header/PlannerTabs';
 
 interface DashboardMetricsProps {
   spent: number;

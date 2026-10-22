@@ -5,7 +5,7 @@ import { formatDisplayDate, isOverdue } from '@/lib/dates';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import type { PlannerTab } from '../PlannerHeader';
+import type { PlannerTab } from '../header/PlannerTabs';
 
 interface DashboardDeadlinesProps {
   upcomingTasks: TimelineTask[];
