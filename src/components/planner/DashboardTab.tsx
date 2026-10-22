@@ -74,7 +74,7 @@ export function DashboardTab({
   const totalVendors = vendors.length;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
+    <div className="space-y-8">
       {/* Overspend Warning Banner */}
       {(hasOverallOverspend || overspentCats.length > 0) && (
         <div

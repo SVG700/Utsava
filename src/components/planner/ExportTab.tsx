@@ -37,7 +37,7 @@ export function ExportTab({
   const download = ({ filename, content }: CsvExport) => downloadCsvFile(filename, content);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-8">
       {/* Action Banner (hidden in print) */}
       <Card className="no-print bg-white/80 dark:bg-stone-900/80 border-sand-200 dark:border-stone-800 shadow-soft">
         <CardContent className="p-6">

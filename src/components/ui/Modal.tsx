@@ -114,7 +114,7 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-moss-915/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-moss-915/60 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -126,7 +126,7 @@ export function Modal({
         ref={modalRef}
         tabIndex={-1}
         className={cn(
-          'relative z-10 w-full bg-sand-50 dark:bg-moss-885 border border-linen-135 dark:border-moss-815 rounded-2xl shadow-elevated overflow-hidden animate-in zoom-in-95 duration-200 focus:outline-none',
+          'relative z-10 w-full bg-sand-50 dark:bg-moss-885 border border-linen-135 dark:border-moss-815 rounded-2xl shadow-elevated overflow-hidden focus:outline-none',
           maxWidths[maxWidth],
         )}
       >

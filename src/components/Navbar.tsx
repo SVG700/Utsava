@@ -202,7 +202,7 @@ export function Navbar() {
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-sand-200 dark:border-moss-830 bg-sand-50 dark:bg-moss-915 px-4 py-4 space-y-2 animate-in slide-in-from-top-2">
+        <div className="md:hidden border-t border-sand-200 dark:border-moss-830 bg-sand-50 dark:bg-moss-915 px-4 py-4 space-y-2">
           <Link
             href="/"
             onClick={() => setIsMobileMenuOpen(false)}

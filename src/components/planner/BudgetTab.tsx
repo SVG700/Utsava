@@ -209,7 +209,7 @@ export function BudgetTab({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-8">
       {/* Financial KPI Dashboard */}
       <BudgetKpis
         totalBudget={event.totalBudget}
@@ -224,7 +224,7 @@ export function BudgetTab({
         <div
           role="alert"
           aria-live="assertive"
-          className="p-4 rounded-2xl bg-rose-50/90 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-xs text-rose-900 dark:text-rose-200 space-y-2 shadow-soft animate-in fade-in"
+          className="p-4 rounded-2xl bg-rose-50/90 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-xs text-rose-900 dark:text-rose-200 space-y-2 shadow-soft"
         >
           <div className="flex items-center gap-2 font-bold text-sm text-rose-800 dark:text-rose-300">
             <AlertTriangle className="w-4 h-4 text-rose-600" />

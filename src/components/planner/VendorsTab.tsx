@@ -159,7 +159,7 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
   });
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-6">
       {/* Privacy Notice Banner */}
       <div className="p-4 rounded-2xl bg-forest-50/80 dark:bg-forest-950/40 border border-forest-200 dark:border-forest-800 text-xs text-forest-900 dark:text-forest-200 flex items-start gap-3 shadow-soft">
         <ShieldCheck className="w-4 h-4 text-forest-700 dark:text-forest-400 shrink-0 mt-0.5" />

@@ -150,7 +150,7 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-6">
       {/* Header */}
       <div className="text-center max-w-xl mx-auto space-y-2">
         <Badge variant="forest" className="mx-auto">

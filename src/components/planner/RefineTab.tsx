@@ -40,7 +40,7 @@ export function RefineTab({ event, blueprint, onApplyRefinedPlan }: RefineTabPro
 
   if (!blueprint) {
     return (
-      <Card className="text-center py-16 border-dashed bg-sand-50/30 dark:bg-stone-900/30 animate-in fade-in">
+      <Card className="text-center py-16 border-dashed bg-sand-50/30 dark:bg-stone-900/30">
         <Sparkles className="w-12 h-12 text-forest-600 dark:text-forest-400 mx-auto mb-3" />
         <h3 className="font-bold text-lg text-forest-950 dark:text-forest-100">
           Blueprint Needed Before Refinement
@@ -105,7 +105,7 @@ export function RefineTab({ event, blueprint, onApplyRefinedPlan }: RefineTabPro
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
+    <div className="max-w-4xl mx-auto space-y-6">
       <div className="text-center space-y-2">
         <Badge variant="forest">
           <Sparkles className="w-3.5 h-3.5 mr-1" /> AI Plan Refinement
@@ -138,7 +138,7 @@ export function RefineTab({ event, blueprint, onApplyRefinedPlan }: RefineTabPro
       {notice?.kind === 'info' && (
         <div
           role="status"
-          className="p-4 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-200 flex items-start gap-2 animate-in fade-in"
+          className="p-4 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-200 flex items-start gap-2"
         >
           <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
           <span>{notice.text}</span>
