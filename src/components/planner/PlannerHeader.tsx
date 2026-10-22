@@ -32,13 +32,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 
 export type PlannerTab =
-  | 'dashboard'
-  | 'budget'
-  | 'timeline'
-  | 'vendors'
-  | 'ideas'
-  | 'refine'
-  | 'export';
+  'dashboard' | 'budget' | 'timeline' | 'vendors' | 'ideas' | 'refine' | 'export';
 
 interface PlannerHeaderProps {
   event: StoredEvent;
@@ -118,7 +112,11 @@ export function PlannerHeader({
     }
   };
 
-  const tabs: Array<{ id: PlannerTab; label: string; icon: React.ComponentType<{ className?: string }> }> = [
+  const tabs: Array<{
+    id: PlannerTab;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }> = [
     { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
     { id: 'budget', label: 'Budget Manager', icon: Wallet },
     { id: 'timeline', label: 'Smart Timeline', icon: CalendarClock },
@@ -169,7 +167,11 @@ export function PlannerHeader({
                   <code className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900 text-[11px] font-mono">
                     GEMINI_API_KEY
                   </code>{' '}
-                  in your <code className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900 text-[11px] font-mono">.env.local</code> file or click the key icon in the navigation bar.
+                  in your{' '}
+                  <code className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900 text-[11px] font-mono">
+                    .env.local
+                  </code>{' '}
+                  file or click the key icon in the navigation bar.
                 </p>
               </div>
             </div>
@@ -195,12 +197,14 @@ export function PlannerHeader({
                   event.eventType === 'wedding'
                     ? 'festive'
                     : event.eventType === 'birthday'
-                    ? 'warning'
-                    : 'forest'
+                      ? 'warning'
+                      : 'forest'
                 }
               >
                 {event.eventType === 'wedding' && <Heart className="w-3 h-3 text-rose-500" />}
-                {event.eventType === 'birthday' && <PartyPopper className="w-3 h-3 text-amber-500" />}
+                {event.eventType === 'birthday' && (
+                  <PartyPopper className="w-3 h-3 text-amber-500" />
+                )}
                 {event.eventType === 'community' && <Flame className="w-3 h-3 text-emerald-500" />}
                 <span className="capitalize">{event.eventType}</span>
               </Badge>
@@ -210,10 +214,10 @@ export function PlannerHeader({
                   isToday
                     ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
                     : isPast
-                    ? 'bg-[#f0ece3] text-[#75837c] dark:bg-[#222d27] dark:text-[#94a19b]'
-                    : daysLeft <= 14
-                    ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300'
-                    : 'bg-[#e8f3ee] text-[#134e3a] dark:bg-[#152a22] dark:text-[#34d399]'
+                      ? 'bg-[#f0ece3] text-[#75837c] dark:bg-[#222d27] dark:text-[#94a19b]'
+                      : daysLeft <= 14
+                        ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300'
+                        : 'bg-[#e8f3ee] text-[#134e3a] dark:bg-[#152a22] dark:text-[#34d399]'
                 }`}
               >
                 <Clock className="w-3 h-3" />
@@ -311,7 +315,9 @@ export function PlannerHeader({
                     : 'border-transparent text-[#606d66] hover:text-[#1c2420] dark:text-[#94a19b] dark:hover:text-[#f3f5f4] hover:border-[#b8ad96]'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-[#134e3a] dark:text-[#2dd4bf]' : 'text-[#88968e]'}`} />
+                <Icon
+                  className={`w-4 h-4 ${isActive ? 'text-[#134e3a] dark:text-[#2dd4bf]' : 'text-[#88968e]'}`}
+                />
                 <span>{tab.label}</span>
               </button>
             );
@@ -346,7 +352,8 @@ export function PlannerHeader({
           )}
 
           <div className="p-3 rounded-xl bg-[#e8f3ee] dark:bg-[#152a22] border border-[#cbe4d7] dark:border-[#1d4235] text-xs text-[#134e3a] dark:text-[#34d399]">
-            All preparation timeline deadlines will be shifted based on their relative days before the event.
+            All preparation timeline deadlines will be shifted based on their relative days before
+            the event.
           </div>
 
           <div className="flex justify-end gap-2.5 pt-2">

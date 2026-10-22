@@ -80,17 +80,13 @@ export function EventWizard() {
 
   const toggleSubEvent = (sub: (typeof WEDDING_SUB_EVENTS)[number]) => {
     const current = formData.subEvents || [];
-    const next = current.includes(sub)
-      ? current.filter((s) => s !== sub)
-      : [...current, sub];
+    const next = current.includes(sub) ? current.filter((s) => s !== sub) : [...current, sub];
     updateField('subEvents', next);
   };
 
   const toggleDietary = (item: (typeof DIETARY_OPTIONS)[number]) => {
     const current = formData.dietaryPreferences || [];
-    const next = current.includes(item)
-      ? current.filter((d) => d !== item)
-      : [...current, item];
+    const next = current.includes(item) ? current.filter((d) => d !== item) : [...current, item];
     updateField('dietaryPreferences', next);
   };
 
@@ -173,7 +169,8 @@ export function EventWizard() {
           Plan Your Next Celebration
         </h1>
         <p className="text-xs sm:text-sm text-[#606d66] dark:text-[#94a19b]">
-          Provide your event details. Utsava’s GenAI will generate a customized blueprint with penny-perfect INR budgets, milestone timelines, and vendor requirements.
+          Provide your event details. Utsava’s GenAI will generate a customized blueprint with
+          penny-perfect INR budgets, milestone timelines, and vendor requirements.
         </p>
 
         {/* Step Progress Pills */}
@@ -193,8 +190,8 @@ export function EventWizard() {
                   step === s.num
                     ? 'bg-[#134e3a] text-white shadow-soft dark:bg-[#2dd4bf] dark:text-[#042f2e]'
                     : step > s.num
-                    ? 'bg-[#e8f3ee] text-[#134e3a] dark:bg-[#1a2e26] dark:text-[#34d399]'
-                    : 'bg-[#f0ece3] text-[#4d5953] dark:bg-[#222d27] dark:text-[#94a19b]'
+                      ? 'bg-[#e8f3ee] text-[#134e3a] dark:bg-[#1a2e26] dark:text-[#34d399]'
+                      : 'bg-[#f0ece3] text-[#4d5953] dark:bg-[#222d27] dark:text-[#94a19b]'
                 }`}
               >
                 <span className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] bg-black/10 dark:bg-white/10 font-bold">
@@ -230,22 +227,12 @@ export function EventWizard() {
               />
             )}
 
-            {step === 3 && (
-              <WizardStep3Review
-                formData={formData}
-                toggleDietary={toggleDietary}
-              />
-            )}
+            {step === 3 && <WizardStep3Review formData={formData} toggleDietary={toggleDietary} />}
 
             {/* Stepper Navigation Buttons */}
             <div className="flex items-center justify-between pt-6">
               {step > 1 ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleBack}
-                  className="gap-2"
-                >
+                <Button type="button" variant="outline" onClick={handleBack} className="gap-2">
                   <ArrowLeft className="w-4 h-4" />
                   <span>Previous Step</span>
                 </Button>
@@ -261,7 +248,9 @@ export function EventWizard() {
                   onClick={handleNext}
                   className="gap-2"
                 >
-                  <span>{step === 1 ? 'Next: Format & Traditions' : 'Next: Preferences & Review'}</span>
+                  <span>
+                    {step === 1 ? 'Next: Format & Traditions' : 'Next: Preferences & Review'}
+                  </span>
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               ) : (

@@ -30,8 +30,9 @@ export function LandingHero() {
 
             {/* Sub-headline */}
             <p className="text-base sm:text-lg text-[#606d66] dark:text-[#94a19b] font-normal leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              Utsava pairs Google Gemini with penny-perfect mathematical financial algorithms.
-              Plan weddings, milestone birthdays, and festivals with zero hallucinated budgets and zero fake vendors.
+              Utsava pairs Google Gemini with penny-perfect mathematical financial algorithms. Plan
+              weddings, milestone birthdays, and festivals with zero hallucinated budgets and zero
+              fake vendors.
             </p>
 
             {/* CTA Action Buttons */}
@@ -49,11 +50,7 @@ export function LandingHero() {
               </Link>
 
               <a href="#how-it-works" className="w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full sm:w-auto gap-2"
-                >
+                <Button variant="outline" size="lg" className="w-full sm:w-auto gap-2">
                   <span>Explore How It Works</span>
                 </Button>
               </a>
@@ -133,29 +130,57 @@ export function LandingHero() {
                   </div>
 
                   <div className="h-3 w-full rounded-full bg-[#f0ece3] dark:bg-[#25322b] overflow-hidden flex">
-                    <div style={{ width: '35%' }} className="bg-[#134e3a] h-full" title="Venue (35%)" />
-                    <div style={{ width: '30%' }} className="bg-[#c48a3f] h-full" title="Catering (30%)" />
-                    <div style={{ width: '15%' }} className="bg-emerald-500 h-full" title="Decor (15%)" />
-                    <div style={{ width: '12%' }} className="bg-sky-500 h-full" title="Photography (12%)" />
-                    <div style={{ width: '8%' }} className="bg-stone-400 h-full" title="Logistics (8%)" />
+                    <div
+                      style={{ width: '35%' }}
+                      className="bg-[#134e3a] h-full"
+                      title="Venue (35%)"
+                    />
+                    <div
+                      style={{ width: '30%' }}
+                      className="bg-[#c48a3f] h-full"
+                      title="Catering (30%)"
+                    />
+                    <div
+                      style={{ width: '15%' }}
+                      className="bg-emerald-500 h-full"
+                      title="Decor (15%)"
+                    />
+                    <div
+                      style={{ width: '12%' }}
+                      className="bg-sky-500 h-full"
+                      title="Photography (12%)"
+                    />
+                    <div
+                      style={{ width: '8%' }}
+                      className="bg-stone-400 h-full"
+                      title="Logistics (8%)"
+                    />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 pt-1 text-[11px] text-[#606d66] dark:text-[#94a19b]">
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-[#134e3a]" />
-                      <span>Venue: <strong>₹7,00,000</strong></span>
+                      <span>
+                        Venue: <strong>₹7,00,000</strong>
+                      </span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-[#c48a3f]" />
-                      <span>Catering: <strong>₹6,00,000</strong></span>
+                      <span>
+                        Catering: <strong>₹6,00,000</strong>
+                      </span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                      <span>Decor: <strong>₹3,00,000</strong></span>
+                      <span>
+                        Decor: <strong>₹3,00,000</strong>
+                      </span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-sky-500" />
-                      <span>Photo: <strong>₹2,40,000</strong></span>
+                      <span>
+                        Photo: <strong>₹2,40,000</strong>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -190,7 +215,8 @@ export function LandingHero() {
                     <span>Gemini Refinement Insight:</span>
                   </div>
                   <p className="text-[#2d3832] dark:text-[#d3ded8] text-[11px] leading-relaxed">
-                    &ldquo;Switched Rajasthani royal dining to 100% locally sourced organic marigolds and banana leaf thali service, saving ₹1,20,000.&rdquo;
+                    &ldquo;Switched Rajasthani royal dining to 100% locally sourced organic
+                    marigolds and banana leaf thali service, saving ₹1,20,000.&rdquo;
                   </p>
                 </div>
               </Card>

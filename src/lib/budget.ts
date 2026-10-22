@@ -54,10 +54,7 @@ export function normalisePercentages(percentages: number[]): number[] {
  * Convert normalised percentages to rupee amounts for a given total budget.
  * Ensures amounts sum exactly to the total budget (penny-perfect).
  */
-export function percentagesToAmounts(
-  percentages: number[],
-  totalBudget: number
-): number[] {
+export function percentagesToAmounts(percentages: number[], totalBudget: number): number[] {
   if (percentages.length === 0) return [];
 
   const amounts = percentages.map((p) => Math.round((p / 100) * totalBudget));
@@ -87,7 +84,7 @@ export function slugifyCategory(name: string): string {
  */
 export function buildBudgetCategories(
   aiCategories: Array<{ category: string; percentage: number }>,
-  totalBudget: number
+  totalBudget: number,
 ): BudgetCategory[] {
   const rawPercentages = aiCategories.map((c) => c.percentage);
   const normalised = normalisePercentages(rawPercentages);
@@ -119,7 +116,7 @@ export function buildBudgetCategories(
 export function remapExpensesToNewCategories(
   existingExpenses: Expense[],
   oldCategories: BudgetCategory[],
-  newCategories: BudgetCategory[]
+  newCategories: BudgetCategory[],
 ): { updatedExpenses: Expense[]; finalCategories: BudgetCategory[] } {
   if (existingExpenses.length === 0) {
     return { updatedExpenses: [], finalCategories: newCategories };
@@ -175,7 +172,7 @@ export function remapExpensesToNewCategories(
  */
 export function findMatchingCategoryId(
   suggestedBudgetCategory: string | undefined,
-  categories: BudgetCategory[]
+  categories: BudgetCategory[],
 ): string | undefined {
   if (!suggestedBudgetCategory || categories.length === 0) return undefined;
 
@@ -226,7 +223,7 @@ export function hasUserVendorData(v: Vendor): boolean {
 export function mergeVendorsOnRegenerate(
   existingVendors: Vendor[],
   newVendors: Vendor[],
-  categories?: BudgetCategory[]
+  categories?: BudgetCategory[],
 ): Vendor[] {
   const validCategoryIds = new Set(categories?.map((c) => c.id) ?? []);
 
@@ -247,7 +244,7 @@ export function mergeVendorsOnRegenerate(
       ...nv,
       source: nv.source || 'ai',
       suggestedByAI: nv.suggestedByAI ?? true,
-    })
+    }),
   );
 
   const keptExisting = existingVendors.filter(hasUserVendorData);
@@ -299,9 +296,7 @@ export function totalActualSpend(expenses: Expense[]): number {
 /**
  * Calculate actual spend per category from expenses.
  */
-export function spendByCategory(
-  expenses: Expense[]
-): Record<string, number> {
+export function spendByCategory(expenses: Expense[]): Record<string, number> {
   const map: Record<string, number> = {};
   for (const e of expenses) {
     map[e.categoryId] = (map[e.categoryId] ?? 0) + e.amount;
@@ -331,7 +326,7 @@ export function utilisationPercent(totalBudget: number, expenses: Expense[]): nu
  */
 export function overspentCategories(
   categories: BudgetCategory[],
-  expenses: Expense[]
+  expenses: Expense[],
 ): Array<{
   categoryId: string;
   categoryName: string;
@@ -364,7 +359,7 @@ export function isOverBudget(totalBudget: number, expenses: Expense[]): boolean 
  */
 export function recalculateEstimates(
   categories: BudgetCategory[],
-  totalBudget: number
+  totalBudget: number,
 ): BudgetCategory[] {
   const percentages = categories.map((c) => c.percentage);
   const normalised = normalisePercentages(percentages);

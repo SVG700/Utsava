@@ -5,7 +5,10 @@ import { isPastDate } from '@/lib/dates';
 // Helper to truncate free-text fields instead of rejecting whole responses
 const trunc = (max: number, min = 1) =>
   min > 0
-    ? z.string().min(min).transform((s) => s.slice(0, max))
+    ? z
+        .string()
+        .min(min)
+        .transform((s) => s.slice(0, max))
     : z.string().transform((s) => s.slice(0, max));
 
 // ─── AI Blueprint Response Schema ────────────────────────────────
@@ -54,7 +57,7 @@ export const aiBlueprintSchema = z.object({
         description: trunc(500),
         estimatedDuration: trunc(100),
         suitableFor: trunc(150),
-      })
+      }),
     )
     .min(1)
     .max(20),
@@ -90,7 +93,7 @@ export const aiRefinementBudgetAllocationSchema = z.union([
       category: cat.slice(0, 100),
       percentage: pct,
       description: `Allocation for ${cat}`.slice(0, 500),
-    }))
+    })),
   ),
 ]);
 
@@ -113,7 +116,7 @@ export const aiRefinementSchema = z.object({
         description: trunc(500),
         estimatedDuration: trunc(100),
         suitableFor: trunc(150),
-      })
+      }),
     )
     .min(1)
     .max(20)
@@ -124,19 +127,16 @@ export const aiRefinementSchema = z.object({
   risksAndAssumptions: z.array(trunc(300)).min(1).max(15).optional(),
   missingInfo: z.array(trunc(300)).max(15).optional(),
   alternatives: z.array(aiAlternativeSchema).min(1).max(15).optional(),
-  refinementSummary: z.string().min(1).transform((s) => s.slice(0, 1000)),
+  refinementSummary: z
+    .string()
+    .min(1)
+    .transform((s) => s.slice(0, 1000)),
 });
 
 export type AIRefinement = z.infer<typeof aiRefinementSchema>;
 
 // ─── AI Ideas Response Schema ────────────────────────────────────
-export const AI_IDEA_SECTIONS = [
-  'theme',
-  'food',
-  'activities',
-  'decor',
-  'return-gifts',
-] as const;
+export const AI_IDEA_SECTIONS = ['theme', 'food', 'activities', 'decor', 'return-gifts'] as const;
 export type AIIdeaSection = (typeof AI_IDEA_SECTIONS)[number];
 
 export const aiIdeasSchema = z.object({
@@ -148,7 +148,7 @@ export const aiIdeasSchema = z.object({
         description: trunc(500),
         estimatedCost: trunc(100),
         sustainability: trunc(300, 0).optional().default(''),
-      })
+      }),
     )
     .min(1)
     .max(20),
@@ -177,7 +177,7 @@ export const blueprintRequestSchema = baseBlueprintRequestSchema.refine(
   {
     message: 'Celebration date cannot be in the past',
     path: ['date'],
-  }
+  },
 );
 
 export type BlueprintRequest = z.infer<typeof blueprintRequestSchema>;

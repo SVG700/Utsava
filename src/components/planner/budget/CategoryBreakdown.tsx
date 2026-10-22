@@ -58,9 +58,7 @@ export function CategoryBreakdown({
             const actual = categorySpends[cat.id] ?? 0;
             const catRemaining = cat.estimatedAmount - actual;
             const catUtil =
-              cat.estimatedAmount > 0
-                ? Math.round((actual / cat.estimatedAmount) * 100)
-                : 0;
+              cat.estimatedAmount > 0 ? Math.round((actual / cat.estimatedAmount) * 100) : 0;
             const isCatOver = actual > cat.estimatedAmount;
 
             return (

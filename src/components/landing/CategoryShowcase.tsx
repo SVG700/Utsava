@@ -3,15 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  Heart,
-  PartyPopper,
-  Home,
-  Award,
-  Sparkles,
-  Briefcase,
-  ArrowRight,
-} from 'lucide-react';
+import { Heart, PartyPopper, Home, Award, Sparkles, Briefcase, ArrowRight } from 'lucide-react';
 import { saveEvent } from '@/lib/storage';
 import { calculateDueDate, getTodayString } from '@/lib/dates';
 import type { EventType, StoredEvent } from '@/schemas';
@@ -43,7 +35,8 @@ const TEMPLATES: Array<{
 }> = [
   {
     icon: Heart,
-    iconClass: 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900',
+    iconClass:
+      'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900',
     title: 'Weddings & Sangeet Nights',
     desc: 'Multi-day celebrations with Haldi, Mehendi, Sangeet, Mandap, and Reception tailored to regional Indian customs.',
     budgetRange: 'Typical: ₹10L – ₹1Cr+',
@@ -64,7 +57,8 @@ const TEMPLATES: Array<{
   },
   {
     icon: PartyPopper,
-    iconClass: 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900',
+    iconClass:
+      'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900',
     title: 'Milestone Birthdays',
     desc: 'From 1st birthday theme wonderlands to 18th milestones and 50th/60th Golden Jubilee gatherings with live music.',
     budgetRange: 'Typical: ₹50K – ₹5L',
@@ -85,7 +79,8 @@ const TEMPLATES: Array<{
   },
   {
     icon: Home,
-    iconClass: 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900',
+    iconClass:
+      'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900',
     title: 'Griha Pravesh & Housewarming',
     desc: 'Sacred Vastu pooja rituals, milk-boiling ceremony, floral threshold torans, and traditional sit-down feasts.',
     budgetRange: 'Typical: ₹75K – ₹4L',
@@ -97,7 +92,8 @@ const TEMPLATES: Array<{
       totalBudget: 250000,
       theme: 'Traditional Vedic Marigold & Brass Urli Decor',
       dietaryPreferences: ['vegetarian', 'jain'],
-      culturalPreferences: 'Morning Navagraha havan, Vastu pooja, and afternoon sattvic satyanarayan prasad',
+      culturalPreferences:
+        'Morning Navagraha havan, Vastu pooja, and afternoon sattvic satyanarayan prasad',
       accessibilityNeeds: 'Elevator access to apartment floor',
       specialRequirements: 'Havan kund smoke ventilation and traditional rangoli at entrance',
       subEvents: [],
@@ -106,7 +102,8 @@ const TEMPLATES: Array<{
   },
   {
     icon: Award,
-    iconClass: 'bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-900',
+    iconClass:
+      'bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-900',
     title: 'Anniversaries & Jubilees',
     desc: 'Silver (25th) and Golden (50th) wedding anniversaries, vow renewals, emotional photo montages, and musical nights.',
     budgetRange: 'Typical: ₹1.5L – ₹15L',
@@ -118,7 +115,8 @@ const TEMPLATES: Array<{
       totalBudget: 600000,
       theme: 'Vintage Gold & Ivory Elegance',
       dietaryPreferences: ['vegetarian', 'non-vegetarian'],
-      culturalPreferences: 'Vow renewal garland exchange, retro live ghazal musicians, and family memoir video',
+      culturalPreferences:
+        'Vow renewal garland exchange, retro live ghazal musicians, and family memoir video',
       accessibilityNeeds: 'Step-free entrance and cushioned seating for senior guests',
       specialRequirements: 'High-definition projector for 50-year memory reel',
       subEvents: [],
@@ -127,7 +125,8 @@ const TEMPLATES: Array<{
   },
   {
     icon: Sparkles,
-    iconClass: 'bg-orange-50 dark:bg-orange-950/50 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-900',
+    iconClass:
+      'bg-orange-50 dark:bg-orange-950/50 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-900',
     title: 'Festivals & Community Pandals',
     desc: 'Ganesh Utsav, Navratri Dandiya, Diwali Melas, and Durga Puja cultural nights with crowd management and prasad stalls.',
     budgetRange: 'Typical: ₹2L – ₹25L',
@@ -139,7 +138,8 @@ const TEMPLATES: Array<{
       totalBudget: 450000,
       theme: 'Vibrant Kutch Mirror Work & Folk Illuminations',
       dietaryPreferences: ['vegetarian', 'jain'],
-      culturalPreferences: 'Traditional Garba circles, live dhol players, and midnight fafda-jalebi stalls',
+      culturalPreferences:
+        'Traditional Garba circles, live dhol players, and midnight fafda-jalebi stalls',
       accessibilityNeeds: 'Wide clear aisles for safe darshan and dance floor entry',
       specialRequirements: 'Certified electrical safety inspection and first aid booth',
       subEvents: [],
@@ -148,7 +148,8 @@ const TEMPLATES: Array<{
   },
   {
     icon: Briefcase,
-    iconClass: 'bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-900',
+    iconClass:
+      'bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-900',
     title: 'Corporate Galas & Offsites',
     desc: 'Annual award nights, milestone celebrations, themed cocktail mixers, and high-energy employee recognition dinners.',
     budgetRange: 'Typical: ₹5L – ₹50L',
@@ -160,9 +161,11 @@ const TEMPLATES: Array<{
       totalBudget: 850000,
       theme: 'Modern Techno-Futuristic Emerald & Slate',
       dietaryPreferences: ['vegetarian', 'non-vegetarian', 'vegan'],
-      culturalPreferences: 'Executive keynote addresses, employee spotlight awards, and interactive live DJ mixer',
+      culturalPreferences:
+        'Executive keynote addresses, employee spotlight awards, and interactive live DJ mixer',
       accessibilityNeeds: 'Accessible stage ramp and ADA compliant restrooms',
-      specialRequirements: 'Dual high-lumen projection screens, wireless collar mics, and badging counter',
+      specialRequirements:
+        'Dual high-lumen projection screens, wireless collar mics, and badging counter',
       subEvents: [],
       daysOffset: 50,
     },
@@ -198,7 +201,10 @@ export function CategoryShowcase() {
   };
 
   return (
-    <section id="categories" className="py-16 sm:py-20 border-b border-[#e8e2d7] dark:border-[#26332b]">
+    <section
+      id="categories"
+      className="py-16 sm:py-20 border-b border-[#e8e2d7] dark:border-[#26332b]"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
           <Badge variant="forest">Celebration Formats</Badge>
@@ -206,7 +212,8 @@ export function CategoryShowcase() {
             Tailored for Every Indian Tradition
           </h2>
           <p className="text-sm sm:text-base text-[#606d66] dark:text-[#94a19b] font-normal leading-relaxed">
-            From grand 3-day royal weddings to community festival pandals, Utsava’s AI understands cultural rituals, regional dining customs, and guest logistics.
+            From grand 3-day royal weddings to community festival pandals, Utsava’s AI understands
+            cultural rituals, regional dining customs, and guest logistics.
           </p>
         </div>
 

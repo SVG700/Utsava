@@ -9,11 +9,7 @@ interface WizardStep2ThemeProps {
   toggleSubEvent: (sub: (typeof WEDDING_SUB_EVENTS)[number]) => void;
 }
 
-export function WizardStep2Theme({
-  formData,
-  updateField,
-  toggleSubEvent,
-}: WizardStep2ThemeProps) {
+export function WizardStep2Theme({ formData, updateField, toggleSubEvent }: WizardStep2ThemeProps) {
   return (
     <Card className="p-6 sm:p-8 space-y-6">
       {/* Indian Wedding Sub-Events */}
@@ -33,20 +29,22 @@ export function WizardStep2Theme({
               { key: 'mehendi', label: 'Mehendi Soirée', desc: 'Henna artists & folk music' },
               { key: 'sangeet', label: 'Sangeet Night', desc: 'Choreography, DJ & cocktails' },
               { key: 'wedding', label: 'Pheras / Mandap', desc: 'Vedic ceremony & sacred fire' },
-              { key: 'reception', label: 'Grand Reception', desc: 'Formal dining & guest portraits' },
+              {
+                key: 'reception',
+                label: 'Grand Reception',
+                desc: 'Formal dining & guest portraits',
+              },
               { key: 'other', label: 'Welcome Dinner / Pooja', desc: 'Ganesh puja or pool party' },
             ].map((sub) => {
               const isChecked = (formData.subEvents || []).includes(
-                sub.key as (typeof WEDDING_SUB_EVENTS)[number]
+                sub.key as (typeof WEDDING_SUB_EVENTS)[number],
               );
               return (
                 <button
                   key={sub.key}
                   type="button"
                   aria-pressed={isChecked}
-                  onClick={() =>
-                    toggleSubEvent(sub.key as (typeof WEDDING_SUB_EVENTS)[number])
-                  }
+                  onClick={() => toggleSubEvent(sub.key as (typeof WEDDING_SUB_EVENTS)[number])}
                   className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                     isChecked
                       ? 'border-[#134e3a] dark:border-[#2dd4bf] bg-[#e8f3ee]/60 dark:bg-[#152a22]/50 text-[#134e3a] dark:text-[#34d399]'
@@ -114,7 +112,10 @@ export function WizardStep2Theme({
 
       {/* Cultural Traditions & Regional Customs */}
       <div className="space-y-1.5 pt-2 border-t border-[#f0ece2] dark:border-[#243029]">
-        <label htmlFor="wizard-cultural-pref" className="block text-xs sm:text-sm font-semibold text-[#1c2420] dark:text-[#f3f5f4]">
+        <label
+          htmlFor="wizard-cultural-pref"
+          className="block text-xs sm:text-sm font-semibold text-[#1c2420] dark:text-[#f3f5f4]"
+        >
           Cultural Traditions & Regional Rituals (Optional)
         </label>
         <textarea

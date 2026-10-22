@@ -173,16 +173,16 @@ export function Navbar() {
             className="p-2 rounded-xl text-[#606d66] hover:text-[#1c2420] hover:bg-[#f0ece3] dark:text-[#94a19b] dark:hover:text-[#f3f5f4] dark:hover:bg-[#222d27] transition-colors cursor-pointer"
             aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           >
-            {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#4a5851]" />}
+            {isDark ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4 text-[#4a5851]" />
+            )}
           </button>
 
           {/* Primary CTA */}
           <Link href="/new">
-            <Button
-              variant="primary"
-              size="sm"
-              className="hidden sm:inline-flex gap-1.5"
-            >
+            <Button variant="primary" size="sm" className="hidden sm:inline-flex gap-1.5">
               <Plus className="w-3.5 h-3.5" />
               <span>Plan a Celebration</span>
             </Button>
@@ -265,12 +265,7 @@ export function Navbar() {
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              size="sm"
-              className="gap-1.5"
-            >
+            <Button type="submit" variant="primary" size="sm" className="gap-1.5">
               {keySaved ? (
                 <>
                   <Check className="w-3.5 h-3.5 text-white" />

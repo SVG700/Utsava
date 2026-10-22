@@ -187,7 +187,8 @@ test.describe('Utsava Celebration Planner End-to-End', () => {
         body: JSON.stringify({
           success: true,
           refinement: {
-            refinementSummary: 'Updated decor to 100% eco-friendly and adjusted category proportions.',
+            refinementSummary:
+              'Updated decor to 100% eco-friendly and adjusted category proportions.',
             themeAndDecor: {
               mainTheme: 'Eco-Chic Royal Palace',
               decorIdeas: ['Clay diyas and banana trunks'],
@@ -310,7 +311,9 @@ test.describe('Utsava Celebration Planner End-to-End', () => {
     await regenBtn.click();
 
     // 4. Confirm dialog must be visible
-    const confirmModal = page.locator('div[role="dialog"]:has-text("Regenerate Celebration Plan?")');
+    const confirmModal = page.locator(
+      'div[role="dialog"]:has-text("Regenerate Celebration Plan?")',
+    );
     await expect(confirmModal).toBeVisible();
 
     // Click Confirm button inside modal
@@ -384,14 +387,14 @@ test.describe('Utsava Celebration Planner End-to-End', () => {
     // 1. Home page at 360px
     await page.goto('/');
     const homeNoOverflow = await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth
+      () => document.documentElement.scrollWidth <= window.innerWidth,
     );
     expect(homeNoOverflow).toBe(true);
 
     // 2. Wizard at 360px
     await page.goto('/new');
     const wizardNoOverflow = await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth
+      () => document.documentElement.scrollWidth <= window.innerWidth,
     );
     expect(wizardNoOverflow).toBe(true);
 
@@ -405,7 +408,7 @@ test.describe('Utsava Celebration Planner End-to-End', () => {
 
     await expect(page).toHaveURL(/\/events\//);
     const plannerNoOverflow = await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth
+      () => document.documentElement.scrollWidth <= window.innerWidth,
     );
     expect(plannerNoOverflow).toBe(true);
   });
@@ -423,12 +426,10 @@ test.describe('Utsava Celebration Planner End-to-End', () => {
 
     // Function to run axe scan and assert 0 critical or serious violations
     const checkA11y = async (contextName: string) => {
-      const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa'])
-        .analyze();
+      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
 
       const severeViolations = results.violations.filter(
-        (v) => v.impact === 'critical' || v.impact === 'serious'
+        (v) => v.impact === 'critical' || v.impact === 'serious',
       );
 
       if (severeViolations.length > 0) {
@@ -442,8 +443,8 @@ test.describe('Utsava Celebration Planner End-to-End', () => {
               nodes: v.nodes.map((n) => n.html),
             })),
             null,
-            2
-          )
+            2,
+          ),
         );
       }
       expect(severeViolations).toEqual([]);
@@ -499,7 +500,9 @@ test.describe('Utsava Celebration Planner End-to-End', () => {
     await checkA11y('Planner page (dark)');
   });
 
-  test('theme toggle initialises from real state on dark reload and toggles cleanly', async ({ page }) => {
+  test('theme toggle initialises from real state on dark reload and toggles cleanly', async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       localStorage.setItem('utsava_theme', 'dark');
     });

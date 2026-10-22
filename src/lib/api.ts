@@ -18,7 +18,7 @@ export class ApiError extends Error {
   constructor(
     message: string,
     public readonly code?: string,
-    public readonly status?: number
+    public readonly status?: number,
   ) {
     super(message);
     this.name = 'ApiError';
@@ -74,7 +74,7 @@ function getSessionApiKey(): string | null {
  */
 export async function apiGenerateBlueprint(
   event: StoredEvent,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<ApiGenerateBlueprintResponse> {
   const userKey = getSessionApiKey();
   const res = await fetch('/api/generate-blueprint', {
@@ -92,7 +92,7 @@ export async function apiGenerateBlueprint(
     throw new ApiError(
       data.message || 'Failed to generate celebration blueprint.',
       data.error,
-      res.status
+      res.status,
     );
   }
   return data;
@@ -105,7 +105,7 @@ export async function apiRefinePlan(
   event: StoredEvent,
   currentPlan: AIBlueprint,
   userRequest: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<ApiRefinePlanResponse> {
   const userKey = getSessionApiKey();
   const payload: RefinementRequest = {
@@ -129,7 +129,7 @@ export async function apiRefinePlan(
     throw new ApiError(
       data.message || 'Failed to refine celebration plan.',
       data.error,
-      res.status
+      res.status,
     );
   }
   return data;
@@ -142,7 +142,7 @@ export async function apiGenerateIdeas(
   event: StoredEvent,
   section: AIIdeaSection,
   existingIdeas: string[],
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<ApiGenerateIdeasResponse> {
   const userKey = getSessionApiKey();
   const payload: IdeasRequest = {
@@ -163,11 +163,7 @@ export async function apiGenerateIdeas(
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new ApiError(
-      data.message || 'Failed to generate ideas.',
-      data.error,
-      res.status
-    );
+    throw new ApiError(data.message || 'Failed to generate ideas.', data.error, res.status);
   }
   return data;
 }

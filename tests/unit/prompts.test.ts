@@ -26,7 +26,9 @@ describe('AI Prompts', () => {
 
   it('system instructions contain Indian celebration guidelines and vendor safety rules', () => {
     expect(UTSAVA_SYSTEM_INSTRUCTION).toContain('Utsava AI');
-    expect(UTSAVA_SYSTEM_INSTRUCTION).toContain('NEVER invent or mention real vendor business names');
+    expect(UTSAVA_SYSTEM_INSTRUCTION).toContain(
+      'NEVER invent or mention real vendor business names',
+    );
     expect(UTSAVA_SYSTEM_INSTRUCTION).toContain('Weddings: Support multi-day ceremonies');
     expect(UTSAVA_SYSTEM_INSTRUCTION).toContain('JSON');
   });

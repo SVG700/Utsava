@@ -17,7 +17,15 @@ export function WizardLivePreview({ formData }: WizardLivePreviewProps) {
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           Live Plan Preview
         </span>
-        <Badge variant={formData.eventType === 'wedding' ? 'festive' : formData.eventType === 'birthday' ? 'warning' : 'forest'}>
+        <Badge
+          variant={
+            formData.eventType === 'wedding'
+              ? 'festive'
+              : formData.eventType === 'birthday'
+                ? 'warning'
+                : 'forest'
+          }
+        >
           {formData.eventType || 'Event'}
         </Badge>
       </div>
@@ -27,7 +35,8 @@ export function WizardLivePreview({ formData }: WizardLivePreviewProps) {
           {formData.name || 'Untitled Celebration'}
         </h3>
         <p className="text-xs text-[#606d66] dark:text-[#94a19b] mt-0.5">
-          {formData.city || 'City not set'} • {formData.date ? formatDisplayDate(formData.date) : 'Date not set'}
+          {formData.city || 'City not set'} •{' '}
+          {formData.date ? formatDisplayDate(formData.date) : 'Date not set'}
         </p>
       </div>
 

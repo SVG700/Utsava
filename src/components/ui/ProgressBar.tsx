@@ -41,7 +41,9 @@ export function ProgressBar({
             <span
               className={cn(
                 'font-semibold tabular-nums',
-                actualPercent > 100 ? 'text-rose-600 dark:text-rose-400' : 'text-[#596660] dark:text-[#94a19b]'
+                actualPercent > 100
+                  ? 'text-rose-600 dark:text-rose-400'
+                  : 'text-[#596660] dark:text-[#94a19b]',
               )}
             >
               {actualPercent}%
@@ -58,7 +60,10 @@ export function ProgressBar({
         aria-label={label || 'Progress'}
       >
         <div
-          className={cn('h-full transition-all duration-500 rounded-full', variants[computedVariant])}
+          className={cn(
+            'h-full transition-all duration-500 rounded-full',
+            variants[computedVariant],
+          )}
           style={{ width: `${percent}%` }}
         />
       </div>

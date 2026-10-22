@@ -57,26 +57,21 @@ export function sanitizeSchemaForGemini(schema: unknown): unknown {
 }
 
 export const blueprintJsonSchema = sanitizeSchemaForGemini(
-  z.toJSONSchema(aiBlueprintSchema, { io: 'input' })
+  z.toJSONSchema(aiBlueprintSchema, { io: 'input' }),
 );
 export const refinementJsonSchema = sanitizeSchemaForGemini(
-  z.toJSONSchema(aiRefinementSchema, { io: 'input' })
+  z.toJSONSchema(aiRefinementSchema, { io: 'input' }),
 );
 export const ideasJsonSchema = sanitizeSchemaForGemini(
-  z.toJSONSchema(aiIdeasSchema, { io: 'input' })
+  z.toJSONSchema(aiIdeasSchema, { io: 'input' }),
 );
 
 export class GeminiError extends Error {
   constructor(
     message: string,
     public readonly code:
-      | 'MISSING_KEY'
-      | 'RATE_LIMIT'
-      | 'TIMEOUT'
-      | 'INVALID_RESPONSE'
-      | 'API_ERROR'
-      | 'NO_CHANGES',
-    public readonly statusCode: number = 500
+      'MISSING_KEY' | 'RATE_LIMIT' | 'TIMEOUT' | 'INVALID_RESPONSE' | 'API_ERROR' | 'NO_CHANGES',
+    public readonly statusCode: number = 500,
   ) {
     super(message);
     this.name = 'GeminiError';
@@ -96,7 +91,7 @@ function getGeminiClient(customKey?: string | null): GoogleGenAI {
     throw new GeminiError(
       'Gemini API key is not configured. Please set GEMINI_API_KEY in .env.local or enter it in app settings.',
       'MISSING_KEY',
-      503
+      503,
     );
   }
   return new GoogleGenAI({ apiKey });
@@ -143,10 +138,7 @@ interface CallGeminiOptions {
 /**
  * Execute Gemini generateContent with 45-second timeout wired to abortSignal.
  */
-async function callGemini(
-  prompt: string,
-  options?: CallGeminiOptions
-): Promise<string> {
+async function callGemini(prompt: string, options?: CallGeminiOptions): Promise<string> {
   const customApiKey = options?.customApiKey;
   const attempt = options?.attempt || 1;
   const overrideModel = options?.overrideModel;
@@ -178,11 +170,7 @@ async function callGemini(
     const text = candidate?.content?.parts?.[0]?.text;
 
     if (!text) {
-      throw new GeminiError(
-        'Empty response received from Gemini model.',
-        'INVALID_RESPONSE',
-        502
-      );
+      throw new GeminiError('Empty response received from Gemini model.', 'INVALID_RESPONSE', 502);
     }
 
     return text;
@@ -202,7 +190,9 @@ async function callGemini(
         errMsg.toUpperCase().includes('INVALID_ARGUMENT') ||
         errMsg.toLowerCase().includes('invalid argument'))
     ) {
-      console.warn('Gemini returned 400 INVALID_ARGUMENT with responseJsonSchema; retrying once without schema...');
+      console.warn(
+        'Gemini returned 400 INVALID_ARGUMENT with responseJsonSchema; retrying once without schema...',
+      );
       return callGemini(prompt, {
         ...options,
         responseJsonSchema: undefined,
@@ -217,7 +207,9 @@ async function callGemini(
       model !== 'gemini-3.5-flash-lite' &&
       attempt === 1
     ) {
-      console.warn(`Model ${model} daily free tier quota hit. Falling back to resilient model gemini-3.5-flash-lite for this call only...`);
+      console.warn(
+        `Model ${model} daily free tier quota hit. Falling back to resilient model gemini-3.5-flash-lite for this call only...`,
+      );
       return callGemini(prompt, {
         ...options,
         attempt: attempt + 1,
@@ -227,7 +219,9 @@ async function callGemini(
 
     // Transient high-demand or service unavailable retry
     if (
-      (errMsg.includes('503') || errMsg.includes('high demand') || errMsg.includes('UNAVAILABLE')) &&
+      (errMsg.includes('503') ||
+        errMsg.includes('high demand') ||
+        errMsg.includes('UNAVAILABLE')) &&
       attempt <= 3
     ) {
       await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
@@ -241,23 +235,23 @@ async function callGemini(
       throw new GeminiError(
         'Gemini request timed out after 45 seconds. Please try again.',
         'TIMEOUT',
-        504
+        504,
       );
     }
 
-    if (errMsg.includes('429') || errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('rate limit')) {
+    if (
+      errMsg.includes('429') ||
+      errMsg.toLowerCase().includes('quota') ||
+      errMsg.toLowerCase().includes('rate limit')
+    ) {
       throw new GeminiError(
         'Gemini API rate limit exceeded. Please wait a moment before trying again.',
         'RATE_LIMIT',
-        429
+        429,
       );
     }
 
-    throw new GeminiError(
-      'AI service error. Please try again.',
-      'API_ERROR',
-      502
-    );
+    throw new GeminiError('AI service error. Please try again.', 'API_ERROR', 502);
   }
 }
 
@@ -266,7 +260,7 @@ async function callGemini(
  */
 export async function generateBlueprintWithGemini(
   req: BlueprintRequest,
-  customApiKey?: string | null
+  customApiKey?: string | null,
 ): Promise<AIBlueprint> {
   const prompt = buildBlueprintPrompt(req);
 
@@ -293,7 +287,7 @@ export async function generateBlueprintWithGemini(
       throw new GeminiError(
         'Failed to parse blueprint JSON from AI output after retry.',
         'INVALID_RESPONSE',
-        502
+        502,
       );
     }
   }
@@ -301,7 +295,9 @@ export async function generateBlueprintWithGemini(
   const validation = aiBlueprintSchema.safeParse(parsedJson);
   if (!validation.success) {
     // Retry once on schema mismatch
-    const errorDetails = validation.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join(', ');
+    const errorDetails = validation.error.issues
+      .map((i) => `${i.path.join('.')}: ${i.message}`)
+      .join(', ');
     const retryPrompt = `${prompt}\n\nCORRECTION REQUIRED: Your previous JSON had schema validation errors: [${errorDetails}]. Please fix and return compliant JSON.`;
     rawText = await callGemini(retryPrompt, {
       customApiKey,
@@ -315,7 +311,7 @@ export async function generateBlueprintWithGemini(
       throw new GeminiError(
         'Failed to parse corrected blueprint JSON after retry.',
         'INVALID_RESPONSE',
-        502
+        502,
       );
     }
     const retryValidation = aiBlueprintSchema.safeParse(retryParsed);
@@ -324,7 +320,7 @@ export async function generateBlueprintWithGemini(
       throw new GeminiError(
         `AI blueprint output did not match expected schema: ${retryValidation.error.issues[0]?.message || 'Unknown issue'}`,
         'INVALID_RESPONSE',
-        502
+        502,
       );
     }
     return retryValidation.data;
@@ -350,7 +346,7 @@ function hasValidChangedSections(refinement: AIRefinement): boolean {
  */
 export async function refinePlanWithGemini(
   req: RefinementRequest,
-  customApiKey?: string | null
+  customApiKey?: string | null,
 ): Promise<AIRefinement> {
   const prompt = buildRefinementPrompt(req);
   let rawText = await callGemini(prompt, {
@@ -375,7 +371,7 @@ export async function refinePlanWithGemini(
       throw new GeminiError(
         'Failed to parse plan refinement JSON from AI output after retry.',
         'INVALID_RESPONSE',
-        502
+        502,
       );
     }
   }
@@ -386,7 +382,8 @@ export async function refinePlanWithGemini(
   if (!isValidFirstAttempt) {
     const isChangedSectionsIssue =
       (validation.success && !hasValidChangedSections(validation.data)) ||
-      (!validation.success && validation.error.issues.some((i) => i.path.includes('changedSections')));
+      (!validation.success &&
+        validation.error.issues.some((i) => i.path.includes('changedSections')));
 
     const errorDetails = validation.success
       ? 'The changedSections array was empty or listed sections were not provided in full.'
@@ -405,26 +402,26 @@ export async function refinePlanWithGemini(
       throw new GeminiError(
         'Failed to parse corrected refinement JSON after retry.',
         'INVALID_RESPONSE',
-        502
+        502,
       );
     }
     const retryValidation = aiRefinementSchema.safeParse(retryParsed);
 
     if (!retryValidation.success) {
       const isRetryChangedIssue = retryValidation.error.issues.some((i) =>
-        i.path.includes('changedSections')
+        i.path.includes('changedSections'),
       );
       if (isRetryChangedIssue || isChangedSectionsIssue) {
         throw new GeminiError(
           'No changes could be applied to your plan. Try a more specific request.',
           'NO_CHANGES',
-          422
+          422,
         );
       }
       throw new GeminiError(
         `AI refinement did not match expected schema: ${retryValidation.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join(', ')}`,
         'INVALID_RESPONSE',
-        502
+        502,
       );
     }
 
@@ -432,7 +429,7 @@ export async function refinePlanWithGemini(
       throw new GeminiError(
         'No changes could be applied to your plan. Try a more specific request.',
         'NO_CHANGES',
-        422
+        422,
       );
     }
 
@@ -447,7 +444,7 @@ export async function refinePlanWithGemini(
  */
 export async function generateIdeasWithGemini(
   req: IdeasRequest,
-  customApiKey?: string | null
+  customApiKey?: string | null,
 ): Promise<AIIdeas> {
   const prompt = buildIdeasPrompt(req);
   let rawText = await callGemini(prompt, {
@@ -472,14 +469,16 @@ export async function generateIdeasWithGemini(
       throw new GeminiError(
         'Failed to parse idea studio JSON from AI output after retry.',
         'INVALID_RESPONSE',
-        502
+        502,
       );
     }
   }
 
   const validation = aiIdeasSchema.safeParse(parsedJson);
   if (!validation.success) {
-    const errorDetails = validation.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join(', ');
+    const errorDetails = validation.error.issues
+      .map((i) => `${i.path.join('.')}: ${i.message}`)
+      .join(', ');
     const retryPrompt = `${prompt}\n\nCORRECTION REQUIRED: Your previous ideas JSON had schema validation errors: [${errorDetails}]. Please fix and return compliant JSON.`;
     rawText = await callGemini(retryPrompt, {
       customApiKey,
@@ -493,7 +492,7 @@ export async function generateIdeasWithGemini(
       throw new GeminiError(
         'Failed to parse corrected idea studio JSON after retry.',
         'INVALID_RESPONSE',
-        502
+        502,
       );
     }
     const retryValidation = aiIdeasSchema.safeParse(retryParsed);
@@ -502,7 +501,7 @@ export async function generateIdeasWithGemini(
       throw new GeminiError(
         `AI ideas output did not match expected schema: ${retryValidation.error.issues[0]?.message}`,
         'INVALID_RESPONSE',
-        502
+        502,
       );
     }
     return retryValidation.data;

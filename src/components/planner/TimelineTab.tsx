@@ -34,15 +34,13 @@ interface TimelineTabProps {
   onUpdateTasks: (tasks: TimelineTask[]) => void;
 }
 
-export function TimelineTab({
-  event,
-  tasks,
-  onUpdateTasks,
-}: TimelineTabProps) {
+export function TimelineTab({ event, tasks, onUpdateTasks }: TimelineTabProps) {
   const today = getTodayString();
 
   // Filters
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'completed' | 'overdue'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'completed' | 'overdue'>(
+    'all',
+  );
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -62,9 +60,7 @@ export function TimelineTab({
 
   // Toggle completed
   const handleToggleCompleted = (taskId: string) => {
-    const updated = tasks.map((t) =>
-      t.id === taskId ? { ...t, completed: !t.completed } : t
-    );
+    const updated = tasks.map((t) => (t.id === taskId ? { ...t, completed: !t.completed } : t));
     onUpdateTasks(updated);
   };
 
@@ -140,7 +136,7 @@ export function TimelineTab({
               category: taskForm.category.trim(),
               source: 'user' as const,
             }
-          : t
+          : t,
       );
       onUpdateTasks(updated);
     } else {
@@ -189,7 +185,8 @@ export function TimelineTab({
 
   const completedCount = tasks.filter((t) => t.completed).length;
   const overdueCount = tasks.filter((t) => !t.completed && isOverdue(t.dueDate, today)).length;
-  const completionPercentage = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
+  const completionPercentage =
+    tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
@@ -207,7 +204,8 @@ export function TimelineTab({
                 </h2>
               </div>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                Milestones automatically synchronized relative to your celebration date ({formatDisplayDate(event.date)}).
+                Milestones automatically synchronized relative to your celebration date (
+                {formatDisplayDate(event.date)}).
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -215,7 +213,12 @@ export function TimelineTab({
                 <CheckCheck className="w-3.5 h-3.5 text-forest-600" />
                 <span>{completionPercentage}% complete</span>
               </div>
-              <Button size="sm" variant="primary" onClick={handleOpenAdd} className="gap-1.5 text-xs">
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={handleOpenAdd}
+                className="gap-1.5 text-xs"
+              >
                 <Plus className="w-3.5 h-3.5" /> Add Task
               </Button>
             </div>
@@ -282,9 +285,7 @@ export function TimelineTab({
         <Card className="text-center py-14 border-dashed bg-sand-50/30 dark:bg-stone-900/30">
           <Clock className="w-10 h-10 text-stone-300 dark:text-stone-600 mx-auto mb-2" />
           <h3 className="text-sm font-semibold text-stone-700 dark:text-stone-300">
-            {tasks.length === 0
-              ? 'No timeline tasks yet.'
-              : 'No tasks match your selected filter.'}
+            {tasks.length === 0 ? 'No timeline tasks yet.' : 'No tasks match your selected filter.'}
           </h3>
           <p className="text-xs text-stone-400 max-w-sm mx-auto mt-1 mb-4">
             Tasks can be auto-generated from your celebration blueprint or added manually.
@@ -305,8 +306,8 @@ export function TimelineTab({
                   task.completed
                     ? 'bg-sand-50/40 dark:bg-stone-900/30 border-sand-200 dark:border-stone-800/80 opacity-70'
                     : overdue
-                    ? 'bg-rose-50/40 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/60 shadow-soft'
-                    : 'bg-white dark:bg-stone-900 border-sand-200 dark:border-stone-800 hover:border-forest-300 dark:hover:border-forest-700 shadow-soft'
+                      ? 'bg-rose-50/40 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/60 shadow-soft'
+                      : 'bg-white dark:bg-stone-900 border-sand-200 dark:border-stone-800 hover:border-forest-300 dark:hover:border-forest-700 shadow-soft'
                 }`}
               >
                 {/* Complete checkbox button */}
@@ -342,8 +343,8 @@ export function TimelineTab({
                         task.priority === 'high'
                           ? 'danger'
                           : task.priority === 'medium'
-                          ? 'warning'
-                          : 'default'
+                            ? 'warning'
+                            : 'default'
                       }
                       className="text-[10px]"
                     >
@@ -500,7 +501,9 @@ export function TimelineTab({
         <div className="space-y-4">
           {taskToDelete && (
             <div className="p-3 rounded-xl bg-sand-50 dark:bg-stone-900 border border-sand-200 dark:border-stone-800 text-xs space-y-1">
-              <p className="font-semibold text-stone-900 dark:text-stone-100">{taskToDelete.title}</p>
+              <p className="font-semibold text-stone-900 dark:text-stone-100">
+                {taskToDelete.title}
+              </p>
               <p className="text-stone-500">Due: {formatDisplayDate(taskToDelete.dueDate)}</p>
             </div>
           )}
@@ -518,9 +521,7 @@ export function TimelineTab({
       {/* Floating Undo Notification for Deleted Task */}
       {undoTask && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-stone-200 animate-in fade-in slide-in-from-bottom-2">
-          <span className="text-xs font-medium">
-            Task &ldquo;{undoTask.title}&rdquo; deleted
-          </span>
+          <span className="text-xs font-medium">Task &ldquo;{undoTask.title}&rdquo; deleted</span>
           <button
             onClick={handleUndoDeleteTask}
             className="text-xs font-bold text-emerald-400 dark:text-emerald-700 hover:underline cursor-pointer"

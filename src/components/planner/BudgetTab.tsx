@@ -128,7 +128,7 @@ export function BudgetTab({
               description: expenseForm.description.trim(),
               notes: expenseForm.notes.trim(),
             }
-          : exp
+          : exp,
       );
       onUpdateExpenses(updated);
     } else {
@@ -197,7 +197,10 @@ export function BudgetTab({
   const handleAddCustomCategory = () => {
     if (!newCatName.trim()) return;
     const p = Number(newCatPercentage) || 5;
-    const slugId = `cat-${newCatName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    const slugId = `cat-${newCatName
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')}`;
     const newCat: BudgetCategory = {
       id: slugId,
       name: newCatName.trim(),
@@ -237,7 +240,7 @@ export function BudgetTab({
         onUpdateCategories(finalCats);
       }
       const reassignedExpenses = expenses.map((e) =>
-        e.categoryId === id ? { ...e, categoryId: 'cat-uncategorised' } : e
+        e.categoryId === id ? { ...e, categoryId: 'cat-uncategorised' } : e,
       );
       onUpdateExpenses(reassignedExpenses);
     }
@@ -349,8 +352,15 @@ export function BudgetTab({
         <div className="space-y-4">
           {expenseToDelete && (
             <div className="p-3 rounded-xl bg-sand-50 dark:bg-stone-900 border border-sand-200 dark:border-stone-800 text-xs space-y-1">
-              <p className="font-semibold text-stone-900 dark:text-stone-100">{expenseToDelete.description}</p>
-              <p className="text-stone-500">Amount: <strong className="text-stone-900 dark:text-stone-100">{formatINR(expenseToDelete.amount)}</strong></p>
+              <p className="font-semibold text-stone-900 dark:text-stone-100">
+                {expenseToDelete.description}
+              </p>
+              <p className="text-stone-500">
+                Amount:{' '}
+                <strong className="text-stone-900 dark:text-stone-100">
+                  {formatINR(expenseToDelete.amount)}
+                </strong>
+              </p>
               <p className="text-stone-500">Date: {formatDisplayDate(expenseToDelete.date)}</p>
             </div>
           )}
@@ -391,7 +401,8 @@ export function BudgetTab({
           className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-stone-200 animate-in fade-in slide-in-from-bottom-2"
         >
           <span className="text-xs font-medium">
-            Expense &ldquo;{undoExpense.description}&rdquo; ({formatINR(undoExpense.amount)}) deleted
+            Expense &ldquo;{undoExpense.description}&rdquo; ({formatINR(undoExpense.amount)})
+            deleted
           </span>
           <button
             onClick={handleUndoDelete}

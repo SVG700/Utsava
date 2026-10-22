@@ -62,49 +62,77 @@ export function WizardStep3Review({ formData, toggleDietary }: WizardStep3Review
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl bg-[#faf8f5] dark:bg-[#1a221e] border border-[#e8e2d7] dark:border-[#26332b] text-xs">
         <div>
-          <span className="text-stone-400 block text-[10px] uppercase font-semibold">Event Type</span>
-          <strong className="text-stone-900 dark:text-stone-100 font-bold block mt-0.5 truncate capitalize">{formData.eventType || 'Event'}</strong>
+          <span className="text-stone-400 block text-[10px] uppercase font-semibold">
+            Event Type
+          </span>
+          <strong className="text-stone-900 dark:text-stone-100 font-bold block mt-0.5 truncate capitalize">
+            {formData.eventType || 'Event'}
+          </strong>
         </div>
         <div>
-          <span className="text-stone-400 block text-[10px] uppercase font-semibold">City & Date</span>
-          <strong className="text-stone-900 dark:text-stone-100 font-bold block mt-0.5">{formData.city} • {formData.date ? formatDisplayDate(formData.date) : '—'}</strong>
+          <span className="text-stone-400 block text-[10px] uppercase font-semibold">
+            City & Date
+          </span>
+          <strong className="text-stone-900 dark:text-stone-100 font-bold block mt-0.5">
+            {formData.city} • {formData.date ? formatDisplayDate(formData.date) : '—'}
+          </strong>
         </div>
         <div>
-          <span className="text-stone-400 block text-[10px] uppercase font-semibold">Guest Count</span>
-          <strong className="text-stone-900 dark:text-stone-100 font-bold block mt-0.5">{formData.guestCount} Guests</strong>
+          <span className="text-stone-400 block text-[10px] uppercase font-semibold">
+            Guest Count
+          </span>
+          <strong className="text-stone-900 dark:text-stone-100 font-bold block mt-0.5">
+            {formData.guestCount} Guests
+          </strong>
         </div>
         <div>
-          <span className="text-stone-400 block text-[10px] uppercase font-semibold">Planned Budget</span>
-          <strong className="text-emerald-700 dark:text-emerald-400 font-extrabold block mt-0.5">{formData.totalBudget ? formatINR(formData.totalBudget) : '—'}</strong>
+          <span className="text-stone-400 block text-[10px] uppercase font-semibold">
+            Planned Budget
+          </span>
+          <strong className="text-emerald-700 dark:text-emerald-400 font-extrabold block mt-0.5">
+            {formData.totalBudget ? formatINR(formData.totalBudget) : '—'}
+          </strong>
         </div>
       </div>
 
       <div className="space-y-3 text-xs">
         {formData.theme && (
           <div className="p-3.5 rounded-xl border border-sand-200 dark:border-stone-800 bg-white dark:bg-[#18201c]">
-            <span className="text-[10px] text-stone-400 font-semibold uppercase block">Theme & Ambience</span>
+            <span className="text-[10px] text-stone-400 font-semibold uppercase block">
+              Theme & Ambience
+            </span>
             <span className="text-stone-800 dark:text-stone-200 font-medium">{formData.theme}</span>
           </div>
         )}
 
         {formData.culturalPreferences && (
           <div className="p-3.5 rounded-xl border border-sand-200 dark:border-stone-800 bg-white dark:bg-[#18201c]">
-            <span className="text-[10px] text-stone-400 font-semibold uppercase block">Cultural Rituals</span>
-            <span className="text-stone-800 dark:text-stone-200 font-medium">{formData.culturalPreferences}</span>
+            <span className="text-[10px] text-stone-400 font-semibold uppercase block">
+              Cultural Rituals
+            </span>
+            <span className="text-stone-800 dark:text-stone-200 font-medium">
+              {formData.culturalPreferences}
+            </span>
           </div>
         )}
 
         {formData.accessibilityNeeds && (
           <div className="p-3.5 rounded-xl border border-sand-200 dark:border-stone-800 bg-white dark:bg-[#18201c]">
-            <span className="text-[10px] text-stone-400 font-semibold uppercase block">Accessibility Needs</span>
-            <span className="text-stone-800 dark:text-stone-200 font-medium">{formData.accessibilityNeeds}</span>
+            <span className="text-[10px] text-stone-400 font-semibold uppercase block">
+              Accessibility Needs
+            </span>
+            <span className="text-stone-800 dark:text-stone-200 font-medium">
+              {formData.accessibilityNeeds}
+            </span>
           </div>
         )}
       </div>
 
       {/* Privacy Honesty Callout */}
       <div className="p-4 rounded-xl bg-[#e8f3ee] dark:bg-[#152a22] border border-[#cbe4d7] dark:border-[#1d4235] text-xs text-[#134e3a] dark:text-[#34d399] leading-relaxed">
-        <strong>Privacy & Security Guarantee:</strong> Processed securely via Google Gemini API; your data is never used to train public models or sold to third parties. All celebration records are saved locally inside your browser.
+        <strong>Privacy & Security Guarantee:</strong> Processed securely via Google Gemini API;
+        your data is never used to train public models or sold to third parties. All celebration
+        records are saved locally inside your browser.
       </div>
     </Card>
   );

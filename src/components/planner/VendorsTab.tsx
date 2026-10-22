@@ -2,19 +2,8 @@
 
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  Users,
-  Plus,
-  Search,
-  ShieldCheck,
-} from 'lucide-react';
-import type {
-  StoredEvent,
-  Vendor,
-  VendorStatus,
-  BudgetCategory,
-  AIBlueprint,
-} from '@/schemas';
+import { Users, Plus, Search, ShieldCheck } from 'lucide-react';
+import type { StoredEvent, Vendor, VendorStatus, BudgetCategory, AIBlueprint } from '@/schemas';
 import { formatINR } from '@/lib/budget';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -31,12 +20,7 @@ interface VendorsTabProps {
   onUpdateVendors: (vendors: Vendor[]) => void;
 }
 
-export function VendorsTab({
-  blueprint,
-  categories,
-  vendors,
-  onUpdateVendors,
-}: VendorsTabProps) {
+export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: VendorsTabProps) {
   const [statusFilter, setStatusFilter] = useState<'all' | VendorStatus>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -58,9 +42,7 @@ export function VendorsTab({
 
   // Quick status toggle
   const handleStatusChange = (vendorId: string, newStatus: VendorStatus) => {
-    const updated = vendors.map((v) =>
-      v.id === vendorId ? { ...v, status: newStatus } : v
-    );
+    const updated = vendors.map((v) => (v.id === vendorId ? { ...v, status: newStatus } : v));
     onUpdateVendors(updated);
   };
 
@@ -148,7 +130,7 @@ export function VendorsTab({
               notes: vendorForm.notes.trim(),
               source: 'user' as const,
             }
-          : v
+          : v,
       );
       onUpdateVendors(updated);
     } else {
@@ -187,10 +169,12 @@ export function VendorsTab({
       <div className="p-4 rounded-2xl bg-forest-50/80 dark:bg-forest-950/40 border border-forest-200 dark:border-forest-800 text-xs text-forest-900 dark:text-forest-200 flex items-start gap-3 shadow-soft">
         <ShieldCheck className="w-4 h-4 text-forest-700 dark:text-forest-400 shrink-0 mt-0.5" />
         <div className="leading-relaxed">
-          <strong className="font-semibold text-forest-950 dark:text-forest-100">Privacy & Safety Notice:</strong> AI suggestions
-          provide category checklists, budget benchmarks, and interview questions only. Utsava never
-          invents fake vendor businesses or synthetic contact numbers. All names, quotes, and contacts
-          below represent your real entries.
+          <strong className="font-semibold text-forest-950 dark:text-forest-100">
+            Privacy & Safety Notice:
+          </strong>{' '}
+          AI suggestions provide category checklists, budget benchmarks, and interview questions
+          only. Utsava never invents fake vendor businesses or synthetic contact numbers. All names,
+          quotes, and contacts below represent your real entries.
         </div>
       </div>
 
@@ -208,11 +192,17 @@ export function VendorsTab({
                 </h2>
               </div>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                Track status across {vendors.length} vendor categories. Compare actual quotes with target allocations.
+                Track status across {vendors.length} vendor categories. Compare actual quotes with
+                target allocations.
               </p>
             </div>
 
-            <Button onClick={handleOpenAdd} variant="primary" size="sm" className="gap-2 self-start sm:self-auto">
+            <Button
+              onClick={handleOpenAdd}
+              variant="primary"
+              size="sm"
+              className="gap-2 self-start sm:self-auto"
+            >
               <Plus className="w-4 h-4" />
               <span>Add Category</span>
             </Button>
@@ -231,7 +221,11 @@ export function VendorsTab({
               />
             </div>
 
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0" role="group" aria-label="Filter vendors by status">
+            <div
+              className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0"
+              role="group"
+              aria-label="Filter vendors by status"
+            >
               {(['all', 'not-started', 'shortlisted', 'booked'] as const).map((st) => (
                 <button
                   key={st}
@@ -244,7 +238,13 @@ export function VendorsTab({
                       : 'bg-sand-100 text-stone-600 hover:bg-sand-200 dark:bg-stone-800 dark:text-stone-400'
                   }`}
                 >
-                  {st === 'all' ? 'All' : st === 'not-started' ? 'Pending' : st === 'shortlisted' ? 'Shortlisted' : 'Booked'}
+                  {st === 'all'
+                    ? 'All'
+                    : st === 'not-started'
+                      ? 'Pending'
+                      : st === 'shortlisted'
+                        ? 'Shortlisted'
+                        : 'Booked'}
                 </button>
               ))}
             </div>
@@ -296,7 +296,9 @@ export function VendorsTab({
         <div className="space-y-4">
           {vendorToDelete && (
             <div className="p-3 rounded-xl bg-sand-50 dark:bg-stone-900 border border-sand-200 dark:border-stone-800 text-xs space-y-1">
-              <p className="font-semibold text-stone-900 dark:text-stone-100">{vendorToDelete.category}</p>
+              <p className="font-semibold text-stone-900 dark:text-stone-100">
+                {vendorToDelete.category}
+              </p>
               {vendorToDelete.name && <p className="text-stone-500">Name: {vendorToDelete.name}</p>}
               {vendorToDelete.quote !== undefined && (
                 <p className="text-stone-500">Quote: {formatINR(vendorToDelete.quote)}</p>

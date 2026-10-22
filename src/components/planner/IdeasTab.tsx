@@ -32,11 +32,36 @@ const SECTIONS: Array<{
   icon: React.ComponentType<{ className?: string }>;
   desc: string;
 }> = [
-  { id: 'theme', label: 'Theme & Style', icon: Palette, desc: 'Aesthetic concepts & dress code styles' },
-  { id: 'food', label: 'Food & Live Stalls', icon: UtensilsCrossed, desc: 'Indian culinary ideas & live chaat' },
-  { id: 'activities', label: 'Celebration Activities', icon: PartyPopper, desc: 'Rituals, interactive games & performances' },
-  { id: 'decor', label: 'Decor & Ambience', icon: Sparkles, desc: 'Mandap, lighting & entrance setups' },
-  { id: 'return-gifts', label: 'Return Gifts & Favors', icon: Gift, desc: 'Traditional potli bags & souvenirs' },
+  {
+    id: 'theme',
+    label: 'Theme & Style',
+    icon: Palette,
+    desc: 'Aesthetic concepts & dress code styles',
+  },
+  {
+    id: 'food',
+    label: 'Food & Live Stalls',
+    icon: UtensilsCrossed,
+    desc: 'Indian culinary ideas & live chaat',
+  },
+  {
+    id: 'activities',
+    label: 'Celebration Activities',
+    icon: PartyPopper,
+    desc: 'Rituals, interactive games & performances',
+  },
+  {
+    id: 'decor',
+    label: 'Decor & Ambience',
+    icon: Sparkles,
+    desc: 'Mandap, lighting & entrance setups',
+  },
+  {
+    id: 'return-gifts',
+    label: 'Return Gifts & Favors',
+    icon: Gift,
+    desc: 'Traditional potli bags & souvenirs',
+  },
 ];
 
 export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
@@ -72,13 +97,14 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
         event,
         section,
         (ideasBySection[section] || []).map((i) => i.title),
-        controller.signal
+        controller.signal,
       );
 
       const existing = ideasBySection[section] || [];
       const incoming: AIIdeas['ideas'] = data.ideas.ideas || [];
       const newItems = incoming.filter(
-        (ni) => !existing.some((ei) => ei.title.trim().toLowerCase() === ni.title.trim().toLowerCase())
+        (ni) =>
+          !existing.some((ei) => ei.title.trim().toLowerCase() === ni.title.trim().toLowerCase()),
       );
       const combined = [...existing, ...newItems];
 
@@ -99,8 +125,8 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
         err instanceof ApiError
           ? err.message
           : err instanceof Error
-          ? err.message
-          : 'Network error while requesting ideas. Please try again.'
+            ? err.message
+            : 'Network error while requesting ideas. Please try again.',
       );
     } finally {
       setIsLoading(false);
@@ -133,7 +159,8 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
           Personalized Indian Celebration Ideas
         </h2>
         <p className="text-xs text-stone-500 dark:text-stone-400">
-          Brainstorm creative concepts tailored to {event.city}, your guest count ({event.guestCount}), and cultural traditions on demand.
+          Brainstorm creative concepts tailored to {event.city}, your guest count (
+          {event.guestCount}), and cultural traditions on demand.
         </p>
       </div>
 
@@ -168,12 +195,8 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
               >
                 <Icon className="w-4 h-4" />
               </div>
-              <h4 className="font-bold text-xs text-stone-900 dark:text-stone-100">
-                {sec.label}
-              </h4>
-              <p className="text-[11px] text-stone-400 line-clamp-1 mt-0.5">
-                {sec.desc}
-              </p>
+              <h4 className="font-bold text-xs text-stone-900 dark:text-stone-100">{sec.label}</h4>
+              <p className="text-[11px] text-stone-400 line-clamp-1 mt-0.5">{sec.desc}</p>
             </button>
           );
         })}
@@ -182,7 +205,10 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
       {/* Actions Bar */}
       <div className="flex items-center justify-between pt-2">
         <span className="text-xs font-semibold text-stone-700 dark:text-stone-300">
-          Showing suggestions for <strong className="capitalize text-forest-900 dark:text-forest-300">{selectedSection}</strong>
+          Showing suggestions for{' '}
+          <strong className="capitalize text-forest-900 dark:text-forest-300">
+            {selectedSection}
+          </strong>
         </span>
         <Button
           size="sm"

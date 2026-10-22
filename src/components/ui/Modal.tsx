@@ -38,8 +38,8 @@ export function Modal({
       if (!modalRef.current) return;
       const focusable = Array.from(
         modalRef.current.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        )
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
       ).filter((el) => el.offsetParent !== null);
 
       if (focusable.length > 0) {
@@ -59,8 +59,8 @@ export function Modal({
       if (event.key === 'Tab' && modalRef.current) {
         const focusable = Array.from(
           modalRef.current.querySelectorAll<HTMLElement>(
-            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-          )
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          ),
         ).filter((el) => el.offsetParent !== null);
 
         if (focusable.length === 0) {
@@ -93,7 +93,10 @@ export function Modal({
       document.body.style.overflow = 'unset';
       window.removeEventListener('keydown', handleKeyDown);
       // Restore focus on close
-      if (previousActiveElementRef.current && typeof previousActiveElementRef.current.focus === 'function') {
+      if (
+        previousActiveElementRef.current &&
+        typeof previousActiveElementRef.current.focus === 'function'
+      ) {
         previousActiveElementRef.current.focus();
       }
     };
@@ -117,23 +120,22 @@ export function Modal({
       aria-labelledby={titleId}
       aria-describedby={description ? descId : undefined}
     >
-      <div
-        className="fixed inset-0"
-        aria-hidden="true"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0" aria-hidden="true" onClick={onClose} />
 
       <div
         ref={modalRef}
         tabIndex={-1}
         className={cn(
           'relative z-10 w-full bg-[#faf8f5] dark:bg-[#18201c] border border-[#e6e0d4] dark:border-[#283830] rounded-2xl shadow-elevated overflow-hidden animate-in zoom-in-95 duration-200 focus:outline-none',
-          maxWidths[maxWidth]
+          maxWidths[maxWidth],
         )}
       >
         <div className="flex items-start justify-between p-6 border-b border-[#ece7dc] dark:border-[#223028]">
           <div>
-            <h3 id={titleId} className="text-lg font-semibold text-[#1c2420] dark:text-[#f3f5f4] tracking-tight">
+            <h3
+              id={titleId}
+              className="text-lg font-semibold text-[#1c2420] dark:text-[#f3f5f4] tracking-tight"
+            >
               {title}
             </h3>
             {description && (
@@ -152,9 +154,7 @@ export function Modal({
           </button>
         </div>
 
-        <div className="p-6 max-h-[calc(85vh-8rem)] overflow-y-auto">
-          {children}
-        </div>
+        <div className="p-6 max-h-[calc(85vh-8rem)] overflow-y-auto">{children}</div>
       </div>
     </div>
   );

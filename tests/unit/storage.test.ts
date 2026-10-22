@@ -19,7 +19,14 @@ import {
   getEventIdeas,
   saveEventIdeas,
 } from '@/lib/storage';
-import type { StoredEvent, AIBlueprint, BudgetCategory, Expense, TimelineTask, Vendor } from '@/schemas';
+import type {
+  StoredEvent,
+  AIBlueprint,
+  BudgetCategory,
+  Expense,
+  TimelineTask,
+  Vendor,
+} from '@/schemas';
 
 // Mock localStorage
 const store: Record<string, string> = {};
@@ -149,7 +156,14 @@ describe('Categories storage', () => {
 describe('Expenses storage', () => {
   it('saves and retrieves expenses', () => {
     const expenses: Expense[] = [
-      { id: '1', categoryId: 'cat-0', description: 'Test', amount: 50000, date: '2026-01-15', notes: '' },
+      {
+        id: '1',
+        categoryId: 'cat-0',
+        description: 'Test',
+        amount: 50000,
+        date: '2026-01-15',
+        notes: '',
+      },
     ];
     saveExpenses('event-1', expenses);
     expect(getExpenses('event-1')).toEqual(expenses);
@@ -159,7 +173,16 @@ describe('Expenses storage', () => {
 describe('Tasks storage', () => {
   it('saves and retrieves tasks', () => {
     const tasks: TimelineTask[] = [
-      { id: '1', title: 'Task 1', description: '', dueDate: '2026-01-15', daysBeforeEvent: 90, priority: 'high', completed: false, category: '' },
+      {
+        id: '1',
+        title: 'Task 1',
+        description: '',
+        dueDate: '2026-01-15',
+        daysBeforeEvent: 90,
+        priority: 'high',
+        completed: false,
+        category: '',
+      },
     ];
     saveTasks('event-1', tasks);
     expect(getTasks('event-1')).toEqual(tasks);
@@ -169,7 +192,15 @@ describe('Tasks storage', () => {
 describe('Vendors storage', () => {
   it('saves and retrieves vendors', () => {
     const vendors: Vendor[] = [
-      { id: '1', category: 'Venue', status: 'not-started', name: '', contact: '', notes: '', suggestedByAI: false },
+      {
+        id: '1',
+        category: 'Venue',
+        status: 'not-started',
+        name: '',
+        contact: '',
+        notes: '',
+        suggestedByAI: false,
+      },
     ];
     saveVendors('event-1', vendors);
     expect(getVendors('event-1')).toEqual(vendors);
@@ -192,7 +223,14 @@ describe('Zod schema validation on storage reads', () => {
 
   it('drops invalid expense records from getExpenses', () => {
     store['utsava_expenses_event-corrupt'] = JSON.stringify([
-      { id: '1', categoryId: 'cat-0', description: 'Valid', amount: 500, date: '2026-01-15', notes: '' },
+      {
+        id: '1',
+        categoryId: 'cat-0',
+        description: 'Valid',
+        amount: 500,
+        date: '2026-01-15',
+        notes: '',
+      },
       { id: '2', amount: 'not-a-number' },
     ]);
 

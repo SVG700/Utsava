@@ -77,10 +77,7 @@ export function daysBetween(date1: string, date2: string): number {
  * Calculate a due date given an event date and daysBeforeEvent.
  * daysBeforeEvent = 30 means 30 days BEFORE the event.
  */
-export function calculateDueDate(
-  eventDate: string,
-  daysBeforeEvent: number
-): string {
+export function calculateDueDate(eventDate: string, daysBeforeEvent: number): string {
   const date = parseDate(eventDate);
   if (!date) return eventDate;
 
@@ -98,7 +95,7 @@ export function calculateTokenSimilarity(a: string, b: string): number {
         .toLowerCase()
         .replace(/[^\w\s]/g, ' ')
         .split(/\s+/)
-        .filter(Boolean)
+        .filter(Boolean),
     );
   const setA = tokenize(a);
   const setB = tokenize(b);
@@ -126,7 +123,7 @@ export function buildTimelineTasks(
     category?: string;
   }>,
   eventDate: string,
-  todayStr: string = getTodayString()
+  todayStr: string = getTodayString(),
 ): Omit<TimelineTask, 'id'>[] {
   return aiTimeline.map((item) => {
     let rawDue = calculateDueDate(eventDate, item.daysBeforeEvent);
@@ -157,10 +154,7 @@ export function buildTimelineTasks(
  * Recalculate all task due dates when the event date changes.
  * Preserves the daysBeforeEvent and completed status.
  */
-export function recalculateTaskDates(
-  tasks: TimelineTask[],
-  newEventDate: string
-): TimelineTask[] {
+export function recalculateTaskDates(tasks: TimelineTask[], newEventDate: string): TimelineTask[] {
   return tasks.map((task) => ({
     ...task,
     dueDate: calculateDueDate(newEventDate, task.daysBeforeEvent),
@@ -198,7 +192,7 @@ export function sortTasks(tasks: TimelineTask[]): TimelineTask[] {
  */
 export function mergeTasksOnRegenerate(
   existingTasks: TimelineTask[],
-  newTasks: Omit<TimelineTask, 'id'>[]
+  newTasks: Omit<TimelineTask, 'id'>[],
 ): TimelineTask[] {
   const isKept = (t: TimelineTask) =>
     t.source === 'user' ||
@@ -231,8 +225,8 @@ export function mergeTasksOnRegenerate(
       const sameCategoryCloseDays =
         Boolean(
           kept.category &&
-            candidate.category &&
-            kept.category.trim().toLowerCase() === candidate.category.trim().toLowerCase()
+          candidate.category &&
+          kept.category.trim().toLowerCase() === candidate.category.trim().toLowerCase(),
         ) && Math.abs(kept.daysBeforeEvent - candidate.daysBeforeEvent) <= 3;
 
       if (sim >= 0.6 || sameCategoryCloseDays) {

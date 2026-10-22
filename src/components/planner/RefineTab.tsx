@@ -40,7 +40,7 @@ interface RefineTabProps {
     updatedCategories: BudgetCategory[] | null,
     summary: string,
     refinedTotalBudget?: number,
-    changedSections?: string[]
+    changedSections?: string[],
   ) => void;
 }
 
@@ -75,11 +75,7 @@ const QUICK_PROMPTS = [
   },
 ];
 
-export function RefineTab({
-  event,
-  blueprint,
-  onApplyRefinedPlan,
-}: RefineTabProps) {
+export function RefineTab({ event, blueprint, onApplyRefinedPlan }: RefineTabProps) {
   const [prompt, setPrompt] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [history, setHistory] = useState<RefinementHistoryItem[]>(() => {
@@ -105,7 +101,8 @@ export function RefineTab({
           Blueprint Needed Before Refinement
         </h3>
         <p className="text-xs text-stone-500 max-w-md mx-auto mt-1 mb-6">
-          Generate an initial celebration blueprint from the Overview tab first to start conversational refinements.
+          Generate an initial celebration blueprint from the Overview tab first to start
+          conversational refinements.
         </p>
       </Card>
     );
@@ -133,12 +130,12 @@ export function RefineTab({
         budgetAllocation: Array.isArray(rawRefinement.budgetAllocation)
           ? rawRefinement.budgetAllocation
           : rawRefinement.budgetAllocation && typeof rawRefinement.budgetAllocation === 'object'
-          ? Object.entries(rawRefinement.budgetAllocation).map(([cat, pct]) => ({
-              category: cat,
-              percentage: Number(pct),
-              description: `Allocation for ${cat}`,
-            }))
-          : undefined,
+            ? Object.entries(rawRefinement.budgetAllocation).map(([cat, pct]) => ({
+                category: cat,
+                percentage: Number(pct),
+                description: `Allocation for ${cat}`,
+              }))
+            : undefined,
       };
 
       // Identify which sections genuinely changed using deep comparison
@@ -162,10 +159,7 @@ export function RefineTab({
           : event.totalBudget;
 
       if (refinement.budgetAllocation || refinement.totalBudget) {
-        newCategories = buildBudgetCategories(
-          updatedBlueprint.budgetAllocation,
-          effectiveBudget
-        );
+        newCategories = buildBudgetCategories(updatedBlueprint.budgetAllocation, effectiveBudget);
       }
 
       // Add to conversation history and persist to storage
@@ -186,7 +180,7 @@ export function RefineTab({
         newCategories,
         refinement.refinementSummary,
         refinement.totalBudget,
-        changed
+        changed,
       );
       setPrompt('');
     } catch (err: unknown) {
@@ -196,7 +190,7 @@ export function RefineTab({
       console.error('Error refining plan:', err);
       if (err instanceof ApiError && err.status === 422) {
         setNeutralNotice(
-          err.message || 'No changes could be applied to your plan. Try a more specific request.'
+          err.message || 'No changes could be applied to your plan. Try a more specific request.',
         );
         setErrorMessage(null);
       } else {
@@ -204,8 +198,8 @@ export function RefineTab({
           err instanceof ApiError
             ? err.message
             : err instanceof Error
-            ? err.message
-            : 'Network error during refinement. Please retry.'
+              ? err.message
+              : 'Network error during refinement. Please retry.',
         );
       }
     } finally {
@@ -324,7 +318,9 @@ export function RefineTab({
             Refinement Activity Log ({history.length})
           </h3>
           {history.length > 0 && (
-            <span className="text-xs text-stone-400">Deterministic merge preserving unmentioned fields</span>
+            <span className="text-xs text-stone-400">
+              Deterministic merge preserving unmentioned fields
+            </span>
           )}
         </div>
 
@@ -335,7 +331,8 @@ export function RefineTab({
               No refinements applied yet.
             </p>
             <p className="text-[11px] text-stone-400 mt-0.5">
-              Try asking for a budget trim, an eco-friendly decor shift, or a ceremony addition above!
+              Try asking for a budget trim, an eco-friendly decor shift, or a ceremony addition
+              above!
             </p>
           </div>
         ) : (

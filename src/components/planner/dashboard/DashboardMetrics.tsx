@@ -72,8 +72,16 @@ export function DashboardMetrics({
 
             <div className="flex justify-between items-center text-xs mt-2.5 text-[#606d66] dark:text-[#94a19b] font-medium">
               <span>{utilPercent}% allocated</span>
-              <span className={remaining < 0 ? 'text-rose-600 font-bold' : 'text-emerald-700 dark:text-emerald-400 font-semibold'}>
-                {remaining >= 0 ? `${formatINR(remaining)} balance` : `${formatINR(Math.abs(remaining))} over`}
+              <span
+                className={
+                  remaining < 0
+                    ? 'text-rose-600 font-bold'
+                    : 'text-emerald-700 dark:text-emerald-400 font-semibold'
+                }
+              >
+                {remaining >= 0
+                  ? `${formatINR(remaining)} balance`
+                  : `${formatINR(Math.abs(remaining))} over`}
               </span>
             </div>
           </div>
@@ -104,7 +112,8 @@ export function DashboardMetrics({
           <div>
             <div className="flex items-baseline justify-between">
               <span className="text-2xl sm:text-3xl font-extrabold text-[#1c2420] dark:text-[#f3f5f4] tracking-tight">
-                {completedTasks} <span className="text-base font-normal text-[#88968e]">/ {totalTasks}</span>
+                {completedTasks}{' '}
+                <span className="text-base font-normal text-[#88968e]">/ {totalTasks}</span>
               </span>
               {overdueTasksCount > 0 && (
                 <Badge variant="danger" className="text-[10px]">
@@ -152,7 +161,8 @@ export function DashboardMetrics({
           <div>
             <div className="flex items-baseline justify-between">
               <span className="text-2xl sm:text-3xl font-extrabold text-[#1c2420] dark:text-[#f3f5f4] tracking-tight">
-                {bookedVendors} <span className="text-base font-normal text-[#88968e]">/ {totalVendors}</span>
+                {bookedVendors}{' '}
+                <span className="text-base font-normal text-[#88968e]">/ {totalVendors}</span>
               </span>
               <span className="text-xs text-[#606d66] dark:text-[#94a19b] font-medium">
                 Categories
@@ -161,15 +171,21 @@ export function DashboardMetrics({
 
             <div className="grid grid-cols-3 gap-2 mt-3 pt-0.5 text-center">
               <div className="p-2 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900">
-                <span className="text-xs font-bold text-emerald-800 dark:text-emerald-400 block">{bookedVendors}</span>
+                <span className="text-xs font-bold text-emerald-800 dark:text-emerald-400 block">
+                  {bookedVendors}
+                </span>
                 <span className="text-[10px] text-[#606d66] dark:text-[#94a19b]">Booked</span>
               </div>
               <div className="p-2 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900">
-                <span className="text-xs font-bold text-amber-800 dark:text-amber-400 block">{shortlistedVendors}</span>
+                <span className="text-xs font-bold text-amber-800 dark:text-amber-400 block">
+                  {shortlistedVendors}
+                </span>
                 <span className="text-[10px] text-[#606d66] dark:text-[#94a19b]">Shortlisted</span>
               </div>
               <div className="p-2 rounded-xl bg-[#f0ece3] dark:bg-[#222d27] border border-[#e2ddd1] dark:border-[#2f3f36]">
-                <span className="text-xs font-bold text-[#2d3832] dark:text-[#d3ded8] block">{notStartedVendors}</span>
+                <span className="text-xs font-bold text-[#2d3832] dark:text-[#d3ded8] block">
+                  {notStartedVendors}
+                </span>
                 <span className="text-[10px] text-[#88968e]">Pending</span>
               </div>
             </div>

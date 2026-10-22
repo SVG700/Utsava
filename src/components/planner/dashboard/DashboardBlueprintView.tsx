@@ -28,7 +28,8 @@ export function DashboardBlueprintView({
           Generate Your AI Celebration Blueprint
         </h3>
         <p className="text-xs sm:text-sm text-[#606d66] dark:text-[#94a19b] max-w-md mx-auto mt-1 mb-6 leading-relaxed">
-          Let Gemini design personalized themes, Indian ritual timeline tasks, budget percentages, and vendor requirements tailored for {event.city}.
+          Let Gemini design personalized themes, Indian ritual timeline tasks, budget percentages,
+          and vendor requirements tailored for {event.city}.
         </p>
         <Button
           variant="primary"
@@ -155,7 +156,9 @@ export function DashboardBlueprintView({
             </div>
             <div>
               <CardTitle>Eco-Friendly & Accessible Alternatives</CardTitle>
-              <CardDescription>Smart alternatives to high-cost traditional elements</CardDescription>
+              <CardDescription>
+                Smart alternatives to high-cost traditional elements
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -167,9 +170,13 @@ export function DashboardBlueprintView({
                 className="p-4 rounded-xl border border-emerald-100 dark:border-emerald-950/60 bg-emerald-50/20 dark:bg-emerald-950/10 space-y-2 text-xs"
               >
                 <div className="flex flex-wrap items-center gap-1.5 font-bold text-[#1c2420] dark:text-[#f3f5f4]">
-                  <span className="text-rose-600 dark:text-rose-400 line-through font-normal">{alt.original}</span>
+                  <span className="text-rose-600 dark:text-rose-400 line-through font-normal">
+                    {alt.original}
+                  </span>
                   <span className="text-[#55635c] dark:text-[#94a19b]">→</span>
-                  <span className="text-emerald-800 dark:text-emerald-400 font-semibold">Smart Alternatives:</span>
+                  <span className="text-emerald-800 dark:text-emerald-400 font-semibold">
+                    Smart Alternatives:
+                  </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
                   <div className="p-2.5 rounded-xl bg-white dark:bg-[#18201c] border border-[#e6e0d4] dark:border-[#2f3f36]">

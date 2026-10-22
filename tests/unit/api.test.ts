@@ -108,7 +108,7 @@ describe('API client helpers (src/lib/api.ts)', () => {
             'Content-Type': 'application/json',
             'x-gemini-key': 'user-session-key',
           }),
-        })
+        }),
       );
     });
 
@@ -137,7 +137,7 @@ describe('API client helpers (src/lib/api.ts)', () => {
         '/api/refine-plan',
         expect.objectContaining({
           method: 'POST',
-        })
+        }),
       );
     });
 
@@ -155,7 +155,7 @@ describe('API client helpers (src/lib/api.ts)', () => {
         '/api/generate-ideas',
         expect.objectContaining({
           method: 'POST',
-        })
+        }),
       );
     });
   });

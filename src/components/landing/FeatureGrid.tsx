@@ -34,7 +34,8 @@ export function FeatureGrid() {
               Deterministic Budget Math
             </h3>
             <p className="text-xs sm:text-sm text-[#606d66] dark:text-[#94a19b] leading-relaxed">
-              Never trust AI with your money. Percentages from Gemini are strictly normalized to 100% and converted to penny-perfect rupee allocations in pure code.
+              Never trust AI with your money. Percentages from Gemini are strictly normalized to
+              100% and converted to penny-perfect rupee allocations in pure code.
             </p>
           </div>
 
@@ -47,7 +48,8 @@ export function FeatureGrid() {
               Dynamic Milestone Dates
             </h3>
             <p className="text-xs sm:text-sm text-[#606d66] dark:text-[#94a19b] leading-relaxed">
-              Tasks automatically offset from the celebration date. Change the date from December to January? All deadlines recalculate instantly.
+              Tasks automatically offset from the celebration date. Change the date from December to
+              January? All deadlines recalculate instantly.
             </p>
           </div>
 
@@ -60,7 +62,8 @@ export function FeatureGrid() {
               Targeted AI Plan Refinement
             </h3>
             <p className="text-xs sm:text-sm text-[#606d66] dark:text-[#94a19b] leading-relaxed">
-              Ask for adjustments in chat. AI returns only the changed sections, deep-merging them into your plan without overwriting your custom vendor records.
+              Ask for adjustments in chat. AI returns only the changed sections, deep-merging them
+              into your plan without overwriting your custom vendor records.
             </p>
           </div>
 
@@ -73,7 +76,8 @@ export function FeatureGrid() {
               Zero Fake Vendors
             </h3>
             <p className="text-xs sm:text-sm text-[#606d66] dark:text-[#94a19b] leading-relaxed">
-              Strict safety guardrails prevent AI hallucinating fake business names or numbers. AI supplies interview tips; you record real vendor quotes.
+              Strict safety guardrails prevent AI hallucinating fake business names or numbers. AI
+              supplies interview tips; you record real vendor quotes.
             </p>
           </div>
 
@@ -86,7 +90,8 @@ export function FeatureGrid() {
               Idea Studio On-Demand
             </h3>
             <p className="text-xs sm:text-sm text-[#606d66] dark:text-[#94a19b] leading-relaxed">
-              Generate tailored ideas for food stalls, cultural games, return gifts, or eco-friendly decor with one click, and add them directly to your timeline.
+              Generate tailored ideas for food stalls, cultural games, return gifts, or eco-friendly
+              decor with one click, and add them directly to your timeline.
             </p>
           </div>
 
@@ -99,7 +104,8 @@ export function FeatureGrid() {
               Export & Print Coordinator Sheets
             </h3>
             <p className="text-xs sm:text-sm text-[#606d66] dark:text-[#94a19b] leading-relaxed">
-              Export clean CSVs of budget ledgers and task lists. Trigger a print-ready coordinator checklist designed specifically for wedding day managers.
+              Export clean CSVs of budget ledgers and task lists. Trigger a print-ready coordinator
+              checklist designed specifically for wedding day managers.
             </p>
           </div>
         </div>
@@ -111,7 +117,9 @@ export function FeatureGrid() {
             <strong className="font-semibold block text-forest-950 dark:text-forest-100 mb-0.5">
               Privacy & Data Protection Guarantee
             </strong>
-            Processed securely via Google Gemini API; your data is never used to train public models or sold to third parties. All celebration budgets, guest lists, and vendor contact records remain securely stored inside your local browser storage.
+            Processed securely via Google Gemini API; your data is never used to train public models
+            or sold to third parties. All celebration budgets, guest lists, and vendor contact
+            records remain securely stored inside your local browser storage.
           </div>
         </div>
       </div>

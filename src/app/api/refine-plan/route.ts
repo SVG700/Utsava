@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
           error: 'PAYLOAD_TOO_LARGE',
           message: 'Request payload exceeds the 64 KB limit.',
         },
-        { status: 413 }
+        { status: 413 },
       );
     }
 
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
           error: 'RATE_LIMIT_EXCEEDED',
           message: `Too many refinement requests. Please wait ${Math.ceil(rateCheck.resetMs / 1000)} seconds before trying again.`,
         },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
           error: 'MISSING_API_KEY',
           message: 'Gemini API key is not configured in server environment or session settings.',
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
           error: 'MALFORMED_JSON',
           message: 'Malformed JSON payload. Please provide valid JSON.',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
           message: 'Invalid refinement payload.',
           details: validation.error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -80,7 +80,10 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: unknown) {
     // Log error details server-side only; never log full AI output or leak secrets
-    console.error('Error in plan refinement:', error instanceof Error ? error.message : 'Unknown server error');
+    console.error(
+      'Error in plan refinement:',
+      error instanceof Error ? error.message : 'Unknown server error',
+    );
 
     if (error instanceof GeminiError) {
       return NextResponse.json(
@@ -88,7 +91,7 @@ export async function POST(req: NextRequest) {
           error: error.code,
           message: error.message,
         },
-        { status: error.statusCode }
+        { status: error.statusCode },
       );
     }
 
@@ -98,7 +101,7 @@ export async function POST(req: NextRequest) {
         error: 'INTERNAL_ERROR',
         message: 'Failed to refine plan. Please try again later.',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

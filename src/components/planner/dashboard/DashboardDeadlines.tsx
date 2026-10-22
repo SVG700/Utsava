@@ -66,8 +66,8 @@ export function DashboardDeadlines({
                           t.priority === 'high'
                             ? 'danger'
                             : t.priority === 'medium'
-                            ? 'warning'
-                            : 'default'
+                              ? 'warning'
+                              : 'default'
                         }
                         className="text-[9px]"
                       >

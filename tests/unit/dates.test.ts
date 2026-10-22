@@ -93,8 +93,18 @@ describe('calculateDueDate', () => {
 describe('buildTimelineTasks', () => {
   it('builds tasks with computed due dates', () => {
     const aiTimeline = [
-      { title: 'Book venue', description: 'Find and book', daysBeforeEvent: 90, priority: 'high' as const },
-      { title: 'Send invites', description: 'Print and send', daysBeforeEvent: 30, priority: 'medium' as const },
+      {
+        title: 'Book venue',
+        description: 'Find and book',
+        daysBeforeEvent: 90,
+        priority: 'high' as const,
+      },
+      {
+        title: 'Send invites',
+        description: 'Print and send',
+        daysBeforeEvent: 30,
+        priority: 'medium' as const,
+      },
     ];
 
     const tasks = buildTimelineTasks(aiTimeline, '2026-06-15');
@@ -158,9 +168,36 @@ describe('isOverdue', () => {
 describe('sortTasks', () => {
   it('sorts by due date then priority', () => {
     const tasks: TimelineTask[] = [
-      { id: '3', title: 'C', description: '', dueDate: '2026-02-01', daysBeforeEvent: 30, priority: 'low', completed: false, category: '' },
-      { id: '1', title: 'A', description: '', dueDate: '2026-01-01', daysBeforeEvent: 60, priority: 'medium', completed: false, category: '' },
-      { id: '2', title: 'B', description: '', dueDate: '2026-01-01', daysBeforeEvent: 60, priority: 'high', completed: false, category: '' },
+      {
+        id: '3',
+        title: 'C',
+        description: '',
+        dueDate: '2026-02-01',
+        daysBeforeEvent: 30,
+        priority: 'low',
+        completed: false,
+        category: '',
+      },
+      {
+        id: '1',
+        title: 'A',
+        description: '',
+        dueDate: '2026-01-01',
+        daysBeforeEvent: 60,
+        priority: 'medium',
+        completed: false,
+        category: '',
+      },
+      {
+        id: '2',
+        title: 'B',
+        description: '',
+        dueDate: '2026-01-01',
+        daysBeforeEvent: 60,
+        priority: 'high',
+        completed: false,
+        category: '',
+      },
     ];
 
     const sorted = sortTasks(tasks);

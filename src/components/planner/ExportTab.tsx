@@ -1,11 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Printer,
-  Download,
-  FileSpreadsheet,
-} from 'lucide-react';
+import { Printer, Download, FileSpreadsheet } from 'lucide-react';
 import type {
   StoredEvent,
   BudgetCategory,
@@ -45,19 +41,19 @@ export function ExportTab({
 
   // Export Budget to CSV
   const handleExportBudgetCsv = () => {
-    const headers = ['Category', 'Percentage (%)', 'Estimated (INR)', 'Actual Spent (INR)', 'Balance (INR)', 'Status'];
+    const headers = [
+      'Category',
+      'Percentage (%)',
+      'Estimated (INR)',
+      'Actual Spent (INR)',
+      'Balance (INR)',
+      'Status',
+    ];
     const rows: (string | number)[][] = categories.map((cat) => {
       const spent = categorySpends[cat.id] ?? 0;
       const balance = cat.estimatedAmount - spent;
       const status = spent > cat.estimatedAmount ? 'OVER BUDGET' : 'WITHIN BUDGET';
-      return [
-        cat.name,
-        cat.percentage,
-        cat.estimatedAmount,
-        spent,
-        balance,
-        status,
-      ];
+      return [cat.name, cat.percentage, cat.estimatedAmount, spent, balance, status];
     });
 
     // Summary row
@@ -78,7 +74,14 @@ export function ExportTab({
 
   // Export Tasks to CSV
   const handleExportTasksCsv = () => {
-    const headers = ['Task Title', 'Category', 'Due Date', 'Days Before Event', 'Priority', 'Status'];
+    const headers = [
+      'Task Title',
+      'Category',
+      'Due Date',
+      'Days Before Event',
+      'Priority',
+      'Status',
+    ];
     const rows = tasks.map((t) => [
       t.title,
       t.category || '',
@@ -94,7 +97,14 @@ export function ExportTab({
 
   // Export Vendors to CSV
   const handleExportVendorsCsv = () => {
-    const headers = ['Category', 'Vendor Name', 'Contact Info', 'Quoted Amount (INR)', 'Status', 'Notes'];
+    const headers = [
+      'Category',
+      'Vendor Name',
+      'Contact Info',
+      'Quoted Amount (INR)',
+      'Status',
+      'Notes',
+    ];
     const rows = vendors.map((v) => [
       v.category,
       v.name || '',
@@ -124,29 +134,18 @@ export function ExportTab({
                 </h2>
               </div>
               <p className="text-xs text-stone-600 dark:text-stone-400 mt-1">
-                Print physical checklists for family coordinators or export structured CSVs to Excel / Google Sheets.
+                Print physical checklists for family coordinators or export structured CSVs to Excel
+                / Google Sheets.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Button
-                variant="primary"
-                onClick={handlePrint}
-                className="text-xs gap-1.5 shadow-sm"
-              >
+              <Button variant="primary" onClick={handlePrint} className="text-xs gap-1.5 shadow-sm">
                 <Printer className="w-4 h-4" /> Print Plan
               </Button>
-              <Button
-                variant="outline"
-                onClick={handleExportBudgetCsv}
-                className="text-xs gap-1.5"
-              >
+              <Button variant="outline" onClick={handleExportBudgetCsv} className="text-xs gap-1.5">
                 <FileSpreadsheet className="w-4 h-4 text-forest-600" /> Budget CSV
               </Button>
-              <Button
-                variant="outline"
-                onClick={handleExportTasksCsv}
-                className="text-xs gap-1.5"
-              >
+              <Button variant="outline" onClick={handleExportTasksCsv} className="text-xs gap-1.5">
                 <Download className="w-4 h-4 text-emerald-600" /> Tasks CSV
               </Button>
               <Button
@@ -179,20 +178,34 @@ export function ExportTab({
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3 text-xs text-stone-600 dark:text-stone-300">
             <div className="p-3 rounded-xl bg-sand-50/70 dark:bg-stone-800/40 border border-sand-200/60 dark:border-stone-800">
-              <span className="text-stone-400 block text-[10px] uppercase font-semibold">Celebration Date</span>
-              <strong className="text-stone-900 dark:text-stone-100 font-bold">{formatDisplayDate(event.date)}</strong>
+              <span className="text-stone-400 block text-[10px] uppercase font-semibold">
+                Celebration Date
+              </span>
+              <strong className="text-stone-900 dark:text-stone-100 font-bold">
+                {formatDisplayDate(event.date)}
+              </strong>
             </div>
             <div className="p-3 rounded-xl bg-sand-50/70 dark:bg-stone-800/40 border border-sand-200/60 dark:border-stone-800">
-              <span className="text-stone-400 block text-[10px] uppercase font-semibold">Location</span>
+              <span className="text-stone-400 block text-[10px] uppercase font-semibold">
+                Location
+              </span>
               <strong className="text-stone-900 dark:text-stone-100 font-bold">{event.city}</strong>
             </div>
             <div className="p-3 rounded-xl bg-sand-50/70 dark:bg-stone-800/40 border border-sand-200/60 dark:border-stone-800">
-              <span className="text-stone-400 block text-[10px] uppercase font-semibold">Guest Count</span>
-              <strong className="text-stone-900 dark:text-stone-100 font-bold">{event.guestCount} Guests</strong>
+              <span className="text-stone-400 block text-[10px] uppercase font-semibold">
+                Guest Count
+              </span>
+              <strong className="text-stone-900 dark:text-stone-100 font-bold">
+                {event.guestCount} Guests
+              </strong>
             </div>
             <div className="p-3 rounded-xl bg-sand-50/70 dark:bg-stone-800/40 border border-sand-200/60 dark:border-stone-800">
-              <span className="text-stone-400 block text-[10px] uppercase font-semibold">Total Planned Budget</span>
-              <strong className="text-forest-800 dark:text-forest-300 font-extrabold">{formatINR(event.totalBudget)}</strong>
+              <span className="text-stone-400 block text-[10px] uppercase font-semibold">
+                Total Planned Budget
+              </span>
+              <strong className="text-forest-800 dark:text-forest-300 font-extrabold">
+                {formatINR(event.totalBudget)}
+              </strong>
             </div>
           </div>
         </div>
@@ -239,11 +252,21 @@ export function ExportTab({
                   const diff = c.estimatedAmount - spent;
                   return (
                     <tr key={c.id}>
-                      <td className="py-2.5 font-medium text-stone-900 dark:text-stone-100">{c.name}</td>
-                      <td className="py-2.5 text-right text-stone-600 dark:text-stone-400">{c.percentage}%</td>
-                      <td className="py-2.5 text-right text-stone-700 dark:text-stone-300">{formatINR(c.estimatedAmount)}</td>
-                      <td className="py-2.5 text-right font-medium text-stone-900 dark:text-stone-100">{formatINR(spent)}</td>
-                      <td className={`py-2.5 text-right font-semibold ${diff < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
+                      <td className="py-2.5 font-medium text-stone-900 dark:text-stone-100">
+                        {c.name}
+                      </td>
+                      <td className="py-2.5 text-right text-stone-600 dark:text-stone-400">
+                        {c.percentage}%
+                      </td>
+                      <td className="py-2.5 text-right text-stone-700 dark:text-stone-300">
+                        {formatINR(c.estimatedAmount)}
+                      </td>
+                      <td className="py-2.5 text-right font-medium text-stone-900 dark:text-stone-100">
+                        {formatINR(spent)}
+                      </td>
+                      <td
+                        className={`py-2.5 text-right font-semibold ${diff < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'}`}
+                      >
                         {diff < 0 ? `-${formatINR(Math.abs(diff))}` : formatINR(diff)}
                       </td>
                     </tr>
@@ -261,12 +284,17 @@ export function ExportTab({
           </h3>
           <div className="space-y-2 text-xs">
             {tasks.map((t) => (
-              <div key={t.id} className="flex items-start gap-2.5 py-1.5 border-b border-sand-50 dark:border-stone-800/40">
+              <div
+                key={t.id}
+                className="flex items-start gap-2.5 py-1.5 border-b border-sand-50 dark:border-stone-800/40"
+              >
                 <span className="w-4 h-4 rounded border border-sand-400 dark:border-stone-600 inline-flex items-center justify-center mt-0.5 text-[10px] text-forest-700 dark:text-forest-400">
                   {t.completed ? '✓' : ''}
                 </span>
                 <div className="flex-1">
-                  <span className={`font-semibold ${t.completed ? 'line-through text-stone-400' : 'text-stone-900 dark:text-stone-100'}`}>
+                  <span
+                    className={`font-semibold ${t.completed ? 'line-through text-stone-400' : 'text-stone-900 dark:text-stone-100'}`}
+                  >
                     {t.title}
                   </span>
                   <span className="text-[11px] text-stone-400 ml-2">
@@ -297,10 +325,16 @@ export function ExportTab({
               <tbody className="divide-y divide-sand-100 dark:divide-stone-800">
                 {vendors.map((v) => (
                   <tr key={v.id}>
-                    <td className="py-2.5 font-medium text-stone-900 dark:text-stone-100">{v.category}</td>
+                    <td className="py-2.5 font-medium text-stone-900 dark:text-stone-100">
+                      {v.category}
+                    </td>
                     <td className="py-2.5 text-stone-700 dark:text-stone-300">{v.name || '—'}</td>
-                    <td className="py-2.5 text-stone-700 dark:text-stone-300">{v.contact || '—'}</td>
-                    <td className="py-2.5 text-right font-medium text-stone-900 dark:text-stone-100">{v.quote !== undefined ? formatINR(v.quote) : '—'}</td>
+                    <td className="py-2.5 text-stone-700 dark:text-stone-300">
+                      {v.contact || '—'}
+                    </td>
+                    <td className="py-2.5 text-right font-medium text-stone-900 dark:text-stone-100">
+                      {v.quote !== undefined ? formatINR(v.quote) : '—'}
+                    </td>
                     <td className="py-2.5 text-right uppercase text-[10px] font-bold text-forest-800 dark:text-forest-400">
                       {v.status}
                     </td>

@@ -52,7 +52,9 @@ describe('IdeasTab Component', () => {
 
     expect(screen.getByText('Artisanal Banarasi Chaat Bar')).toBeDefined();
     expect(screen.getByText('Live Tawa Mithai Station')).toBeDefined();
-    expect(screen.getByText('Biodegradable clay crockery and zero single-use plastic')).toBeDefined();
+    expect(
+      screen.getByText('Biodegradable clay crockery and zero single-use plastic'),
+    ).toBeDefined();
   });
 
   it('invokes onAddTask callback with valid due date and changes button state to added', () => {
@@ -85,6 +87,9 @@ describe('IdeasTab Component', () => {
 
     // The clicked button should now say "Added to Tasks" and be disabled
     expect(screen.getByRole('button', { name: /added to tasks/i })).toBeDefined();
-    expect(screen.getByRole('button', { name: /added to tasks/i })).toHaveProperty('disabled', true);
+    expect(screen.getByRole('button', { name: /added to tasks/i })).toHaveProperty(
+      'disabled',
+      true,
+    );
   });
 });

@@ -41,7 +41,10 @@ export function ExpenseModal({
     >
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
-          <label htmlFor="expense-category-select" className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
+          <label
+            htmlFor="expense-category-select"
+            className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5"
+          >
             Category <span className="text-forest-700 dark:text-forest-400">*</span>
           </label>
           <select
@@ -92,7 +95,10 @@ export function ExpenseModal({
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="expense-notes-input" className="block text-xs font-medium text-stone-700 dark:text-stone-300">
+          <label
+            htmlFor="expense-notes-input"
+            className="block text-xs font-medium text-stone-700 dark:text-stone-300"
+          >
             Notes (Optional)
           </label>
           <textarea

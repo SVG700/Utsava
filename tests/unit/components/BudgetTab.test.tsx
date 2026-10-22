@@ -24,9 +24,27 @@ describe('BudgetTab Component', () => {
   };
 
   const initialCategories: BudgetCategory[] = [
-    { id: 'cat-venue', name: 'Venue & Stays', percentage: 50, estimatedAmount: 500000, actualAmount: 0 },
-    { id: 'cat-catering', name: 'Catering', percentage: 30, estimatedAmount: 300000, actualAmount: 0 },
-    { id: 'cat-decor', name: 'Decor & Flowers', percentage: 20, estimatedAmount: 200000, actualAmount: 0 },
+    {
+      id: 'cat-venue',
+      name: 'Venue & Stays',
+      percentage: 50,
+      estimatedAmount: 500000,
+      actualAmount: 0,
+    },
+    {
+      id: 'cat-catering',
+      name: 'Catering',
+      percentage: 30,
+      estimatedAmount: 300000,
+      actualAmount: 0,
+    },
+    {
+      id: 'cat-decor',
+      name: 'Decor & Flowers',
+      percentage: 20,
+      estimatedAmount: 200000,
+      actualAmount: 0,
+    },
   ];
 
   const sampleExpenses: Expense[] = [
@@ -48,7 +66,7 @@ describe('BudgetTab Component', () => {
         expenses={sampleExpenses}
         onUpdateCategories={vi.fn()}
         onUpdateExpenses={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText('Category Allocations')).toBeDefined();
@@ -67,17 +85,21 @@ describe('BudgetTab Component', () => {
         expenses={sampleExpenses}
         onUpdateCategories={onUpdateCategories}
         onUpdateExpenses={onUpdateExpenses}
-      />
+      />,
     );
 
     // 1. Open Adjust Percentages modal
     const adjustBtn = screen.getByRole('button', { name: /adjust percentages/i });
     fireEvent.click(adjustBtn);
 
-    expect(screen.getByRole('heading', { name: 'Adjust Budget Allocation Percentages' })).toBeDefined();
+    expect(
+      screen.getByRole('heading', { name: 'Adjust Budget Allocation Percentages' }),
+    ).toBeDefined();
 
     // 2. Click Remove button on "Decor & Flowers" category
-    const removeDecorBtn = screen.getByRole('button', { name: /remove category: decor & flowers/i });
+    const removeDecorBtn = screen.getByRole('button', {
+      name: /remove category: decor & flowers/i,
+    });
     fireEvent.click(removeDecorBtn);
 
     // 3. Confirmation modal opens
@@ -98,7 +120,8 @@ describe('BudgetTab Component', () => {
 
     // Verify onUpdateCategories was called with Decor removed and Uncategorised safely added for preserved expense
     expect(onUpdateCategories).toHaveBeenCalled();
-    const savedCategories: BudgetCategory[] = onUpdateCategories.mock.calls[onUpdateCategories.mock.calls.length - 1][0];
+    const savedCategories: BudgetCategory[] =
+      onUpdateCategories.mock.calls[onUpdateCategories.mock.calls.length - 1][0];
     expect(savedCategories.some((c) => c.id === 'cat-decor')).toBe(false);
 
     // Total of normalised percentages is 100%

@@ -43,7 +43,7 @@ export function deepEqual(a: unknown, b: unknown): boolean {
 export function getChangedSections(
   currentPlan: AIBlueprint,
   refinement: AIRefinement,
-  currentTotalBudget?: number
+  currentTotalBudget?: number,
 ): string[] {
   const changed: string[] = [];
 
@@ -67,7 +67,10 @@ export function getChangedSections(
     }
   }
 
-  if (refinement.budgetAllocation && !deepEqual(currentPlan.budgetAllocation, refinement.budgetAllocation)) {
+  if (
+    refinement.budgetAllocation &&
+    !deepEqual(currentPlan.budgetAllocation, refinement.budgetAllocation)
+  ) {
     changed.push('Budget Allocation');
   }
 
@@ -79,7 +82,10 @@ export function getChangedSections(
     changed.push('Timeline');
   }
 
-  if (refinement.vendorCategories && !deepEqual(currentPlan.vendorCategories, refinement.vendorCategories)) {
+  if (
+    refinement.vendorCategories &&
+    !deepEqual(currentPlan.vendorCategories, refinement.vendorCategories)
+  ) {
     changed.push('Vendor Categories');
   }
 
@@ -87,7 +93,10 @@ export function getChangedSections(
     changed.push('Alternatives');
   }
 
-  if (refinement.risksAndAssumptions && !deepEqual(currentPlan.risksAndAssumptions, refinement.risksAndAssumptions)) {
+  if (
+    refinement.risksAndAssumptions &&
+    !deepEqual(currentPlan.risksAndAssumptions, refinement.risksAndAssumptions)
+  ) {
     changed.push('Risks & Assumptions');
   }
 

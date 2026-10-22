@@ -19,8 +19,7 @@ export function Badge({ className = '', variant = 'default', children, ...props 
       'bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60',
     danger:
       'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800/60',
-    info:
-      'bg-sky-50 text-sky-900 border-sky-200 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/60',
+    info: 'bg-sky-50 text-sky-900 border-sky-200 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/60',
   };
 
   return (
@@ -28,7 +27,7 @@ export function Badge({ className = '', variant = 'default', children, ...props 
       className={cn(
         'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide uppercase border',
         variants[variant],
-        className
+        className,
       )}
       {...props}
     >

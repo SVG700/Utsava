@@ -2,7 +2,14 @@
 
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
-import type { StoredEvent, BudgetCategory, Expense, TimelineTask, Vendor, AIBlueprint } from '@/schemas';
+import type {
+  StoredEvent,
+  BudgetCategory,
+  Expense,
+  TimelineTask,
+  Vendor,
+  AIBlueprint,
+} from '@/schemas';
 import {
   formatINR,
   totalActualSpend,

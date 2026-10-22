@@ -16,13 +16,22 @@ export function LandingFooter() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6">
-            <Link href="/new" className="hover:text-[#1c2420] dark:hover:text-[#f3f5f4] transition-colors">
+            <Link
+              href="/new"
+              className="hover:text-[#1c2420] dark:hover:text-[#f3f5f4] transition-colors"
+            >
               Create Event
             </Link>
-            <a href="#categories" className="hover:text-[#1c2420] dark:hover:text-[#f3f5f4] transition-colors">
+            <a
+              href="#categories"
+              className="hover:text-[#1c2420] dark:hover:text-[#f3f5f4] transition-colors"
+            >
               Celebration Formats
             </a>
-            <a href="#how-it-works" className="hover:text-[#1c2420] dark:hover:text-[#f3f5f4] transition-colors">
+            <a
+              href="#how-it-works"
+              className="hover:text-[#1c2420] dark:hover:text-[#f3f5f4] transition-colors"
+            >
               How It Works
             </a>
             <a

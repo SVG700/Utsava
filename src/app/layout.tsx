@@ -17,11 +17,7 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full antialiased scroll-smooth" suppressHydrationWarning>
       <head>
@@ -39,7 +35,9 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <Suspense fallback={<div className="h-16 border-b border-[#e6e0d4] dark:border-[#2c3a33]" />}>
+        <Suspense
+          fallback={<div className="h-16 border-b border-[#e6e0d4] dark:border-[#2c3a33]" />}
+        >
           <Navbar />
         </Suspense>
         <div className="flex-1 flex flex-col">{children}</div>

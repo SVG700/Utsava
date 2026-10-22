@@ -14,9 +14,19 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <label htmlFor={inputId} className="block text-xs sm:text-sm font-medium text-[#2d3832] dark:text-[#d3ded8]">
+          <label
+            htmlFor={inputId}
+            className="block text-xs sm:text-sm font-medium text-[#2d3832] dark:text-[#d3ded8]"
+          >
             {label}
-            {required && <span className="text-[#134e3a] dark:text-[#2dd4bf] ml-1 font-bold" aria-hidden="true">*</span>}
+            {required && (
+              <span
+                className="text-[#134e3a] dark:text-[#2dd4bf] ml-1 font-bold"
+                aria-hidden="true"
+              >
+                *
+              </span>
+            )}
           </label>
         )}
         <input
@@ -29,12 +39,16 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             error
               ? 'border-rose-300 dark:border-rose-800 focus:border-rose-500 focus:ring-rose-200 dark:focus:ring-rose-950'
               : 'border-[#dcd6c8] dark:border-[#2f3f37] focus:border-[#134e3a] dark:focus:border-[#2dd4bf] focus:ring-[#134e3a]/15 dark:focus:ring-[#2dd4bf]/20',
-            className
+            className,
           )}
           {...props}
         />
         {error && (
-          <p id={`${inputId}-error`} role="alert" className="text-xs text-rose-700 dark:text-rose-400 font-medium">
+          <p
+            id={`${inputId}-error`}
+            role="alert"
+            className="text-xs text-rose-700 dark:text-rose-400 font-medium"
+          >
             {error}
           </p>
         )}
@@ -45,7 +59,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = 'Input';

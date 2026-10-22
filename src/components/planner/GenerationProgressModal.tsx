@@ -18,7 +18,10 @@ const STAGES = [
   { label: 'Finalizing personalized celebration blueprint', duration: 3500 },
 ];
 
-export function GenerationProgressModal({ isOpen, eventName: _eventName }: GenerationProgressModalProps) {
+export function GenerationProgressModal({
+  isOpen,
+  eventName: _eventName,
+}: GenerationProgressModalProps) {
   void _eventName;
   const [currentStageIndex, setCurrentStageIndex] = useState(0);
 
@@ -48,10 +51,7 @@ export function GenerationProgressModal({ isOpen, eventName: _eventName }: Gener
     };
   }, [isOpen]);
 
-  const progressPercent = Math.min(
-    Math.round(((currentStageIndex + 1) / STAGES.length) * 100),
-    95
-  );
+  const progressPercent = Math.min(Math.round(((currentStageIndex + 1) / STAGES.length) * 100), 95);
 
   return (
     <Modal
@@ -79,12 +79,7 @@ export function GenerationProgressModal({ isOpen, eventName: _eventName }: Gener
 
         {/* Progress Bar */}
         <div className="space-y-2">
-          <ProgressBar
-            value={progressPercent}
-            variant="primary"
-            showPercent
-            className="h-2.5"
-          />
+          <ProgressBar value={progressPercent} variant="primary" showPercent className="h-2.5" />
         </div>
 
         {/* Staged Checklist */}
@@ -99,8 +94,8 @@ export function GenerationProgressModal({ isOpen, eventName: _eventName }: Gener
                   isCompleted
                     ? 'text-emerald-700 dark:text-emerald-400 font-medium'
                     : isCurrent
-                    ? 'text-forest-900 dark:text-forest-100 font-semibold'
-                    : 'text-stone-400 dark:text-stone-600 opacity-60'
+                      ? 'text-forest-900 dark:text-forest-100 font-semibold'
+                      : 'text-stone-400 dark:text-stone-600 opacity-60'
                 }`}
               >
                 {isCompleted ? (

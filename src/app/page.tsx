@@ -10,7 +10,11 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col bg-[#faf8f5] dark:bg-[#111614] text-[#1c2420] dark:text-[#f3f5f4]">
       <main id="main-content">
         <LandingHero />
-        <Suspense fallback={<div className="py-12 text-center text-xs text-stone-400">Loading celebrations...</div>}>
+        <Suspense
+          fallback={
+            <div className="py-12 text-center text-xs text-stone-400">Loading celebrations...</div>
+          }
+        >
           <SavedEventsList />
         </Suspense>
         <CategoryShowcase />

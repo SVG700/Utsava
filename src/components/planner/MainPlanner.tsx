@@ -25,11 +25,7 @@ import {
   findMatchingCategoryId,
   mergeVendorsOnRegenerate,
 } from '@/lib/budget';
-import {
-  buildTimelineTasks,
-  recalculateTaskDates,
-  mergeTasksOnRegenerate,
-} from '@/lib/dates';
+import { buildTimelineTasks, recalculateTaskDates, mergeTasksOnRegenerate } from '@/lib/dates';
 import type {
   StoredEvent,
   AIBlueprint,
@@ -161,12 +157,12 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
       // 2. Build budget categories with stable slug IDs and re-map expenses
       const computedCats = buildBudgetCategories(
         generatedBlueprint.budgetAllocation,
-        event.totalBudget
+        event.totalBudget,
       );
       const { updatedExpenses, finalCategories } = remapExpensesToNewCategories(
         expenses,
         categories,
-        computedCats
+        computedCats,
       );
       saveCategories(event.id, finalCategories);
       setCategories(finalCategories);
@@ -204,13 +200,13 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
       if (err instanceof ApiError && err.code === 'MISSING_API_KEY') {
         setApiKeyMissing(true);
         setErrorMessage(
-          'Gemini API key is not configured. Please set GEMINI_API_KEY in your .env.local file to enable AI generation.'
+          'Gemini API key is not configured. Please set GEMINI_API_KEY in your .env.local file to enable AI generation.',
         );
       } else {
         setErrorMessage(
           err instanceof Error
             ? err.message
-            : 'Network error or service unavailable. Please check your connection and retry.'
+            : 'Network error or service unavailable. Please check your connection and retry.',
         );
       }
     } finally {
@@ -302,7 +298,7 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
     updatedCategories: BudgetCategory[] | null,
     summary: string,
     refinedTotalBudget?: number,
-    changedSections?: string[]
+    changedSections?: string[],
   ) => {
     if (!event) return;
 
@@ -340,8 +336,8 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
     if (changedSections?.includes('Vendor Categories')) {
       const rawVendors: Vendor[] = updatedBlueprint.vendorCategories.map((vc) => {
         const matchingCatId = vc.budgetCategory
-          ? activeCategories.find((c) => c.name.toLowerCase() === vc.budgetCategory?.toLowerCase())?.id ??
-            findMatchingCategoryId(vc.category, activeCategories)
+          ? (activeCategories.find((c) => c.name.toLowerCase() === vc.budgetCategory?.toLowerCase())
+              ?.id ?? findMatchingCategoryId(vc.category, activeCategories))
           : findMatchingCategoryId(vc.category, activeCategories);
         return {
           id: uuidv4(),
@@ -386,10 +382,7 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
       />
 
       {/* Generation Staged Progress Modal */}
-      <GenerationProgressModal
-        isOpen={isGenerating}
-        eventName={event.name}
-      />
+      <GenerationProgressModal isOpen={isGenerating} eventName={event.name} />
 
       {/* Main Tab Content Container */}
       <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex-1 w-full">
@@ -424,11 +417,7 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
           )}
 
           {activeTab === 'timeline' && (
-            <TimelineTab
-              event={event}
-              tasks={tasks}
-              onUpdateTasks={handleUpdateTasks}
-            />
+            <TimelineTab event={event} tasks={tasks} onUpdateTasks={handleUpdateTasks} />
           )}
 
           {activeTab === 'vendors' && (
@@ -441,12 +430,7 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
             />
           )}
 
-          {activeTab === 'ideas' && (
-            <IdeasTab
-              event={event}
-              onAddTask={handleAddTask}
-            />
-          )}
+          {activeTab === 'ideas' && <IdeasTab event={event} onAddTask={handleAddTask} />}
 
           {activeTab === 'refine' && (
             <RefineTab

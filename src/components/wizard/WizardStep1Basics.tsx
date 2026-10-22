@@ -116,8 +116,8 @@ export function WizardStep1Basics({
           formData.eventType === 'wedding'
             ? 'e.g. Ananya & Rohan’s Wedding'
             : formData.eventType === 'birthday'
-            ? 'e.g. Aarav’s 1st Birthday Safari'
-            : 'e.g. Sharad Utsav Dandiya Night'
+              ? 'e.g. Aarav’s 1st Birthday Safari'
+              : 'e.g. Sharad Utsav Dandiya Night'
         }
         value={formData.name || ''}
         onChange={(e) => updateField('name', e.target.value)}

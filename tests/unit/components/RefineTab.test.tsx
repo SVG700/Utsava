@@ -87,7 +87,7 @@ describe('RefineTab Component', () => {
         blueprint={sampleBlueprint}
         tasks={[]}
         onApplyRefinedPlan={onApplyRefinedPlan}
-      />
+      />,
     );
 
     const input = screen.getByLabelText(/refinement request/i);
@@ -105,9 +105,7 @@ describe('RefineTab Component', () => {
     expect(screen.queryByText(/sections updated:/i)).toBeNull();
 
     // Verify neutral notice is displayed
-    expect(
-      screen.getByText(/no changes could be applied to your plan/i)
-    ).toBeDefined();
+    expect(screen.getByText(/no changes could be applied to your plan/i)).toBeDefined();
   });
 
   it('renders neutral notice when API returns 422 NO_CHANGES', async () => {
@@ -115,8 +113,8 @@ describe('RefineTab Component', () => {
       new apiModule.ApiError(
         'No changes could be applied to your plan. Try a more specific request.',
         'NO_CHANGES',
-        422
-      )
+        422,
+      ),
     );
 
     render(
@@ -125,7 +123,7 @@ describe('RefineTab Component', () => {
         blueprint={sampleBlueprint}
         tasks={[]}
         onApplyRefinedPlan={vi.fn()}
-      />
+      />,
     );
 
     const input = screen.getByLabelText(/refinement request/i);
@@ -135,9 +133,7 @@ describe('RefineTab Component', () => {
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/no changes could be applied to your plan/i)
-      ).toBeDefined();
+      expect(screen.getByText(/no changes could be applied to your plan/i)).toBeDefined();
     });
 
     // Must not show "Sections updated"

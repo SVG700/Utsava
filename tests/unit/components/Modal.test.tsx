@@ -4,7 +4,10 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { Modal } from '@/components/ui/Modal';
 
 describe('Modal Component', () => {
-  const originalOffsetParent = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetParent');
+  const originalOffsetParent = Object.getOwnPropertyDescriptor(
+    HTMLElement.prototype,
+    'offsetParent',
+  );
 
   beforeAll(() => {
     // In JSDOM, offsetParent is null by default. Mock it so elements attached to document are considered visible.
@@ -113,8 +116,8 @@ describe('Modal Component', () => {
     const modal = screen.getByRole('dialog');
     const focusable = Array.from(
       modal.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
     );
 
     expect(focusable.length).toBeGreaterThan(1);

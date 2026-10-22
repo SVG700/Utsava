@@ -29,7 +29,10 @@ export function SavedEventsList() {
 
   const loadEvents = () => {
     const list = getAllEvents();
-    list.sort((a: StoredEvent, b: StoredEvent) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    list.sort(
+      (a: StoredEvent, b: StoredEvent) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
     setEvents(list);
   };
 
@@ -88,12 +91,14 @@ export function SavedEventsList() {
                       ev.eventType === 'wedding'
                         ? 'festive'
                         : ev.eventType === 'birthday'
-                        ? 'warning'
-                        : 'forest'
+                          ? 'warning'
+                          : 'forest'
                     }
                   >
                     {ev.eventType === 'wedding' && <Heart className="w-3 h-3 text-rose-500" />}
-                    {ev.eventType === 'birthday' && <PartyPopper className="w-3 h-3 text-amber-500" />}
+                    {ev.eventType === 'birthday' && (
+                      <PartyPopper className="w-3 h-3 text-amber-500" />
+                    )}
                     {ev.eventType === 'community' && <Flame className="w-3 h-3 text-emerald-500" />}
                     <span className="capitalize">{ev.eventType}</span>
                   </Badge>
@@ -171,17 +176,14 @@ export function SavedEventsList() {
                 {eventToDelete.name}
               </span>
               <span className="text-stone-500 dark:text-stone-400 block">
-                {eventToDelete.city} • {formatDisplayDate(eventToDelete.date)} • {formatINR(eventToDelete.totalBudget)}
+                {eventToDelete.city} • {formatDisplayDate(eventToDelete.date)} •{' '}
+                {formatINR(eventToDelete.totalBudget)}
               </span>
             </div>
           )}
 
           <div className="flex justify-end gap-2.5 pt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setEventToDelete(null)}
-            >
+            <Button variant="outline" size="sm" onClick={() => setEventToDelete(null)}>
               Cancel
             </Button>
             <Button

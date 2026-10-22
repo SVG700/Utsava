@@ -8,7 +8,18 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = '', variant = 'primary', size = 'md', isLoading = false, children, disabled, ...props }, ref) => {
+  (
+    {
+      className = '',
+      variant = 'primary',
+      size = 'md',
+      isLoading = false,
+      children,
+      disabled,
+      ...props
+    },
+    ref,
+  ) => {
     const base =
       'inline-flex items-center justify-center font-medium transition-colors duration-150 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#134e3a] dark:focus-visible:ring-[#2dd4bf] disabled:opacity-50 disabled:pointer-events-none cursor-pointer select-none';
 
@@ -21,10 +32,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         'border border-[#dcd6c8] hover:border-[#b8ad96] hover:bg-[#f6f2ea] text-[#1c2420] dark:border-[#2f3f37] dark:hover:border-[#42584d] dark:hover:bg-[#18231e] dark:text-[#e8ecea]',
       ghost:
         'hover:bg-[#f0ece3] text-[#334039] hover:text-[#1c2420] dark:hover:bg-[#222d27] dark:text-[#a6b4ad] dark:hover:text-[#f3f5f4]',
-      accent:
-        'bg-[#c48a3f] hover:bg-[#b07832] text-white shadow-xs hover:shadow-soft',
-      danger:
-        'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
+      accent: 'bg-[#c48a3f] hover:bg-[#b07832] text-white shadow-xs hover:shadow-soft',
+      danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
     };
 
     const sizes = {
@@ -48,7 +57,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
             <path
               className="opacity-75"
               fill="currentColor"
@@ -59,7 +75,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     );
-  }
+  },
 );
 
 Button.displayName = 'Button';
