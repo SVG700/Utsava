@@ -112,7 +112,8 @@ export async function callGemini(prompt: string, options: CallGeminiOptions = {}
       return callGemini(prompt, { ...options, responseJsonSchema: undefined });
     }
 
-    if (isQuotaError(errMsg) && model !== FALLBACK_MODEL && attempt === 1) {
+    // Fall back once per call chain, even if a transient retry already happened.
+    if (isQuotaError(errMsg) && model !== FALLBACK_MODEL) {
       logger.warn(
         `Model ${model} quota exhausted; falling back to ${FALLBACK_MODEL} for this call.`,
       );

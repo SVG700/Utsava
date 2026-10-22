@@ -240,6 +240,20 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
       expect(mocks.generateContent.mock.calls[1][0].model).toBe('gemini-3.5-flash-lite');
     });
 
+    it('still falls back to flash-lite when the quota error follows a 503 retry', async () => {
+      // Observed live: primary model busy (503), the retry then hits the daily quota (429).
+      mocks.generateContent.mockRejectedValueOnce(new Error('503 UNAVAILABLE: high demand'));
+      mocks.generateContent.mockRejectedValueOnce(new Error('429 You exceeded your current quota'));
+      mocks.generateContent.mockResolvedValueOnce({
+        candidates: [{ content: { parts: [{ text: JSON.stringify(sampleBlueprintData) }] } }],
+      });
+
+      const result = await generateBlueprintWithGemini(sampleBlueprintRequest);
+      expect(result.themeAndDecor.mainTheme).toBe('Royal Heritage Palace');
+      expect(mocks.generateContent).toHaveBeenCalledTimes(3);
+      expect(mocks.generateContent.mock.calls[2][0].model).toBe('gemini-3.5-flash-lite');
+    });
+
     it('throws GeminiError with TIMEOUT when request is aborted or timed out', async () => {
       mocks.generateContent.mockRejectedValue(new Error('This operation was aborted by timeout'));
 
