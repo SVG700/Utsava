@@ -29,10 +29,7 @@ export function SavedEventsList() {
 
   const loadEvents = () => {
     const list = getAllEvents();
-    list.sort(
-      (a: StoredEvent, b: StoredEvent) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
+    list.sort((a: StoredEvent, b: StoredEvent) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     setEvents(list);
   };
 
@@ -55,17 +52,17 @@ export function SavedEventsList() {
   }
 
   return (
-    <section className="py-12 sm:py-16 border-b border-sand-200 dark:border-moss-830">
+    <section className="py-12 sm:py-16 border-b border-[#e8e2d7] dark:border-[#26332b]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-              <h2 className="text-2xl font-bold tracking-tight text-moss-875 dark:text-moss-45">
+              <h2 className="text-2xl font-bold tracking-tight text-[#1c2420] dark:text-[#f3f5f4]">
                 Your Saved Celebrations
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-moss-620 dark:text-moss-415 mt-0.5">
+            <p className="text-xs sm:text-sm text-[#606d66] dark:text-[#94a19b] mt-0.5">
               Access your real celebration plans, budget ledgers, and vendor checklists.
             </p>
           </div>
@@ -82,7 +79,7 @@ export function SavedEventsList() {
           {events.map((ev) => (
             <Card
               key={ev.id}
-              className="hover:border-forest-700/50 dark:hover:border-mint-285/50 transition-all duration-200 group flex flex-col justify-between"
+              className="hover:border-[#134e3a]/50 dark:hover:border-[#2dd4bf]/50 transition-all duration-200 group flex flex-col justify-between"
             >
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-start justify-between gap-3">
@@ -91,14 +88,12 @@ export function SavedEventsList() {
                       ev.eventType === 'wedding'
                         ? 'festive'
                         : ev.eventType === 'birthday'
-                          ? 'warning'
-                          : 'forest'
+                        ? 'warning'
+                        : 'forest'
                     }
                   >
                     {ev.eventType === 'wedding' && <Heart className="w-3 h-3 text-rose-500" />}
-                    {ev.eventType === 'birthday' && (
-                      <PartyPopper className="w-3 h-3 text-amber-500" />
-                    )}
+                    {ev.eventType === 'birthday' && <PartyPopper className="w-3 h-3 text-amber-500" />}
                     {ev.eventType === 'community' && <Flame className="w-3 h-3 text-emerald-500" />}
                     <span className="capitalize">{ev.eventType}</span>
                   </Badge>
@@ -108,7 +103,7 @@ export function SavedEventsList() {
                     onClick={() => setEventToDelete(ev)}
                     aria-label={`Delete event: ${ev.name}`}
                     title={`Delete event: ${ev.name}`}
-                    className="p-1.5 rounded-lg text-moss-460 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                    className="p-1.5 rounded-lg text-[#88968e] hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -116,32 +111,32 @@ export function SavedEventsList() {
 
                 <div>
                   <Link href={`/events/${ev.id}`}>
-                    <h3 className="font-bold text-base sm:text-lg text-moss-875 dark:text-moss-45 group-hover:text-forest-700 dark:group-hover:text-mint-285 transition-colors line-clamp-1">
+                    <h3 className="font-bold text-base sm:text-lg text-[#1c2420] dark:text-[#f3f5f4] group-hover:text-[#134e3a] dark:group-hover:text-[#2dd4bf] transition-colors line-clamp-1">
                       {ev.name}
                     </h3>
                   </Link>
                   {ev.theme && (
-                    <p className="text-xs text-moss-620 dark:text-moss-415 mt-0.5 line-clamp-1 italic">
+                    <p className="text-xs text-[#606d66] dark:text-[#94a19b] mt-0.5 line-clamp-1 italic">
                       &ldquo;{ev.theme}&rdquo;
                     </p>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-linen-85 dark:border-moss-835 text-xs text-moss-620 dark:text-moss-415">
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#f0ece2] dark:border-[#243029] text-xs text-[#606d66] dark:text-[#94a19b]">
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-forest-700 dark:text-mint-285" />
+                    <Calendar className="w-3.5 h-3.5 text-[#134e3a] dark:text-[#2dd4bf]" />
                     <span>{formatDisplayDate(ev.date)}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-forest-700 dark:text-mint-285" />
+                    <MapPin className="w-3.5 h-3.5 text-[#134e3a] dark:text-[#2dd4bf]" />
                     <span className="truncate">{ev.city}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-forest-700 dark:text-mint-285" />
+                    <Users className="w-3.5 h-3.5 text-[#134e3a] dark:text-[#2dd4bf]" />
                     <span>{ev.guestCount} guests</span>
                   </div>
-                  <div className="flex items-center gap-1.5 font-semibold text-moss-875 dark:text-moss-45">
-                    <IndianRupee className="w-3.5 h-3.5 text-forest-700 dark:text-mint-285" />
+                  <div className="flex items-center gap-1.5 font-semibold text-[#1c2420] dark:text-[#f3f5f4]">
+                    <IndianRupee className="w-3.5 h-3.5 text-[#134e3a] dark:text-[#2dd4bf]" />
                     <span>{formatINR(ev.totalBudget)}</span>
                   </div>
                 </div>
@@ -150,7 +145,7 @@ export function SavedEventsList() {
                   <Button
                     variant="secondary"
                     size="sm"
-                    className="w-full justify-between group-hover:bg-forest-700 group-hover:text-white dark:group-hover:bg-mint-285 dark:group-hover:text-mint-850 transition-all"
+                    className="w-full justify-between group-hover:bg-[#134e3a] group-hover:text-white dark:group-hover:bg-[#2dd4bf] dark:group-hover:text-[#042f2e] transition-all"
                   >
                     <span>Open Planning Dashboard</span>
                     <ChevronRight className="w-4 h-4" />
@@ -176,14 +171,17 @@ export function SavedEventsList() {
                 {eventToDelete.name}
               </span>
               <span className="text-stone-500 dark:text-stone-400 block">
-                {eventToDelete.city} • {formatDisplayDate(eventToDelete.date)} •{' '}
-                {formatINR(eventToDelete.totalBudget)}
+                {eventToDelete.city} • {formatDisplayDate(eventToDelete.date)} • {formatINR(eventToDelete.totalBudget)}
               </span>
             </div>
           )}
 
           <div className="flex justify-end gap-2.5 pt-2">
-            <Button variant="outline" size="sm" onClick={() => setEventToDelete(null)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setEventToDelete(null)}
+            >
               Cancel
             </Button>
             <Button

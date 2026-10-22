@@ -8,18 +8,19 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 export function Badge({ className = '', variant = 'default', children, ...props }: BadgeProps) {
   const variants = {
     default:
-      'bg-linen-85 text-moss-810 border-linen-150 dark:bg-moss-845 dark:text-moss-155 dark:border-moss-790',
+      'bg-[#f0ece3] text-[#2d3832] border-[#e2ddd1] dark:bg-[#222d27] dark:text-[#d3ded8] dark:border-[#2f3f36]',
     forest:
-      'bg-forest-50 text-forest-700 border-moss-145 dark:bg-moss-860 dark:text-mint-295 dark:border-moss-795',
+      'bg-[#e8f3ee] text-[#134e3a] border-[#cbe4d7] dark:bg-[#132a22] dark:text-[#34d399] dark:border-[#1d4235]',
     festive:
-      'bg-saffron-50 text-saffron-685 border-saffron-150 dark:bg-saffron-880 dark:text-saffron-230 dark:border-saffron-825',
+      'bg-[#fbf3e6] text-[#7c4e12] border-[#eedbb9] dark:bg-[#281f13] dark:text-[#f3c27a] dark:border-[#3d2e1b]',
     success:
       'bg-emerald-50 text-emerald-900 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60',
     warning:
       'bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60',
     danger:
       'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800/60',
-    info: 'bg-sky-50 text-sky-900 border-sky-200 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/60',
+    info:
+      'bg-sky-50 text-sky-900 border-sky-200 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/60',
   };
 
   return (
@@ -27,7 +28,7 @@ export function Badge({ className = '', variant = 'default', children, ...props 
       className={cn(
         'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide uppercase border',
         variants[variant],
-        className,
+        className
       )}
       {...props}
     >

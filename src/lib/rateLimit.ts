@@ -12,19 +12,16 @@ let globalTimestamps: number[] = [];
 
 // Clean up stale entries periodically (every 5 minutes)
 if (typeof setInterval !== 'undefined') {
-  setInterval(
-    () => {
-      const now = Date.now();
-      for (const [ip, record] of ipMap.entries()) {
-        record.timestamps = record.timestamps.filter((ts) => now - ts < 60000);
-        if (record.timestamps.length === 0) {
-          ipMap.delete(ip);
-        }
+  setInterval(() => {
+    const now = Date.now();
+    for (const [ip, record] of ipMap.entries()) {
+      record.timestamps = record.timestamps.filter((ts) => now - ts < 60000);
+      if (record.timestamps.length === 0) {
+        ipMap.delete(ip);
       }
-      globalTimestamps = globalTimestamps.filter((ts) => now - ts < 60000);
-    },
-    5 * 60 * 1000,
-  );
+    }
+    globalTimestamps = globalTimestamps.filter((ts) => now - ts < 60000);
+  }, 5 * 60 * 1000);
 }
 
 export interface RateLimitResult {
@@ -64,7 +61,7 @@ export function checkRateLimit(
   ip: string,
   maxRequests: number = 15,
   windowMs: number = 60000,
-  globalCap: number = 100,
+  globalCap: number = 100
 ): RateLimitResult {
   const now = Date.now();
 

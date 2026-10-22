@@ -24,13 +24,13 @@ export function VendorCard({
   const matchCat = categories.find((c) =>
     v.budgetCategoryId
       ? c.id === v.budgetCategoryId
-      : c.name.toLowerCase() === v.category.toLowerCase(),
+      : c.name.toLowerCase() === v.category.toLowerCase()
   );
   const estBudget = matchCat?.estimatedAmount;
 
   // Find AI tips from blueprint
   const aiCategory = blueprint?.vendorCategories?.find(
-    (vc) => vc.category.toLowerCase() === v.category.toLowerCase(),
+    (vc) => vc.category.toLowerCase() === v.category.toLowerCase()
   );
 
   // Quote vs Target comparison
@@ -57,13 +57,12 @@ export function VendorCard({
             <span className="text-[10px] font-bold uppercase tracking-wider text-forest-700 dark:text-forest-400 block">
               Category
             </span>
-            <h3 className="font-bold text-base text-stone-900 dark:text-stone-100">{v.category}</h3>
+            <h3 className="font-bold text-base text-stone-900 dark:text-stone-100">
+              {v.category}
+            </h3>
             {estBudget !== undefined && (
               <span className="text-[11px] text-stone-500">
-                Target Budget:{' '}
-                <strong className="font-semibold text-stone-700 dark:text-stone-300">
-                  {formatINR(estBudget)}
-                </strong>
+                Target Budget: <strong className="font-semibold text-stone-700 dark:text-stone-300">{formatINR(estBudget)}</strong>
               </span>
             )}
           </div>
@@ -74,14 +73,16 @@ export function VendorCard({
           <select
             id={`vendor-status-${v.id}`}
             value={v.status}
-            onChange={(e) => onStatusChange(v.id, e.target.value as VendorStatus)}
+            onChange={(e) =>
+              onStatusChange(v.id, e.target.value as VendorStatus)
+            }
             aria-label={`Status for ${v.category} vendor`}
             className={`text-xs font-semibold px-2.5 py-1 rounded-full border cursor-pointer focus:outline-none focus:ring-1 focus:ring-forest-600 ${
               v.status === 'booked'
                 ? 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
                 : v.status === 'shortlisted'
-                  ? 'bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800'
-                  : 'bg-sand-100 text-stone-700 border-sand-300 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700'
+                ? 'bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800'
+                : 'bg-sand-100 text-stone-700 border-sand-300 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700'
             }`}
           >
             <option value="not-started">Pending</option>

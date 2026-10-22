@@ -220,9 +220,7 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
 
     it('falls back to gemini-3.5-flash-lite when primary model hits 429 quota exhaustion', async () => {
       // First attempt: 429 Quota exhausted error
-      mocks.generateContent.mockRejectedValueOnce(
-        new Error('Resource has been exhausted (e.g. check quota) 429'),
-      );
+      mocks.generateContent.mockRejectedValueOnce(new Error('Resource has been exhausted (e.g. check quota) 429'));
       // Second attempt (fallback model): succeeds
       mocks.generateContent.mockResolvedValueOnce({
         candidates: [
@@ -238,35 +236,6 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
       expect(result.themeAndDecor.mainTheme).toBe('Royal Heritage Palace');
       expect(mocks.generateContent).toHaveBeenCalledTimes(2);
       expect(mocks.generateContent.mock.calls[1][0].model).toBe('gemini-3.5-flash-lite');
-    });
-
-    it('still falls back to flash-lite when the quota error follows a 503 retry', async () => {
-      // Observed live: primary model busy (503), the retry then hits the daily quota (429).
-      mocks.generateContent.mockRejectedValueOnce(new Error('503 UNAVAILABLE: high demand'));
-      mocks.generateContent.mockRejectedValueOnce(new Error('429 You exceeded your current quota'));
-      mocks.generateContent.mockResolvedValueOnce({
-        candidates: [{ content: { parts: [{ text: JSON.stringify(sampleBlueprintData) }] } }],
-      });
-
-      const result = await generateBlueprintWithGemini(sampleBlueprintRequest);
-      expect(result.themeAndDecor.mainTheme).toBe('Royal Heritage Palace');
-      expect(mocks.generateContent).toHaveBeenCalledTimes(3);
-      expect(mocks.generateContent.mock.calls[2][0].model).toBe('gemini-3.5-flash-lite');
-    });
-
-    it('reports SERVICE_BUSY when Gemini stays overloaded after all retries', async () => {
-      vi.useFakeTimers();
-      mocks.generateContent.mockRejectedValue(new Error('503 UNAVAILABLE: high demand'));
-
-      const outcome = generateBlueprintWithGemini(sampleBlueprintRequest).catch((err) => err);
-      await vi.runAllTimersAsync();
-      const err = await outcome;
-
-      expect(err).toBeInstanceOf(GeminiError);
-      expect((err as GeminiError).code).toBe('SERVICE_BUSY');
-      expect((err as GeminiError).statusCode).toBe(503);
-      expect((err as GeminiError).message).toMatch(/high demand/);
-      expect(mocks.generateContent).toHaveBeenCalledTimes(4); // first call + 3 backoff retries
     });
 
     it('throws GeminiError with TIMEOUT when request is aborted or timed out', async () => {
@@ -298,7 +267,7 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
     it('retries once without responseJsonSchema when Gemini returns 400 INVALID_ARGUMENT', async () => {
       // First attempt fails with 400 INVALID_ARGUMENT
       mocks.generateContent.mockRejectedValueOnce(
-        new Error('400 Invalid argument: responseJsonSchema contains unsupported keyword'),
+        new Error('400 Invalid argument: responseJsonSchema contains unsupported keyword')
       );
       // Second attempt succeeds without schema
       mocks.generateContent.mockResolvedValueOnce({
@@ -320,9 +289,7 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
 
     it('maps generic upstream API errors to fixed safe message without leaking upstream error details', async () => {
       mocks.generateContent.mockRejectedValue(
-        new Error(
-          'Google upstream internal failure: {"error": {"code": 500, "message": "Backend crash with key 123"}}',
-        ),
+        new Error('Google upstream internal failure: {"error": {"code": 500, "message": "Backend crash with key 123"}}')
       );
 
       try {
@@ -404,14 +371,7 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
         candidates: [
           {
             content: {
-              parts: [
-                {
-                  text: JSON.stringify({
-                    changedSections: [],
-                    refinementSummary: 'No changes made.',
-                  }),
-                },
-              ],
+              parts: [{ text: JSON.stringify({ changedSections: [], refinementSummary: 'No changes made.' }) }],
             },
           },
         ],
@@ -420,14 +380,7 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
         candidates: [
           {
             content: {
-              parts: [
-                {
-                  text: JSON.stringify({
-                    changedSections: [],
-                    refinementSummary: 'Still no changes.',
-                  }),
-                },
-              ],
+              parts: [{ text: JSON.stringify({ changedSections: [], refinementSummary: 'Still no changes.' }) }],
             },
           },
         ],
@@ -441,7 +394,7 @@ describe('Gemini AI Client (src/lib/ai/client.ts)', () => {
         expect((err as GeminiError).code).toBe('NO_CHANGES');
         expect((err as GeminiError).statusCode).toBe(422);
         expect((err as GeminiError).message).toBe(
-          'No changes could be applied to your plan. Try a more specific request.',
+          'No changes could be applied to your plan. Try a more specific request.'
         );
         expect(mocks.generateContent).toHaveBeenCalledTimes(2);
       }

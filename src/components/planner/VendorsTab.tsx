@@ -2,15 +2,24 @@
 
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Users, Plus, Search, ShieldCheck } from 'lucide-react';
-import type { StoredEvent, Vendor, VendorStatus, BudgetCategory, AIBlueprint } from '@/schemas';
+import {
+  Users,
+  Plus,
+  Search,
+  ShieldCheck,
+} from 'lucide-react';
+import type {
+  StoredEvent,
+  Vendor,
+  VendorStatus,
+  BudgetCategory,
+  AIBlueprint,
+} from '@/schemas';
 import { formatINR } from '@/lib/budget';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
-import { UndoToast } from '@/components/ui/UndoToast';
-import { useUndo } from '@/hooks/useUndo';
 import { VendorCard } from './vendors/VendorCard';
 import { VendorFormModal, type VendorFormData } from './vendors/VendorFormModal';
 
@@ -22,10 +31,12 @@ interface VendorsTabProps {
   onUpdateVendors: (vendors: Vendor[]) => void;
 }
 
-const UNDO_WINDOW_MS = 6000;
-
-/** Vendor Checklist tab: AI-suggested vendor cards, quotes and booking status. */
-export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: VendorsTabProps) {
+export function VendorsTab({
+  blueprint,
+  categories,
+  vendors,
+  onUpdateVendors,
+}: VendorsTabProps) {
   const [statusFilter, setStatusFilter] = useState<'all' | VendorStatus>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -33,8 +44,9 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingVendorId, setEditingVendorId] = useState<string | null>(null);
   const [vendorToDelete, setVendorToDelete] = useState<Vendor | null>(null);
+  const [undoVendor, setUndoVendor] = useState<Vendor | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);
-  const undo = useUndo<Vendor>(UNDO_WINDOW_MS);
+  const undoVendorTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [vendorForm, setVendorForm] = useState<VendorFormData>({
     category: '',
     name: '',
@@ -46,7 +58,9 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
 
   // Quick status toggle
   const handleStatusChange = (vendorId: string, newStatus: VendorStatus) => {
-    const updated = vendors.map((v) => (v.id === vendorId ? { ...v, status: newStatus } : v));
+    const updated = vendors.map((v) =>
+      v.id === vendorId ? { ...v, status: newStatus } : v
+    );
     onUpdateVendors(updated);
   };
 
@@ -85,15 +99,24 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
 
   const handleConfirmDeleteVendor = () => {
     if (!vendorToDelete) return;
-    onUpdateVendors(vendors.filter((v) => v.id !== vendorToDelete.id));
-    undo.offer(vendorToDelete);
+    const toDelete = vendorToDelete;
+    const remaining = vendors.filter((v) => v.id !== toDelete.id);
+    onUpdateVendors(remaining);
     setVendorToDelete(null);
+
+    // Set up undo notification for 6 seconds
+    setUndoVendor(toDelete);
+    if (undoVendorTimeoutRef.current) clearTimeout(undoVendorTimeoutRef.current);
+    undoVendorTimeoutRef.current = setTimeout(() => {
+      setUndoVendor(null);
+    }, 6000);
   };
 
   const handleUndoDeleteVendor = () => {
-    if (!undo.item) return;
-    onUpdateVendors([...vendors, undo.item]);
-    undo.dismiss();
+    if (!undoVendor) return;
+    onUpdateVendors([...vendors, undoVendor]);
+    setUndoVendor(null);
+    if (undoVendorTimeoutRef.current) clearTimeout(undoVendorTimeoutRef.current);
   };
 
   // Save Vendor
@@ -125,7 +148,7 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
               notes: vendorForm.notes.trim(),
               source: 'user' as const,
             }
-          : v,
+          : v
       );
       onUpdateVendors(updated);
     } else {
@@ -159,17 +182,15 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* Privacy Notice Banner */}
       <div className="p-4 rounded-2xl bg-forest-50/80 dark:bg-forest-950/40 border border-forest-200 dark:border-forest-800 text-xs text-forest-900 dark:text-forest-200 flex items-start gap-3 shadow-soft">
         <ShieldCheck className="w-4 h-4 text-forest-700 dark:text-forest-400 shrink-0 mt-0.5" />
         <div className="leading-relaxed">
-          <strong className="font-semibold text-forest-950 dark:text-forest-100">
-            Privacy & Safety Notice:
-          </strong>{' '}
-          AI suggestions provide category checklists, budget benchmarks, and interview questions
-          only. Utsava never invents fake vendor businesses or synthetic contact numbers. All names,
-          quotes, and contacts below represent your real entries.
+          <strong className="font-semibold text-forest-950 dark:text-forest-100">Privacy & Safety Notice:</strong> AI suggestions
+          provide category checklists, budget benchmarks, and interview questions only. Utsava never
+          invents fake vendor businesses or synthetic contact numbers. All names, quotes, and contacts
+          below represent your real entries.
         </div>
       </div>
 
@@ -187,17 +208,11 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
                 </h2>
               </div>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                Track status across {vendors.length} vendor categories. Compare actual quotes with
-                target allocations.
+                Track status across {vendors.length} vendor categories. Compare actual quotes with target allocations.
               </p>
             </div>
 
-            <Button
-              onClick={handleOpenAdd}
-              variant="primary"
-              size="sm"
-              className="gap-2 self-start sm:self-auto"
-            >
+            <Button onClick={handleOpenAdd} variant="primary" size="sm" className="gap-2 self-start sm:self-auto">
               <Plus className="w-4 h-4" />
               <span>Add Category</span>
             </Button>
@@ -216,11 +231,7 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
               />
             </div>
 
-            <div
-              className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0"
-              role="group"
-              aria-label="Filter vendors by status"
-            >
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0" role="group" aria-label="Filter vendors by status">
               {(['all', 'not-started', 'shortlisted', 'booked'] as const).map((st) => (
                 <button
                   key={st}
@@ -233,13 +244,7 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
                       : 'bg-sand-100 text-stone-600 hover:bg-sand-200 dark:bg-stone-800 dark:text-stone-400'
                   }`}
                 >
-                  {st === 'all'
-                    ? 'All'
-                    : st === 'not-started'
-                      ? 'Pending'
-                      : st === 'shortlisted'
-                        ? 'Shortlisted'
-                        : 'Booked'}
+                  {st === 'all' ? 'All' : st === 'not-started' ? 'Pending' : st === 'shortlisted' ? 'Shortlisted' : 'Booked'}
                 </button>
               ))}
             </div>
@@ -291,9 +296,7 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
         <div className="space-y-4">
           {vendorToDelete && (
             <div className="p-3 rounded-xl bg-sand-50 dark:bg-stone-900 border border-sand-200 dark:border-stone-800 text-xs space-y-1">
-              <p className="font-semibold text-stone-900 dark:text-stone-100">
-                {vendorToDelete.category}
-              </p>
+              <p className="font-semibold text-stone-900 dark:text-stone-100">{vendorToDelete.category}</p>
               {vendorToDelete.name && <p className="text-stone-500">Name: {vendorToDelete.name}</p>}
               {vendorToDelete.quote !== undefined && (
                 <p className="text-stone-500">Quote: {formatINR(vendorToDelete.quote)}</p>
@@ -311,10 +314,23 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
         </div>
       </Modal>
 
-      {undo.item && (
-        <UndoToast onUndo={handleUndoDeleteVendor}>
-          Vendor &ldquo;{undo.item.category}&rdquo; deleted
-        </UndoToast>
+      {/* Floating Undo Notification for Deleted Vendor */}
+      {undoVendor && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-stone-200 animate-in fade-in slide-in-from-bottom-2"
+        >
+          <span className="text-xs font-medium">
+            Vendor &ldquo;{undoVendor.category}&rdquo; deleted
+          </span>
+          <button
+            onClick={handleUndoDeleteVendor}
+            className="text-xs font-bold text-emerald-400 dark:text-emerald-700 hover:underline cursor-pointer"
+          >
+            Undo
+          </button>
+        </div>
       )}
     </div>
   );

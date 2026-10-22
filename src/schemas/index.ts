@@ -1,10 +1,4 @@
-export {
-  eventInputSchema,
-  storedEventSchema,
-  EVENT_TYPES,
-  WEDDING_SUB_EVENTS,
-  DIETARY_OPTIONS,
-} from './event';
+export { eventInputSchema, storedEventSchema, EVENT_TYPES, WEDDING_SUB_EVENTS, DIETARY_OPTIONS } from './event';
 export type { EventInput, StoredEvent, EventType } from './event';
 
 export {

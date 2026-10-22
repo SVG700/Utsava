@@ -34,7 +34,9 @@ const baseEventSchema = z.object({
     .min(2, 'Event name must be at least 2 characters')
     .max(100, 'Event name must be at most 100 characters')
     .trim(),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Please enter a valid date (YYYY-MM-DD)'),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Please enter a valid date (YYYY-MM-DD)'),
   city: z
     .string()
     .min(2, 'City must be at least 2 characters')
@@ -70,10 +72,13 @@ const baseEventSchema = z.object({
 });
 
 // ─── Event Input Schema (form validation with past date check) ─────
-export const eventInputSchema = baseEventSchema.refine((data) => !isPastDate(data.date), {
-  message: 'Celebration date cannot be in the past',
-  path: ['date'],
-});
+export const eventInputSchema = baseEventSchema.refine(
+  (data) => !isPastDate(data.date),
+  {
+    message: 'Celebration date cannot be in the past',
+    path: ['date'],
+  }
+);
 
 export type EventInput = z.infer<typeof eventInputSchema>;
 

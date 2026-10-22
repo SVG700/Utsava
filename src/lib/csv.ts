@@ -34,7 +34,7 @@ export function csvCell(value: unknown): string {
  */
 export function buildCsvString(
   headers: string[],
-  rows: (string | number | boolean | null | undefined)[][],
+  rows: (string | number | boolean | null | undefined)[][]
 ): string {
   const headerLine = headers.map(csvCell).join(',');
   const rowLines = rows.map((row) => row.map(csvCell).join(','));

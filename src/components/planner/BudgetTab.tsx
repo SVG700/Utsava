@@ -12,14 +12,12 @@ import {
   overspentCategories,
   isOverBudget,
   spendByCategory,
-  reconcileCategoryEdits,
-  slugifyCategory,
+  normalisePercentages,
+  percentagesToAmounts,
 } from '@/lib/budget';
 import { getTodayString, formatDisplayDate } from '@/lib/dates';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
-import { UndoToast } from '@/components/ui/UndoToast';
-import { useUndo } from '@/hooks/useUndo';
 import { BudgetKpis } from './budget/BudgetKpis';
 import { CategoryBreakdown } from './budget/CategoryBreakdown';
 import { ExpensesLedger } from './budget/ExpensesLedger';
@@ -34,9 +32,6 @@ interface BudgetTabProps {
   onUpdateExpenses: (expenses: Expense[]) => void;
 }
 
-const UNDO_WINDOW_MS = 6000;
-
-/** Budget Manager tab: KPIs, category allocations and the expense ledger. */
 export function BudgetTab({
   event,
   categories,
@@ -55,10 +50,11 @@ export function BudgetTab({
   const [isEditCatsModalOpen, setIsEditCatsModalOpen] = useState(false);
   const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null);
 
-  // Deletion confirmation and undo
+  // Undo and deletion confirmation state
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
+  const [undoExpense, setUndoExpense] = useState<Expense | null>(null);
   const [categoryToRemove, setCategoryToRemove] = useState<string | null>(null);
-  const undo = useUndo<Expense>(UNDO_WINDOW_MS);
+  const undoTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Forms
   const [expenseForm, setExpenseForm] = useState<ExpenseFormData>({
@@ -132,7 +128,7 @@ export function BudgetTab({
               description: expenseForm.description.trim(),
               notes: expenseForm.notes.trim(),
             }
-          : exp,
+          : exp
       );
       onUpdateExpenses(updated);
     } else {
@@ -157,15 +153,24 @@ export function BudgetTab({
 
   const handleConfirmDeleteExpense = () => {
     if (!expenseToDelete) return;
-    onUpdateExpenses(expenses.filter((e) => e.id !== expenseToDelete.id));
-    undo.offer(expenseToDelete);
+    const toDelete = expenseToDelete;
+    const remainingExps = expenses.filter((e) => e.id !== toDelete.id);
+    onUpdateExpenses(remainingExps);
     setExpenseToDelete(null);
+
+    // Setup undo notification for 6 seconds
+    setUndoExpense(toDelete);
+    if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
+    undoTimeoutRef.current = setTimeout(() => {
+      setUndoExpense(null);
+    }, 6000);
   };
 
   const handleUndoDelete = () => {
-    if (!undo.item) return;
-    onUpdateExpenses([...expenses, undo.item]);
-    undo.dismiss();
+    if (!undoExpense) return;
+    onUpdateExpenses([...expenses, undoExpense]);
+    setUndoExpense(null);
+    if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
   };
 
   // Save Category Allocations
@@ -173,9 +178,18 @@ export function BudgetTab({
     e.preventDefault();
     if (tempCategories.length === 0) return;
 
-    const result = reconcileCategoryEdits(tempCategories, expenses, event.totalBudget);
-    onUpdateCategories(result.categories);
-    if (result.expensesChanged) onUpdateExpenses(result.expenses);
+    const rawPercentages = tempCategories.map((c) => c.percentage);
+    const normalised = normalisePercentages(rawPercentages);
+    const amounts = percentagesToAmounts(normalised, event.totalBudget);
+
+    const updatedWithAmounts: BudgetCategory[] = tempCategories.map((c, i) => ({
+      ...c,
+      percentage: normalised[i],
+      estimatedAmount: amounts[i],
+      actualAmount: c.actualAmount ?? 0,
+    }));
+
+    onUpdateCategories(updatedWithAmounts);
     setIsEditCatsModalOpen(false);
   };
 
@@ -183,7 +197,7 @@ export function BudgetTab({
   const handleAddCustomCategory = () => {
     if (!newCatName.trim()) return;
     const p = Number(newCatPercentage) || 5;
-    const slugId = `cat-${slugifyCategory(newCatName)}`;
+    const slugId = `cat-${newCatName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
     const newCat: BudgetCategory = {
       id: slugId,
       name: newCatName.trim(),
@@ -196,7 +210,7 @@ export function BudgetTab({
     setNewCatPercentage('');
   };
 
-  // Removing a category only edits the draft; expenses are reassigned when the draft is saved.
+  // Category removal with confirmation and reassignment to cat-uncategorised
   const handleRemoveCategory = (catId: string) => {
     if (tempCategories.length <= 1) return;
     setCategoryToRemove(catId);
@@ -204,12 +218,34 @@ export function BudgetTab({
 
   const handleConfirmRemoveCategory = () => {
     if (!categoryToRemove) return;
-    setTempCategories(tempCategories.filter((c) => c.id !== categoryToRemove));
+    const id = categoryToRemove;
+    setTempCategories(tempCategories.filter((c) => c.id !== id));
+
+    const needsReassignment = expenses.some((e) => e.categoryId === id);
+    if (needsReassignment) {
+      let finalCats = [...categories.filter((c) => c.id !== id)];
+      let uncategorisedCat = finalCats.find((c) => c.id === 'cat-uncategorised');
+      if (!uncategorisedCat) {
+        uncategorisedCat = {
+          id: 'cat-uncategorised',
+          name: 'Uncategorised',
+          percentage: 0,
+          estimatedAmount: 0,
+          actualAmount: 0,
+        };
+        finalCats = [...finalCats, uncategorisedCat];
+        onUpdateCategories(finalCats);
+      }
+      const reassignedExpenses = expenses.map((e) =>
+        e.categoryId === id ? { ...e, categoryId: 'cat-uncategorised' } : e
+      );
+      onUpdateExpenses(reassignedExpenses);
+    }
     setCategoryToRemove(null);
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-300">
       {/* Financial KPI Dashboard */}
       <BudgetKpis
         totalBudget={event.totalBudget}
@@ -224,7 +260,7 @@ export function BudgetTab({
         <div
           role="alert"
           aria-live="assertive"
-          className="p-4 rounded-2xl bg-rose-50/90 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-xs text-rose-900 dark:text-rose-200 space-y-2 shadow-soft"
+          className="p-4 rounded-2xl bg-rose-50/90 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-xs text-rose-900 dark:text-rose-200 space-y-2 shadow-soft animate-in fade-in"
         >
           <div className="flex items-center gap-2 font-bold text-sm text-rose-800 dark:text-rose-300">
             <AlertTriangle className="w-4 h-4 text-rose-600" />
@@ -313,15 +349,8 @@ export function BudgetTab({
         <div className="space-y-4">
           {expenseToDelete && (
             <div className="p-3 rounded-xl bg-sand-50 dark:bg-stone-900 border border-sand-200 dark:border-stone-800 text-xs space-y-1">
-              <p className="font-semibold text-stone-900 dark:text-stone-100">
-                {expenseToDelete.description}
-              </p>
-              <p className="text-stone-500">
-                Amount:{' '}
-                <strong className="text-stone-900 dark:text-stone-100">
-                  {formatINR(expenseToDelete.amount)}
-                </strong>
-              </p>
+              <p className="font-semibold text-stone-900 dark:text-stone-100">{expenseToDelete.description}</p>
+              <p className="text-stone-500">Amount: <strong className="text-stone-900 dark:text-stone-100">{formatINR(expenseToDelete.amount)}</strong></p>
               <p className="text-stone-500">Date: {formatDisplayDate(expenseToDelete.date)}</p>
             </div>
           )}
@@ -341,7 +370,7 @@ export function BudgetTab({
         isOpen={Boolean(categoryToRemove)}
         onClose={() => setCategoryToRemove(null)}
         title="Remove Budget Category"
-        description="When you save these allocations, expenses assigned to this category move to an 'Uncategorised' category so your records remain intact."
+        description="Expenses currently assigned to this category will be automatically reassigned to an 'Uncategorised' category so your records remain intact."
         maxWidth="sm"
       >
         <div className="flex justify-end gap-2.5 pt-2">
@@ -354,10 +383,23 @@ export function BudgetTab({
         </div>
       </Modal>
 
-      {undo.item && (
-        <UndoToast onUndo={handleUndoDelete}>
-          Expense &ldquo;{undo.item.description}&rdquo; ({formatINR(undo.item.amount)}) deleted
-        </UndoToast>
+      {/* Floating Undo Notification */}
+      {undoExpense && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-stone-200 animate-in fade-in slide-in-from-bottom-2"
+        >
+          <span className="text-xs font-medium">
+            Expense &ldquo;{undoExpense.description}&rdquo; ({formatINR(undoExpense.amount)}) deleted
+          </span>
+          <button
+            onClick={handleUndoDelete}
+            className="text-xs font-bold text-emerald-400 dark:text-emerald-700 hover:underline cursor-pointer"
+          >
+            Undo
+          </button>
+        </div>
       )}
     </div>
   );

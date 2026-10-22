@@ -12,10 +12,10 @@ import {
   isOverBudget,
   recalculateEstimates,
   slugifyCategory,
+  mergeVendorsOnRegenerate,
   remapExpensesToNewCategories,
   findMatchingCategoryId,
 } from '@/lib/budget';
-import { mergeVendorsOnRegenerate } from '@/lib/vendors';
 import type { BudgetCategory, Expense, Vendor } from '@/schemas';
 
 describe('formatINR', () => {
@@ -162,14 +162,7 @@ describe('overspentCategories', () => {
 
   it('detects overspent categories', () => {
     const expenses: Expense[] = [
-      {
-        id: '1',
-        categoryId: 'cat-0',
-        description: 'V',
-        amount: 60000,
-        date: '2026-01-15',
-        notes: '',
-      },
+      { id: '1', categoryId: 'cat-0', description: 'V', amount: 60000, date: '2026-01-15', notes: '' },
     ];
     const result = overspentCategories(categories, expenses);
     expect(result).toHaveLength(1);
@@ -179,14 +172,7 @@ describe('overspentCategories', () => {
 
   it('returns empty when no overspend', () => {
     const expenses: Expense[] = [
-      {
-        id: '1',
-        categoryId: 'cat-0',
-        description: 'V',
-        amount: 40000,
-        date: '2026-01-15',
-        notes: '',
-      },
+      { id: '1', categoryId: 'cat-0', description: 'V', amount: 40000, date: '2026-01-15', notes: '' },
     ];
     expect(overspentCategories(categories, expenses)).toHaveLength(0);
   });
@@ -195,28 +181,14 @@ describe('overspentCategories', () => {
 describe('isOverBudget', () => {
   it('returns true when total spend exceeds budget', () => {
     const expenses: Expense[] = [
-      {
-        id: '1',
-        categoryId: 'cat-0',
-        description: 'V',
-        amount: 600000,
-        date: '2026-01-15',
-        notes: '',
-      },
+      { id: '1', categoryId: 'cat-0', description: 'V', amount: 600000, date: '2026-01-15', notes: '' },
     ];
     expect(isOverBudget(500000, expenses)).toBe(true);
   });
 
   it('returns false when within budget', () => {
     const expenses: Expense[] = [
-      {
-        id: '1',
-        categoryId: 'cat-0',
-        description: 'V',
-        amount: 400000,
-        date: '2026-01-15',
-        notes: '',
-      },
+      { id: '1', categoryId: 'cat-0', description: 'V', amount: 400000, date: '2026-01-15', notes: '' },
     ];
     expect(isOverBudget(500000, expenses)).toBe(false);
   });
@@ -238,13 +210,7 @@ describe('recalculateEstimates', () => {
     const primeBudget = 1333333;
     const categories: BudgetCategory[] = [
       { id: 'cat-venue', name: 'Venue', percentage: 33.33, estimatedAmount: 0, actualAmount: 0 },
-      {
-        id: 'cat-catering',
-        name: 'Catering',
-        percentage: 33.33,
-        estimatedAmount: 0,
-        actualAmount: 0,
-      },
+      { id: 'cat-catering', name: 'Catering', percentage: 33.33, estimatedAmount: 0, actualAmount: 0 },
       { id: 'cat-decor', name: 'Decor', percentage: 33.34, estimatedAmount: 0, actualAmount: 0 },
     ];
     const recalculated = recalculateEstimates(categories, primeBudget);
@@ -257,7 +223,7 @@ describe('recalculateEstimates', () => {
         { category: 'Catering', percentage: 33.33 },
         { category: 'Decor', percentage: 33.34 },
       ],
-      primeBudget,
+      primeBudget
     );
     const builtSum = built.reduce((acc, cat) => acc + cat.estimatedAmount, 0);
     expect(builtSum).toBe(primeBudget);
@@ -277,7 +243,7 @@ describe('slugifyCategory & slug category IDs', () => {
         { category: 'Venue Booking', percentage: 50 },
         { category: 'Catering & Dining', percentage: 50 },
       ],
-      100000,
+      100000
     );
 
     expect(categories[0].id).toBe('cat-venue-booking');
@@ -290,7 +256,7 @@ describe('slugifyCategory & slug category IDs', () => {
         { category: 'Decor', percentage: 50 },
         { category: 'Decor', percentage: 50 },
       ],
-      100000,
+      100000
     );
 
     expect(categories[0].id).toBe('cat-decor');
@@ -440,20 +406,8 @@ describe('mergeVendorsOnRegenerate', () => {
 
   it('ensures every vendor has a valid budgetCategoryId or falls back to cat-uncategorised', () => {
     const categories: BudgetCategory[] = [
-      {
-        id: 'cat-catering',
-        name: 'Catering & Food',
-        percentage: 50,
-        estimatedAmount: 50000,
-        actualAmount: 0,
-      },
-      {
-        id: 'cat-venue',
-        name: 'Venue & Banquet',
-        percentage: 50,
-        estimatedAmount: 50000,
-        actualAmount: 0,
-      },
+      { id: 'cat-catering', name: 'Catering & Food', percentage: 50, estimatedAmount: 50000, actualAmount: 0 },
+      { id: 'cat-venue', name: 'Venue & Banquet', percentage: 50, estimatedAmount: 50000, actualAmount: 0 },
     ];
 
     const existingVendors: Vendor[] = [];
@@ -489,71 +443,27 @@ describe('mergeVendorsOnRegenerate', () => {
 
 describe('remapExpensesToNewCategories', () => {
   const oldCategories: BudgetCategory[] = [
-    {
-      id: 'cat-venue',
-      name: 'Venue',
-      percentage: 40,
-      estimatedAmount: 200000,
-      actualAmount: 100000,
-    },
-    {
-      id: 'cat-catering',
-      name: 'Catering',
-      percentage: 35,
-      estimatedAmount: 175000,
-      actualAmount: 50000,
-    },
-    {
-      id: 'cat-decor',
-      name: 'Decor',
-      percentage: 25,
-      estimatedAmount: 125000,
-      actualAmount: 30000,
-    },
+    { id: 'cat-venue', name: 'Venue', percentage: 40, estimatedAmount: 200000, actualAmount: 100000 },
+    { id: 'cat-catering', name: 'Catering', percentage: 35, estimatedAmount: 175000, actualAmount: 50000 },
+    { id: 'cat-decor', name: 'Decor', percentage: 25, estimatedAmount: 125000, actualAmount: 30000 },
   ];
 
   const newCategories: BudgetCategory[] = [
     { id: 'cat-venue', name: 'Venue', percentage: 50, estimatedAmount: 250000, actualAmount: 0 },
-    {
-      id: 'cat-catering-royal',
-      name: 'Catering',
-      percentage: 30,
-      estimatedAmount: 150000,
-      actualAmount: 0,
-    },
-    {
-      id: 'cat-music',
-      name: 'Music & Sound',
-      percentage: 20,
-      estimatedAmount: 100000,
-      actualAmount: 0,
-    },
+    { id: 'cat-catering-royal', name: 'Catering', percentage: 30, estimatedAmount: 150000, actualAmount: 0 },
+    { id: 'cat-music', name: 'Music & Sound', percentage: 20, estimatedAmount: 100000, actualAmount: 0 },
   ];
 
   it('maps existing expenses to new categories by matching category name', () => {
     const existingExpenses: Expense[] = [
-      {
-        id: 'e-1',
-        categoryId: 'cat-venue',
-        description: 'Hall advance',
-        amount: 80000,
-        date: '2026-04-01',
-        notes: '',
-      },
-      {
-        id: 'e-2',
-        categoryId: 'cat-catering',
-        description: 'Food advance',
-        amount: 45000,
-        date: '2026-04-02',
-        notes: '',
-      },
+      { id: 'e-1', categoryId: 'cat-venue', description: 'Hall advance', amount: 80000, date: '2026-04-01', notes: '' },
+      { id: 'e-2', categoryId: 'cat-catering', description: 'Food advance', amount: 45000, date: '2026-04-02', notes: '' },
     ];
 
     const { updatedExpenses, finalCategories } = remapExpensesToNewCategories(
       existingExpenses,
       oldCategories,
-      newCategories,
+      newCategories
     );
 
     expect(updatedExpenses).toHaveLength(2);
@@ -567,28 +477,14 @@ describe('remapExpensesToNewCategories', () => {
 
   it('safely moves unmatched expenses to an Uncategorised category without deleting or misassigning', () => {
     const existingExpenses: Expense[] = [
-      {
-        id: 'e-1',
-        categoryId: 'cat-venue',
-        description: 'Hall advance',
-        amount: 80000,
-        date: '2026-04-01',
-        notes: '',
-      },
-      {
-        id: 'e-decor',
-        categoryId: 'cat-decor',
-        description: 'Floral stage booking',
-        amount: 30000,
-        date: '2026-04-03',
-        notes: '',
-      },
+      { id: 'e-1', categoryId: 'cat-venue', description: 'Hall advance', amount: 80000, date: '2026-04-01', notes: '' },
+      { id: 'e-decor', categoryId: 'cat-decor', description: 'Floral stage booking', amount: 30000, date: '2026-04-03', notes: '' },
     ];
 
     const { updatedExpenses, finalCategories } = remapExpensesToNewCategories(
       existingExpenses,
       oldCategories,
-      newCategories, // note: newCategories does NOT have Decor
+      newCategories // note: newCategories does NOT have Decor
     );
 
     expect(updatedExpenses).toHaveLength(2);
@@ -609,27 +505,9 @@ describe('remapExpensesToNewCategories', () => {
 
 describe('findMatchingCategoryId', () => {
   const categories: BudgetCategory[] = [
-    {
-      id: 'cat-palace-venue',
-      name: 'Palace Venue',
-      percentage: 40,
-      estimatedAmount: 400000,
-      actualAmount: 0,
-    },
-    {
-      id: 'cat-catering',
-      name: 'Catering & Beverages',
-      percentage: 35,
-      estimatedAmount: 350000,
-      actualAmount: 0,
-    },
-    {
-      id: 'cat-decor',
-      name: 'Floral Decor',
-      percentage: 25,
-      estimatedAmount: 250000,
-      actualAmount: 0,
-    },
+    { id: 'cat-palace-venue', name: 'Palace Venue', percentage: 40, estimatedAmount: 400000, actualAmount: 0 },
+    { id: 'cat-catering', name: 'Catering & Beverages', percentage: 35, estimatedAmount: 350000, actualAmount: 0 },
+    { id: 'cat-decor', name: 'Floral Decor', percentage: 25, estimatedAmount: 250000, actualAmount: 0 },
   ];
 
   it('finds exact category by name (case-insensitive)', () => {

@@ -91,10 +91,7 @@ export function VendorFormModal({
         </div>
 
         <div>
-          <label
-            htmlFor="vendor-form-status-select"
-            className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5"
-          >
+          <label htmlFor="vendor-form-status-select" className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
             Booking Status
           </label>
           <select
@@ -112,10 +109,7 @@ export function VendorFormModal({
         </div>
 
         <div className="space-y-1.5">
-          <label
-            htmlFor="vendor-form-notes"
-            className="block text-xs font-medium text-stone-700 dark:text-stone-300"
-          >
+          <label htmlFor="vendor-form-notes" className="block text-xs font-medium text-stone-700 dark:text-stone-300">
             Notes & Scope
           </label>
           <textarea

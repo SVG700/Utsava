@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @variant dark (&:where(.dark, .dark *));
 
@@ -26,74 +26,6 @@
   --color-sand-800: #4e4436;
   --color-sand-900: #332c23;
   --color-sand-950: #1d1914;
-
-  /*
-   * Extended palette. The numeric suffix is perceptual darkness (0 = white, 1000 = black),
-   * so lower numbers are lighter. Pair a light value with a dark: value for theming.
-   */
-
-  /* Moss — green-grey neutrals (text, borders, dark-mode surfaces) */
-  --color-moss-45: #f3f5f4;
-  --color-moss-90: #e8ecea;
-  --color-moss-145: #cbe4d7;
-  --color-moss-155: #d3ded8;
-  --color-moss-340: #a6b4ad;
-  --color-moss-415: #94a19b;
-  --color-moss-460: #88968e;
-  --color-moss-535: #75837c;
-  --color-moss-620: #606d66;
-  --color-moss-645: #596660;
-  --color-moss-660: #55635c;
-  --color-moss-695: #4d5953;
-  --color-moss-700: #4a5851;
-  --color-moss-705: #42584d;
-  --color-moss-785: #334039;
-  --color-moss-790: #2f3f36;
-  --color-moss-795: #1d4235;
-  --color-moss-810: #2d3832;
-  --color-moss-815: #283830;
-  --color-moss-830: #26332b;
-  --color-moss-835: #223028;
-  --color-moss-845: #222d27;
-  --color-moss-850: #1a2e26;
-  --color-moss-860: #152a22;
-  --color-moss-865: #1f2924;
-  --color-moss-875: #1c2420;
-  --color-moss-880: #18231e;
-  --color-moss-885: #18201c;
-  --color-moss-915: #111614;
-  --color-moss-925: #0e1311;
-
-  /* Linen — warm light neutrals (secondary surfaces, borders) */
-  --color-linen-60: #f5f1e8;
-  --color-linen-85: #f0ece3;
-  --color-linen-105: #ece7dd;
-  --color-linen-130: #f0dfc4;
-  --color-linen-135: #e6e0d4;
-  --color-linen-150: #e2ddd1;
-  --color-linen-180: #dcd6c8;
-  --color-linen-350: #b8ad96;
-
-  /* Saffron — warm gold accents */
-  --color-saffron-45: #fbf4ea;
-  --color-saffron-50: #fbf3e6;
-  --color-saffron-150: #eedbb9;
-  --color-saffron-230: #f3c27a;
-  --color-saffron-290: #eab368;
-  --color-saffron-450: #c48a3f;
-  --color-saffron-520: #b07832;
-  --color-saffron-535: #ab7532;
-  --color-saffron-655: #8c531b;
-  --color-saffron-685: #7c4e12;
-  --color-saffron-810: #42321c;
-  --color-saffron-825: #3d2e1b;
-  --color-saffron-880: #281f13;
-
-  /* Mint — bright accents used in dark mode */
-  --color-mint-285: #2dd4bf;
-  --color-mint-295: #34d399;
-  --color-mint-390: #14b8a6;
-  --color-mint-850: #042f2e;
 
   --shadow-soft: 0 1px 3px rgba(19, 78, 58, 0.04), 0 6px 16px rgba(19, 78, 58, 0.03);
   --shadow-card: 0 2px 8px rgba(19, 78, 58, 0.04), 0 12px 28px rgba(19, 78, 58, 0.06);
@@ -175,7 +107,7 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -194,9 +126,7 @@ body {
 
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
+  *, ::before, ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -206,11 +136,7 @@ body {
 
 /* Print styles for exportable coordinator checklists */
 @media print {
-  header,
-  nav,
-  footer,
-  button,
-  .no-print {
+  header, nav, footer, button, .no-print {
     display: none !important;
   }
   body {

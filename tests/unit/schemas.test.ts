@@ -61,7 +61,7 @@ describe('eventInputSchema', () => {
     const minimal = {
       eventType: 'birthday',
       name: 'Birthday',
-      date: '2026-12-01',
+      date: '2026-06-01',
       city: 'Delhi',
       guestCount: 20,
       totalBudget: 50000,

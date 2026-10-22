@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Wallet,
-  TrendingDown,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle2,
-  Percent,
-} from 'lucide-react';
+import { Wallet, TrendingDown, TrendingUp, AlertTriangle, CheckCircle2, Percent } from 'lucide-react';
 import { formatINR } from '@/lib/budget';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 
@@ -77,11 +70,7 @@ export function BudgetKpis({
                 : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'
             }`}
           >
-            {remaining < 0 ? (
-              <AlertTriangle className="w-4 h-4" />
-            ) : (
-              <TrendingUp className="w-4 h-4" />
-            )}
+            {remaining < 0 ? <AlertTriangle className="w-4 h-4" /> : <TrendingUp className="w-4 h-4" />}
           </div>
         </div>
         <p
@@ -111,11 +100,7 @@ export function BudgetKpis({
         <div className="flex items-baseline justify-between mb-2">
           <p
             className={`text-2xl font-bold tracking-tight ${
-              util > 100
-                ? 'text-rose-600'
-                : util >= 85
-                  ? 'text-amber-700'
-                  : 'text-forest-900 dark:text-forest-300'
+              util > 100 ? 'text-rose-600' : util >= 85 ? 'text-amber-700' : 'text-forest-900 dark:text-forest-300'
             }`}
           >
             {util}%

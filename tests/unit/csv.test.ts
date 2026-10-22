@@ -18,12 +18,12 @@ describe('csvCell', () => {
 
   it('neutralises formula injection by prefixing with a single quote', () => {
     // Dangerous formula prefixes: = + - @ tab \r
-    expect(csvCell('=SUM(A1:A10)')).toBe('"\'=SUM(A1:A10)"');
-    expect(csvCell('+cmd|')).toBe('"\'+cmd|"');
-    expect(csvCell('-20% cut')).toBe('"\'-20% cut"');
-    expect(csvCell('@import')).toBe('"\'@import"');
-    expect(csvCell('\tTAB_VALUE')).toBe('"\'\tTAB_VALUE"');
-    expect(csvCell('\rCR_VALUE')).toBe('"\'\rCR_VALUE"');
+    expect(csvCell('=SUM(A1:A10)')).toBe("\"'=SUM(A1:A10)\"");
+    expect(csvCell('+cmd|')).toBe("\"'+cmd|\"");
+    expect(csvCell('-20% cut')).toBe("\"'-20% cut\"");
+    expect(csvCell('@import')).toBe("\"'@import\"");
+    expect(csvCell('\tTAB_VALUE')).toBe("\"'\tTAB_VALUE\"");
+    expect(csvCell('\rCR_VALUE')).toBe("\"'\rCR_VALUE\"");
   });
 
   it('properly quotes cells with commas', () => {

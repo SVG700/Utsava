@@ -35,8 +35,8 @@ export function WizardStep1Basics({
     <Card className="p-6 sm:p-8 space-y-6">
       {/* Event Type Cards */}
       <div className="space-y-2">
-        <label className="block text-xs sm:text-sm font-semibold text-moss-875 dark:text-moss-45">
-          Celebration Type <span className="text-forest-700 dark:text-mint-285">*</span>
+        <label className="block text-xs sm:text-sm font-semibold text-[#1c2420] dark:text-[#f3f5f4]">
+          Celebration Type <span className="text-[#134e3a] dark:text-[#2dd4bf]">*</span>
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
@@ -72,29 +72,29 @@ export function WizardStep1Basics({
                 onClick={() => updateField('eventType', item.type)}
                 className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                   isSelected
-                    ? 'border-forest-700 dark:border-mint-285 bg-forest-50/50 dark:bg-moss-860/60 ring-2 ring-forest-700/15 dark:ring-mint-285/20 shadow-xs'
-                    : 'border-linen-135 dark:border-moss-790 bg-white dark:bg-moss-885 hover:border-forest-700/40 dark:hover:border-mint-285/40'
+                    ? 'border-[#134e3a] dark:border-[#2dd4bf] bg-[#e8f3ee]/50 dark:bg-[#152a22]/60 ring-2 ring-[#134e3a]/15 dark:ring-[#2dd4bf]/20 shadow-xs'
+                    : 'border-[#e6e0d4] dark:border-[#2f3f36] bg-white dark:bg-[#18201c] hover:border-[#134e3a]/40 dark:hover:border-[#2dd4bf]/40'
                 }`}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center ${
                       isSelected
-                        ? 'bg-forest-700 text-white dark:bg-mint-285 dark:text-mint-850'
-                        : 'bg-sand-50 dark:bg-moss-845 ' + item.color
+                        ? 'bg-[#134e3a] text-white dark:bg-[#2dd4bf] dark:text-[#042f2e]'
+                        : 'bg-[#faf8f5] dark:bg-[#222d27] ' + item.color
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                   </div>
                   {isSelected && (
-                    <span className="w-2.5 h-2.5 rounded-full bg-forest-700 dark:bg-mint-285" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#134e3a] dark:bg-[#2dd4bf]" />
                   )}
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-moss-875 dark:text-moss-45">
+                  <h4 className="font-bold text-sm text-[#1c2420] dark:text-[#f3f5f4]">
                     {item.title}
                   </h4>
-                  <p className="text-xs text-moss-620 dark:text-moss-415 mt-1 leading-relaxed">
+                  <p className="text-xs text-[#606d66] dark:text-[#94a19b] mt-1 leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
@@ -116,8 +116,8 @@ export function WizardStep1Basics({
           formData.eventType === 'wedding'
             ? 'e.g. Ananya & Rohan’s Wedding'
             : formData.eventType === 'birthday'
-              ? 'e.g. Aarav’s 1st Birthday Safari'
-              : 'e.g. Sharad Utsav Dandiya Night'
+            ? 'e.g. Aarav’s 1st Birthday Safari'
+            : 'e.g. Sharad Utsav Dandiya Night'
         }
         value={formData.name || ''}
         onChange={(e) => updateField('name', e.target.value)}
@@ -150,7 +150,7 @@ export function WizardStep1Basics({
             error={errors.city}
           />
           <div className="flex flex-wrap gap-1.5 pt-1">
-            <span className="text-[10px] text-moss-660 dark:text-moss-415 font-semibold uppercase tracking-wider self-center mr-1">
+            <span className="text-[10px] text-[#55635c] dark:text-[#94a19b] font-semibold uppercase tracking-wider self-center mr-1">
               Popular:
             </span>
             {POPULAR_INDIAN_CITIES.slice(0, 5).map((city) => (
@@ -160,8 +160,8 @@ export function WizardStep1Basics({
                 onClick={() => updateField('city', city)}
                 className={`text-[11px] px-2 py-0.5 rounded-md border transition-colors cursor-pointer ${
                   formData.city === city
-                    ? 'border-forest-700 dark:border-mint-285 bg-forest-50 text-forest-700 dark:bg-moss-860 dark:text-mint-295 font-semibold'
-                    : 'border-linen-135 dark:border-moss-790 bg-sand-50 dark:bg-moss-885 text-moss-620 dark:text-moss-415 hover:border-forest-700/40'
+                    ? 'border-[#134e3a] dark:border-[#2dd4bf] bg-[#e8f3ee] text-[#134e3a] dark:bg-[#152a22] dark:text-[#34d399] font-semibold'
+                    : 'border-[#e6e0d4] dark:border-[#2f3f36] bg-[#faf8f5] dark:bg-[#18201c] text-[#606d66] dark:text-[#94a19b] hover:border-[#134e3a]/40'
                 }`}
               >
                 {city}
@@ -172,7 +172,7 @@ export function WizardStep1Basics({
       </div>
 
       {/* Guests & Budget Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-linen-85 dark:border-moss-835">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#f0ece2] dark:border-[#243029]">
         <Input
           id="guest-count"
           label="Expected Guest Count"

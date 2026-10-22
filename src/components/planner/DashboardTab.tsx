@@ -2,14 +2,7 @@
 
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
-import type {
-  StoredEvent,
-  BudgetCategory,
-  Expense,
-  TimelineTask,
-  Vendor,
-  AIBlueprint,
-} from '@/schemas';
+import type { StoredEvent, BudgetCategory, Expense, TimelineTask, Vendor, AIBlueprint } from '@/schemas';
 import {
   formatINR,
   totalActualSpend,
@@ -20,7 +13,7 @@ import {
 } from '@/lib/budget';
 import { isOverdue, getTodayString } from '@/lib/dates';
 import { Button } from '@/components/ui/Button';
-import type { PlannerTab } from './header/PlannerTabs';
+import type { PlannerTab } from './PlannerHeader';
 import { DashboardMetrics } from './dashboard/DashboardMetrics';
 import { DashboardBlueprintView } from './dashboard/DashboardBlueprintView';
 import { DashboardDeadlines } from './dashboard/DashboardDeadlines';
@@ -74,7 +67,7 @@ export function DashboardTab({
   const totalVendors = vendors.length;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-200">
       {/* Overspend Warning Banner */}
       {(hasOverallOverspend || overspentCats.length > 0) && (
         <div

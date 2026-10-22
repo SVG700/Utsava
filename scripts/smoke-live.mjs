@@ -41,9 +41,7 @@ async function callEndpoint(label, endpoint, payload) {
     });
   } catch (err) {
     const timing = ((performance.now() - start) / 1000).toFixed(2);
-    console.error(
-      `[${label}] Status: Connection Error | Timing: ${timing}s | Message: ${err.message}`,
-    );
+    console.error(`[${label}] Status: Connection Error | Timing: ${timing}s | Message: ${err.message}`);
     process.exit(1);
   }
 
@@ -71,9 +69,7 @@ async function callEndpoint(label, endpoint, payload) {
     sectionNames = Object.keys(json);
   }
 
-  console.log(
-    `[${label}] Status: ${res.status} | Timing: ${timing}s | Section names: ${sectionNames.join(', ')}`,
-  );
+  console.log(`[${label}] Status: ${res.status} | Timing: ${timing}s | Section names: ${sectionNames.join(', ')}`);
 
   return { status: res.status, ok: res.ok, json, timing };
 }
@@ -101,7 +97,7 @@ async function run() {
   const bpRes = await callEndpoint(
     '1. POST /api/generate-blueprint',
     '/api/generate-blueprint',
-    eventDetails,
+    eventDetails
   );
 
   if (bpRes.status !== 200 || !bpRes.json?.blueprint) {
@@ -142,16 +138,11 @@ async function run() {
   // Check every timeline task daysBeforeEvent <= days remaining
   const today = new Date();
   const eventDate = new Date(eventDetails.date);
-  const daysRemaining = Math.max(
-    0,
-    Math.round((eventDate.getTime() - today.getTime()) / (24 * 60 * 60 * 1000)),
-  );
+  const daysRemaining = Math.max(0, Math.round((eventDate.getTime() - today.getTime()) / (24 * 60 * 60 * 1000)));
 
   for (const task of bp.timeline) {
     if (task.daysBeforeEvent > daysRemaining) {
-      console.error(
-        `Assertion failed: Task "${task.title}" has daysBeforeEvent ${task.daysBeforeEvent} > daysRemaining ${daysRemaining}`,
-      );
+      console.error(`Assertion failed: Task "${task.title}" has daysBeforeEvent ${task.daysBeforeEvent} > daysRemaining ${daysRemaining}`);
       process.exit(1);
     }
   }
@@ -164,7 +155,7 @@ async function run() {
       eventDetails,
       currentPlan: bp,
       userRequest: 'Cut the total budget by 20%',
-    },
+    }
   );
 
   if (refine1Res.status !== 200 || !refine1Res.json?.refinement) {
@@ -175,9 +166,7 @@ async function run() {
   const expectedBudget = Math.round(eventDetails.totalBudget * 0.8);
   const returnedBudget = refine1Res.json.refinement.totalBudget;
   if (returnedBudget !== expectedBudget) {
-    console.error(
-      `Assertion failed: Total budget was ${returnedBudget}, expected 80% (${expectedBudget})`,
-    );
+    console.error(`Assertion failed: Total budget was ${returnedBudget}, expected 80% (${expectedBudget})`);
     process.exit(1);
   }
 
@@ -189,7 +178,7 @@ async function run() {
       eventDetails,
       currentPlan: bp,
       userRequest: 'Make it eco-friendly',
-    },
+    }
   );
 
   if (refine2Res.status !== 200 || !refine2Res.json?.refinement) {
@@ -202,9 +191,7 @@ async function run() {
   const altDiffers = r2.alternatives && deepDiffers(r2.alternatives, bp.alternatives);
 
   if (!themeDiffers && !altDiffers) {
-    console.error(
-      'Assertion failed: Neither themeAndDecor nor alternatives differed from original plan in eco-friendly refinement',
-    );
+    console.error('Assertion failed: Neither themeAndDecor nor alternatives differed from original plan in eco-friendly refinement');
     process.exit(1);
   }
 
@@ -219,7 +206,7 @@ async function run() {
       eventDetails,
       currentPlan: bp,
       userRequest: 'Cut venue budget by 20% and reallocate to gourmet Indian catering',
-    },
+    }
   );
 
   if (refine3Res.status !== 200 || !refine3Res.json?.refinement) {
@@ -231,26 +218,23 @@ async function run() {
   const venueAfter = findCategoryPct(r3Alloc, /venue|hall|lawn/i);
   const cateringAfter = findCategoryPct(r3Alloc, /cater|food|feast/i);
 
-  if (
-    venueBefore !== null &&
-    venueAfter !== null &&
-    cateringBefore !== null &&
-    cateringAfter !== null
-  ) {
+  if (venueBefore !== null && venueAfter !== null && cateringBefore !== null && cateringAfter !== null) {
     if (!(venueAfter < venueBefore && cateringAfter > cateringBefore)) {
-      console.error(
-        `Assertion failed: Expected venueAfter (${venueAfter}) < venueBefore (${venueBefore}) AND cateringAfter (${cateringAfter}) > cateringBefore (${cateringBefore})`,
-      );
+      console.error(`Assertion failed: Expected venueAfter (${venueAfter}) < venueBefore (${venueBefore}) AND cateringAfter (${cateringAfter}) > cateringBefore (${cateringBefore})`);
       process.exit(1);
     }
   }
 
   // 5. Generate Ideas: section = "theme"
-  const ideasRes = await callEndpoint('5. POST /api/generate-ideas', '/api/generate-ideas', {
-    eventDetails,
-    section: 'theme',
-    existingIdeas: ['Outdoor Garden Soiree'],
-  });
+  const ideasRes = await callEndpoint(
+    '5. POST /api/generate-ideas',
+    '/api/generate-ideas',
+    {
+      eventDetails,
+      section: 'theme',
+      existingIdeas: ['Outdoor Garden Soiree'],
+    }
+  );
 
   if (ideasRes.status !== 200 || !ideasRes.json?.ideas) {
     console.error('Assertion failed: Generate ideas did not return 200');

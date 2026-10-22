@@ -55,8 +55,7 @@ export function ExpensesLedger({
               Expense Tracker Ledger
             </CardTitle>
             <p className="text-xs text-stone-500 dark:text-stone-400">
-              Detailed transaction records for venue advance, catering token, decor, and
-              photography.
+              Detailed transaction records for venue advance, catering token, decor, and photography.
             </p>
           </div>
         </div>
@@ -143,10 +142,7 @@ export function ExpensesLedger({
                 {filteredExpenses.map((exp) => {
                   const cat = categories.find((c) => c.id === exp.categoryId);
                   return (
-                    <tr
-                      key={exp.id}
-                      className="hover:bg-sand-50/60 dark:hover:bg-stone-800/40 transition-colors"
-                    >
+                    <tr key={exp.id} className="hover:bg-sand-50/60 dark:hover:bg-stone-800/40 transition-colors">
                       <td className="py-3.5 px-4 text-stone-500 dark:text-stone-400 whitespace-nowrap">
                         {formatDisplayDate(exp.date)}
                       </td>

@@ -130,9 +130,7 @@ describe('deepEqual and getChangedSections', () => {
         decorIdeas: ['Drapes'],
         description: 'Desc',
       },
-      activities: [
-        { name: 'Game', description: 'Desc', estimatedDuration: '1h', suitableFor: 'All' },
-      ],
+      activities: [{ name: 'Game', description: 'Desc', estimatedDuration: '1h', suitableFor: 'All' }],
       budgetAllocation: [{ category: 'Venue', percentage: 100, description: 'Venue' }],
       timeline: [],
       vendorCategories: [],

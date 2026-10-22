@@ -180,7 +180,7 @@ describe('API Route Handlers', () => {
 
     it('returns sanitized error response when GeminiError is thrown without leaking secrets', async () => {
       mockAiClient.generateBlueprintWithGemini.mockRejectedValueOnce(
-        new mockAiClient.GeminiError('QUOTA_EXCEEDED', 'Gemini quota reached', 429),
+        new mockAiClient.GeminiError('QUOTA_EXCEEDED', 'Gemini quota reached', 429)
       );
 
       const req = new NextRequest('http://localhost:3000/api/generate-blueprint', {
@@ -198,7 +198,7 @@ describe('API Route Handlers', () => {
 
     it('returns generic 500 without leaking unexpected error details or secrets', async () => {
       mockAiClient.generateBlueprintWithGemini.mockRejectedValueOnce(
-        new Error('Fatal database connection error with secret key AIzaSyABC123XYZ'),
+        new Error('Fatal database connection error with secret key AIzaSyABC123XYZ')
       );
 
       const req = new NextRequest('http://localhost:3000/api/generate-blueprint', {
@@ -232,7 +232,7 @@ describe('API Route Handlers', () => {
 
     it('never leaks upstream Google error JSON in response body when Gemini API call fails', async () => {
       mockAiClient.generateBlueprintWithGemini.mockRejectedValueOnce(
-        new mockAiClient.GeminiError('API_ERROR', 'AI service error. Please try again.', 502),
+        new mockAiClient.GeminiError('API_ERROR', 'AI service error. Please try again.', 502)
       );
 
       const req = new NextRequest('http://localhost:3000/api/generate-blueprint', {
@@ -259,14 +259,12 @@ describe('API Route Handlers', () => {
           code: 400,
           message: 'API key not valid. Please pass a valid API key.',
           status: 'INVALID_ARGUMENT',
-          details: [
-            { '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason: 'API_KEY_INVALID' },
-          ],
+          details: [{ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason: 'API_KEY_INVALID' }],
         },
       });
 
       mockAiClient.generateBlueprintWithGemini.mockRejectedValueOnce(
-        new Error(`[GoogleGenerativeAI Error]: ${googleRawErrorJson}`),
+        new Error(`[GoogleGenerativeAI Error]: ${googleRawErrorJson}`)
       );
 
       const req = new NextRequest('http://localhost:3000/api/generate-blueprint', {
