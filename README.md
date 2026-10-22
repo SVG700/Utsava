@@ -277,3 +277,5 @@ node scripts/smoke-live.mjs
 1. **Free-Tier Gemini Quotas:** Google Gemini free tier enforces per-minute and per-day request limits. The application mitigates this via automatic model fallback (`gemini-3.5-flash-lite`), exponential backoff retries, and informative user notifications.
 2. **In-Memory Rate Limiting:** The IP rate limiter uses an in-memory sliding window, which resets if the server restarts. In multi-instance serverless deployments, an external cache (e.g. Upstash Redis) would be used.
 3. **Client-Side Storage:** Celebrations are stored in browser `localStorage`. Data persists across browser sessions and reloads on the same device, but does not synchronize across separate devices.
+#   U t s a v a  
+ 
