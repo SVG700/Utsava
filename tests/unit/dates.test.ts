@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   parseDate,
   formatDate,
@@ -10,9 +10,9 @@ import {
   isOverdue,
   sortTasks,
   daysUntilEvent,
-  mergeTasksOnRegenerate,
   getTodayString,
 } from '@/lib/dates';
+import { mergeTasksOnRegenerate } from '@/lib/timeline';
 import type { TimelineTask } from '@/schemas';
 
 describe('parseDate', () => {
@@ -225,18 +225,11 @@ describe('getTodayString', () => {
     expect(parsed).not.toBeNull();
   });
 
-  it('respects UTSAVA_TODAY environment variable override if set', () => {
-    const original = process.env.UTSAVA_TODAY;
-    try {
-      process.env.UTSAVA_TODAY = '2026-11-15';
-      expect(getTodayString()).toBe('2026-11-15');
-    } finally {
-      if (original !== undefined) {
-        process.env.UTSAVA_TODAY = original;
-      } else {
-        delete process.env.UTSAVA_TODAY;
-      }
-    }
+  it('uses the Indian Standard Time calendar day, not UTC', () => {
+    // 20:00 UTC on 21 Oct is already 01:30 on 22 Oct in IST.
+    vi.setSystemTime(new Date('2026-10-21T20:00:00.000Z'));
+    expect(getTodayString()).toBe('2026-10-22');
+    expect(getTodayString('UTC')).toBe('2026-10-21');
   });
 });
 

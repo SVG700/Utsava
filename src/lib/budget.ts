@@ -4,8 +4,21 @@
  * amounts by this code and normalised to exactly 100%.
  */
 
-import type { BudgetCategory, Expense, Vendor } from '@/schemas';
-import { calculateTokenSimilarity } from './dates';
+import type { BudgetCategory, Expense } from '@/schemas';
+
+/** Id of the fallback category that holds expenses whose category no longer exists. */
+export const UNCATEGORISED_ID = 'cat-uncategorised';
+
+/** Creates the zero-allocation fallback category. */
+export function createUncategorisedCategory(): BudgetCategory {
+  return {
+    id: UNCATEGORISED_ID,
+    name: 'Uncategorised',
+    percentage: 0,
+    estimatedAmount: 0,
+    actualAmount: 0,
+  };
+}
 
 /** Format a number as INR with en-IN grouping (e.g. ₹1,50,000). */
 export function formatINR(amount: number): string {
@@ -148,20 +161,14 @@ export function remapExpensesToNewCategories(
       hasUnmatched = true;
       updatedExpenses.push({
         ...exp,
-        categoryId: 'cat-uncategorised',
+        categoryId: UNCATEGORISED_ID,
       });
     }
   }
 
   const finalCategories = [...newCategories];
-  if (hasUnmatched && !finalCategories.some((c) => c.id === 'cat-uncategorised')) {
-    finalCategories.push({
-      id: 'cat-uncategorised',
-      name: 'Uncategorised',
-      percentage: 0,
-      estimatedAmount: 0,
-      actualAmount: 0,
-    });
+  if (hasUnmatched && !finalCategories.some((c) => c.id === UNCATEGORISED_ID)) {
+    finalCategories.push(createUncategorisedCategory());
   }
 
   return { updatedExpenses, finalCategories };
@@ -197,93 +204,6 @@ export function findMatchingCategoryId(
   }
 
   return maxOverlap > 0 && bestMatch ? bestMatch.id : undefined;
-}
-
-/**
- * Determine whether a vendor contains user-customized information.
- */
-export function hasUserVendorData(v: Vendor): boolean {
-  if (v.source === 'user') return true;
-  if (v.name && v.name.trim().length > 0) return true;
-  if (v.contact && v.contact.trim().length > 0) return true;
-  if (v.quote !== undefined && v.quote !== null) return true;
-  if (v.notes && v.notes.trim().length > 0) return true;
-  if (v.status !== 'not-started') return true;
-  return false;
-}
-
-/**
- * Merge existing vendors with newly suggested vendors on regeneration.
- * AI vendors without user data (no name/contact/quote/notes, status not-started)
- * are dropped and replaced.
- * Vendors with user data are kept and merged into the best-matching new AI vendor category
- * (token similarity >= 0.6) so there is one card per category.
- * Every vendor must have a valid budgetCategoryId (falls back to best match, else "cat-uncategorised").
- */
-export function mergeVendorsOnRegenerate(
-  existingVendors: Vendor[],
-  newVendors: Vendor[],
-  categories?: BudgetCategory[],
-): Vendor[] {
-  const validCategoryIds = new Set(categories?.map((c) => c.id) ?? []);
-
-  function ensureValidBudgetCategoryId(v: Vendor): Vendor {
-    let catId = v.budgetCategoryId;
-    if (categories && categories.length > 0) {
-      if (!catId || !validCategoryIds.has(catId)) {
-        catId = findMatchingCategoryId(v.category, categories) || 'cat-uncategorised';
-      }
-    } else if (!catId) {
-      catId = 'cat-uncategorised';
-    }
-    return { ...v, budgetCategoryId: catId };
-  }
-
-  const finalNewVendors: Vendor[] = newVendors.map((nv) =>
-    ensureValidBudgetCategoryId({
-      ...nv,
-      source: nv.source || 'ai',
-      suggestedByAI: nv.suggestedByAI ?? true,
-    }),
-  );
-
-  const keptExisting = existingVendors.filter(hasUserVendorData);
-  const matchedNewIndices = new Set<number>();
-  const unmatchedKept: Vendor[] = [];
-
-  for (const kept of keptExisting) {
-    let bestIndex = -1;
-    let bestScore = -1;
-
-    for (let i = 0; i < finalNewVendors.length; i++) {
-      if (matchedNewIndices.has(i)) continue;
-      const candidate = finalNewVendors[i];
-
-      const sim = calculateTokenSimilarity(kept.category, candidate.category);
-      if (sim >= 0.6) {
-        if (sim > bestScore) {
-          bestScore = sim;
-          bestIndex = i;
-        }
-      }
-    }
-
-    if (bestIndex !== -1) {
-      matchedNewIndices.add(bestIndex);
-      const target = finalNewVendors[bestIndex];
-      target.id = kept.id;
-      target.name = kept.name || target.name;
-      target.contact = kept.contact || target.contact;
-      target.quote = kept.quote !== undefined ? kept.quote : target.quote;
-      target.status = kept.status !== 'not-started' ? kept.status : target.status;
-      target.notes = kept.notes || target.notes;
-      target.source = kept.source || 'user';
-    } else {
-      unmatchedKept.push(ensureValidBudgetCategoryId(kept));
-    }
-  }
-
-  return [...finalNewVendors, ...unmatchedKept];
 }
 
 /**
@@ -370,4 +290,42 @@ export function recalculateEstimates(
     percentage: normalised[i],
     estimatedAmount: amounts[i],
   }));
+}
+
+/**
+ * Applies edited category allocations in one consistent step.
+ * Percentages are normalised to 100% and converted to rupees; expenses whose category
+ * was removed move to "Uncategorised", which is added (at 0%) only when needed.
+ */
+export function reconcileCategoryEdits(
+  editedCategories: BudgetCategory[],
+  expenses: Expense[],
+  totalBudget: number,
+): { categories: BudgetCategory[]; expenses: Expense[]; expensesChanged: boolean } {
+  const keptIds = new Set(editedCategories.map((c) => c.id));
+  const orphaned = expenses.some((e) => !keptIds.has(e.categoryId));
+
+  const withFallback =
+    orphaned && !keptIds.has(UNCATEGORISED_ID)
+      ? [...editedCategories, createUncategorisedCategory()]
+      : editedCategories;
+
+  const percentages = normalisePercentages(withFallback.map((c) => c.percentage));
+  const amounts = percentagesToAmounts(percentages, totalBudget);
+  const categories = withFallback.map((c, i) => ({
+    ...c,
+    percentage: percentages[i],
+    estimatedAmount: amounts[i],
+    actualAmount: c.actualAmount ?? 0,
+  }));
+
+  return {
+    categories,
+    expenses: orphaned
+      ? expenses.map((e) =>
+          keptIds.has(e.categoryId) ? e : { ...e, categoryId: UNCATEGORISED_ID },
+        )
+      : expenses,
+    expensesChanged: orphaned,
+  };
 }

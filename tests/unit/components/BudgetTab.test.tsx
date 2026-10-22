@@ -109,20 +109,27 @@ describe('BudgetTab Component', () => {
     const confirmBtn = screen.getByRole('button', { name: /confirm removal/i });
     fireEvent.click(confirmBtn);
 
-    // Expenses linked to decor were remapped to cat-uncategorised
-    expect(onUpdateExpenses).toHaveBeenCalled();
-    const updatedExpenses = onUpdateExpenses.mock.calls[0][0];
-    expect(updatedExpenses[0].categoryId).toBe('cat-uncategorised');
+    // Removal only edits the draft: nothing is persisted before Save
+    expect(onUpdateExpenses).not.toHaveBeenCalled();
+    expect(onUpdateCategories).not.toHaveBeenCalled();
 
     // 5. Save the updated allocations
     const saveBtn = screen.getByRole('button', { name: /normalise & save allocations/i });
     fireEvent.click(saveBtn);
 
-    // Verify onUpdateCategories was called with Decor removed and Uncategorised safely added for preserved expense
-    expect(onUpdateCategories).toHaveBeenCalled();
-    const savedCategories: BudgetCategory[] =
-      onUpdateCategories.mock.calls[onUpdateCategories.mock.calls.length - 1][0];
+    // Expenses linked to decor were remapped to cat-uncategorised
+    expect(onUpdateExpenses).toHaveBeenCalledTimes(1);
+    const updatedExpenses: Expense[] = onUpdateExpenses.mock.calls[0][0];
+    expect(updatedExpenses[0].categoryId).toBe('cat-uncategorised');
+
+    // Saved categories drop Decor and include the Uncategorised category the expense now points to
+    expect(onUpdateCategories).toHaveBeenCalledTimes(1);
+    const savedCategories: BudgetCategory[] = onUpdateCategories.mock.calls[0][0];
     expect(savedCategories.some((c) => c.id === 'cat-decor')).toBe(false);
+    expect(savedCategories.some((c) => c.id === 'cat-uncategorised')).toBe(true);
+    expect(updatedExpenses.every((e) => savedCategories.some((c) => c.id === e.categoryId))).toBe(
+      true,
+    );
 
     // Total of normalised percentages is 100%
     const totalPercentage = savedCategories.reduce((sum, c) => sum + c.percentage, 0);
@@ -131,5 +138,30 @@ describe('BudgetTab Component', () => {
     // Total estimated amount matches total budget
     const totalEst = savedCategories.reduce((sum, c) => sum + c.estimatedAmount, 0);
     expect(totalEst).toBe(sampleEvent.totalBudget);
+  });
+
+  it('leaves categories and expenses untouched when a removal is cancelled', () => {
+    const onUpdateCategories = vi.fn();
+    const onUpdateExpenses = vi.fn();
+
+    render(
+      <BudgetTab
+        event={sampleEvent}
+        categories={initialCategories}
+        expenses={sampleExpenses}
+        onUpdateCategories={onUpdateCategories}
+        onUpdateExpenses={onUpdateExpenses}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /adjust percentages/i }));
+    fireEvent.click(screen.getByRole('button', { name: /remove category: decor & flowers/i }));
+    fireEvent.click(screen.getByRole('button', { name: /confirm removal/i }));
+
+    // Abandon the draft instead of saving it
+    fireEvent.click(screen.getByRole('button', { name: /^cancel$/i }));
+
+    expect(onUpdateCategories).not.toHaveBeenCalled();
+    expect(onUpdateExpenses).not.toHaveBeenCalled();
   });
 });

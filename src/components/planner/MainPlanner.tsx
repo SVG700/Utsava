@@ -24,9 +24,10 @@ import {
   recalculateEstimates,
   remapExpensesToNewCategories,
   findMatchingCategoryId,
-  mergeVendorsOnRegenerate,
 } from '@/lib/budget';
-import { buildTimelineTasks, recalculateTaskDates, mergeTasksOnRegenerate } from '@/lib/dates';
+import { mergeVendorsOnRegenerate } from '@/lib/vendors';
+import { buildTimelineTasks, recalculateTaskDates } from '@/lib/dates';
+import { mergeTasksOnRegenerate } from '@/lib/timeline';
 import type {
   StoredEvent,
   AIBlueprint,

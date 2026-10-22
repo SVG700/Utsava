@@ -12,10 +12,10 @@ import {
   isOverBudget,
   recalculateEstimates,
   slugifyCategory,
-  mergeVendorsOnRegenerate,
   remapExpensesToNewCategories,
   findMatchingCategoryId,
 } from '@/lib/budget';
+import { mergeVendorsOnRegenerate } from '@/lib/vendors';
 import type { BudgetCategory, Expense, Vendor } from '@/schemas';
 
 describe('formatINR', () => {

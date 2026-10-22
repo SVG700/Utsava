@@ -8,6 +8,7 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['tests/unit/**/*.test.ts', 'tests/unit/**/*.test.tsx'],
     exclude: ['tests/e2e/**'],
+    setupFiles: ['tests/setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],

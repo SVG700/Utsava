@@ -9,6 +9,8 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
+import { UndoToast } from '@/components/ui/UndoToast';
+import { useUndo } from '@/hooks/useUndo';
 import { VendorCard } from './vendors/VendorCard';
 import { VendorFormModal, type VendorFormData } from './vendors/VendorFormModal';
 
@@ -20,6 +22,9 @@ interface VendorsTabProps {
   onUpdateVendors: (vendors: Vendor[]) => void;
 }
 
+const UNDO_WINDOW_MS = 6000;
+
+/** Vendor Checklist tab: AI-suggested vendor cards, quotes and booking status. */
 export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: VendorsTabProps) {
   const [statusFilter, setStatusFilter] = useState<'all' | VendorStatus>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,9 +33,8 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingVendorId, setEditingVendorId] = useState<string | null>(null);
   const [vendorToDelete, setVendorToDelete] = useState<Vendor | null>(null);
-  const [undoVendor, setUndoVendor] = useState<Vendor | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);
-  const undoVendorTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const undo = useUndo<Vendor>(UNDO_WINDOW_MS);
   const [vendorForm, setVendorForm] = useState<VendorFormData>({
     category: '',
     name: '',
@@ -81,24 +85,15 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
 
   const handleConfirmDeleteVendor = () => {
     if (!vendorToDelete) return;
-    const toDelete = vendorToDelete;
-    const remaining = vendors.filter((v) => v.id !== toDelete.id);
-    onUpdateVendors(remaining);
+    onUpdateVendors(vendors.filter((v) => v.id !== vendorToDelete.id));
+    undo.offer(vendorToDelete);
     setVendorToDelete(null);
-
-    // Set up undo notification for 6 seconds
-    setUndoVendor(toDelete);
-    if (undoVendorTimeoutRef.current) clearTimeout(undoVendorTimeoutRef.current);
-    undoVendorTimeoutRef.current = setTimeout(() => {
-      setUndoVendor(null);
-    }, 6000);
   };
 
   const handleUndoDeleteVendor = () => {
-    if (!undoVendor) return;
-    onUpdateVendors([...vendors, undoVendor]);
-    setUndoVendor(null);
-    if (undoVendorTimeoutRef.current) clearTimeout(undoVendorTimeoutRef.current);
+    if (!undo.item) return;
+    onUpdateVendors([...vendors, undo.item]);
+    undo.dismiss();
   };
 
   // Save Vendor
@@ -316,23 +311,10 @@ export function VendorsTab({ blueprint, categories, vendors, onUpdateVendors }: 
         </div>
       </Modal>
 
-      {/* Floating Undo Notification for Deleted Vendor */}
-      {undoVendor && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 px-4 py-3 rounded-2xl shadow-xl border border-stone-800 dark:border-stone-200 animate-in fade-in slide-in-from-bottom-2"
-        >
-          <span className="text-xs font-medium">
-            Vendor &ldquo;{undoVendor.category}&rdquo; deleted
-          </span>
-          <button
-            onClick={handleUndoDeleteVendor}
-            className="text-xs font-bold text-emerald-400 dark:text-emerald-700 hover:underline cursor-pointer"
-          >
-            Undo
-          </button>
-        </div>
+      {undo.item && (
+        <UndoToast onUndo={handleUndoDeleteVendor}>
+          Vendor &ldquo;{undo.item.category}&rdquo; deleted
+        </UndoToast>
       )}
     </div>
   );
