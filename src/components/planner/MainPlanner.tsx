@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/logger';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
@@ -196,7 +197,7 @@ export function MainPlanner({ eventId }: MainPlannerProps) {
       if (err instanceof Error && err.name === 'AbortError') {
         return;
       }
-      console.error('Error generating blueprint:', err);
+      logger.error('Error generating blueprint:', err);
       if (err instanceof ApiError && err.code === 'MISSING_API_KEY') {
         setApiKeyMissing(true);
         setErrorMessage(

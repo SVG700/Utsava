@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/logger';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
@@ -153,7 +154,7 @@ export function EventWizard() {
       saveEvent(newEvent);
       router.push(`/events/${newEvent.id}?new=true`);
     } catch (err) {
-      console.error('Failed to create event:', err);
+      logger.error('Failed to create event:', err);
       setIsSubmitting(false);
     }
   };

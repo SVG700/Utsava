@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/logger';
 import React, { useState } from 'react';
 import {
   Sparkles,
@@ -120,7 +121,7 @@ export function IdeasTab({ event, onAddTask }: IdeasTabProps) {
       if (err instanceof Error && err.name === 'AbortError') {
         return;
       }
-      console.error('Error fetching ideas:', err);
+      logger.error('Error fetching ideas:', err);
       setErrorMessage(
         err instanceof ApiError
           ? err.message

@@ -4,6 +4,7 @@
  * Never exposes GEMINI_API_KEY to browser.
  */
 
+import { logger } from '@/lib/logger';
 import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
 import {
@@ -181,7 +182,7 @@ async function callGemini(prompt: string, options?: CallGeminiOptions): Promise<
 
     const errMsg = error instanceof Error ? error.message : String(error);
     const safeErrMsg = errMsg.replace(/key=[a-zA-Z0-9_\-]+/gi, 'key=[REDACTED]');
-    console.error('Gemini upstream call error:', safeErrMsg);
+    logger.error('Gemini upstream call error:', safeErrMsg);
 
     // If a call with a schema fails with 400 INVALID_ARGUMENT, retry once without responseJsonSchema (Zod still validates)
     if (
@@ -190,7 +191,7 @@ async function callGemini(prompt: string, options?: CallGeminiOptions): Promise<
         errMsg.toUpperCase().includes('INVALID_ARGUMENT') ||
         errMsg.toLowerCase().includes('invalid argument'))
     ) {
-      console.warn(
+      logger.warn(
         'Gemini returned 400 INVALID_ARGUMENT with responseJsonSchema; retrying once without schema...',
       );
       return callGemini(prompt, {
@@ -207,7 +208,7 @@ async function callGemini(prompt: string, options?: CallGeminiOptions): Promise<
       model !== 'gemini-3.5-flash-lite' &&
       attempt === 1
     ) {
-      console.warn(
+      logger.warn(
         `Model ${model} daily free tier quota hit. Falling back to resilient model gemini-3.5-flash-lite for this call only...`,
       );
       return callGemini(prompt, {

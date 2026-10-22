@@ -4,6 +4,7 @@
  * Validates every read with Zod schemas to ensure data integrity and drop invalid records.
  */
 
+import { logger } from '@/lib/logger';
 import { z } from 'zod';
 import {
   storedEventSchema,
@@ -70,7 +71,7 @@ function setItem<T>(key: string, value: T): void {
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch (e) {
-    console.error('Failed to save to localStorage:', e);
+    logger.error('Failed to save to localStorage:', e);
   }
 }
 

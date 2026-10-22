@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/logger';
 import React, { useState } from 'react';
 import {
   Sparkles,
@@ -187,7 +188,7 @@ export function RefineTab({ event, blueprint, onApplyRefinedPlan }: RefineTabPro
       if (err instanceof Error && err.name === 'AbortError') {
         return;
       }
-      console.error('Error refining plan:', err);
+      logger.error('Error refining plan:', err);
       if (err instanceof ApiError && err.status === 422) {
         setNeutralNotice(
           err.message || 'No changes could be applied to your plan. Try a more specific request.',
