@@ -21,18 +21,18 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const base =
-      'inline-flex items-center justify-center font-medium transition-colors duration-150 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#134e3a] dark:focus-visible:ring-[#2dd4bf] disabled:opacity-50 disabled:pointer-events-none cursor-pointer select-none';
+      'inline-flex items-center justify-center font-medium transition-colors duration-150 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700 dark:focus-visible:ring-mint-285 disabled:opacity-50 disabled:pointer-events-none cursor-pointer select-none';
 
     const variants = {
       primary:
-        'bg-[#134e3a] hover:bg-[#0f3e2e] text-white shadow-xs hover:shadow-soft dark:bg-[#2dd4bf] dark:hover:bg-[#14b8a6] dark:text-[#042f2e]',
+        'bg-forest-700 hover:bg-forest-800 text-white shadow-xs hover:shadow-soft dark:bg-mint-285 dark:hover:bg-mint-390 dark:text-mint-850',
       secondary:
-        'bg-[#f0ece3] hover:bg-[#e6e0d3] text-[#1c2420] dark:bg-[#222d27] dark:hover:bg-[#2c3a32] dark:text-[#f3f5f4]',
+        'bg-linen-85 hover:bg-linen-135 text-moss-875 dark:bg-moss-845 dark:hover:bg-moss-810 dark:text-moss-45',
       outline:
-        'border border-[#dcd6c8] hover:border-[#b8ad96] hover:bg-[#f6f2ea] text-[#1c2420] dark:border-[#2f3f37] dark:hover:border-[#42584d] dark:hover:bg-[#18231e] dark:text-[#e8ecea]',
+        'border border-linen-180 hover:border-linen-350 hover:bg-linen-60 text-moss-875 dark:border-moss-790 dark:hover:border-moss-705 dark:hover:bg-moss-880 dark:text-moss-90',
       ghost:
-        'hover:bg-[#f0ece3] text-[#334039] hover:text-[#1c2420] dark:hover:bg-[#222d27] dark:text-[#a6b4ad] dark:hover:text-[#f3f5f4]',
-      accent: 'bg-[#c48a3f] hover:bg-[#b07832] text-white shadow-xs hover:shadow-soft',
+        'hover:bg-linen-85 text-moss-785 hover:text-moss-875 dark:hover:bg-moss-845 dark:text-moss-340 dark:hover:text-moss-45',
+      accent: 'bg-saffron-450 hover:bg-saffron-520 text-white shadow-xs hover:shadow-soft',
       danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
     };
 

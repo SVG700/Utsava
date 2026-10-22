@@ -203,15 +203,15 @@ export function CategoryShowcase() {
   return (
     <section
       id="categories"
-      className="py-16 sm:py-20 border-b border-[#e8e2d7] dark:border-[#26332b]"
+      className="py-16 sm:py-20 border-b border-sand-200 dark:border-moss-830"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
           <Badge variant="forest">Celebration Formats</Badge>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1c2420] dark:text-[#f3f5f4] tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-moss-875 dark:text-moss-45 tracking-tight">
             Tailored for Every Indian Tradition
           </h2>
-          <p className="text-sm sm:text-base text-[#606d66] dark:text-[#94a19b] font-normal leading-relaxed">
+          <p className="text-sm sm:text-base text-moss-620 dark:text-moss-415 font-normal leading-relaxed">
             From grand 3-day royal weddings to community festival pandals, Utsava’s AI understands
             cultural rituals, regional dining customs, and guest logistics.
           </p>
@@ -223,7 +223,7 @@ export function CategoryShowcase() {
             return (
               <Card
                 key={idx}
-                className="p-6 border border-[#e6e0d4] dark:border-[#2f3f36] hover:shadow-card transition-all space-y-4 flex flex-col justify-between"
+                className="p-6 border border-linen-135 dark:border-moss-790 hover:shadow-card transition-all space-y-4 flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   <div
@@ -232,22 +232,22 @@ export function CategoryShowcase() {
                     <Icon className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg text-[#1c2420] dark:text-[#f3f5f4]">
+                    <h3 className="font-bold text-lg text-moss-875 dark:text-moss-45">
                       {item.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-[#606d66] dark:text-[#94a19b] mt-1 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-moss-620 dark:text-moss-415 mt-1 leading-relaxed">
                       {item.desc}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-[#f0ece2] dark:border-[#243029] flex items-center justify-between text-xs text-[#606d66] dark:text-[#94a19b]">
+                <div className="pt-2 border-t border-linen-85 dark:border-moss-835 flex items-center justify-between text-xs text-moss-620 dark:text-moss-415">
                   <span>{item.budgetRange}</span>
                   <button
                     type="button"
                     onClick={() => handleLaunchTemplate(item.config)}
                     aria-label={`Use ${item.title} Quick Template`}
-                    className="font-semibold text-[#134e3a] dark:text-[#2dd4bf] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="font-semibold text-forest-700 dark:text-mint-285 hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <span>Quick Template</span>
                     <ArrowRight className="w-3.5 h-3.5" />

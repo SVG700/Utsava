@@ -26,8 +26,8 @@ export function ProgressBar({
     variant || (actualPercent > 100 ? 'danger' : actualPercent >= 85 ? 'warning' : 'primary');
 
   const variants = {
-    primary: 'bg-[#134e3a] dark:bg-[#2dd4bf]',
-    warning: 'bg-[#b07832] dark:bg-[#eab368]',
+    primary: 'bg-forest-700 dark:bg-mint-285',
+    warning: 'bg-saffron-520 dark:bg-saffron-290',
     danger: 'bg-rose-600 dark:bg-rose-500',
     success: 'bg-emerald-600 dark:bg-emerald-400',
   };
@@ -36,14 +36,14 @@ export function ProgressBar({
     <div className={cn('w-full space-y-1.5', className)}>
       {(label || showPercent) && (
         <div className="flex justify-between items-center text-xs">
-          {label && <span className="font-medium text-[#2d3832] dark:text-[#d3ded8]">{label}</span>}
+          {label && <span className="font-medium text-moss-810 dark:text-moss-155">{label}</span>}
           {showPercent && (
             <span
               className={cn(
                 'font-semibold tabular-nums',
                 actualPercent > 100
                   ? 'text-rose-600 dark:text-rose-400'
-                  : 'text-[#596660] dark:text-[#94a19b]',
+                  : 'text-moss-645 dark:text-moss-415',
               )}
             >
               {actualPercent}%
@@ -52,7 +52,7 @@ export function ProgressBar({
         </div>
       )}
       <div
-        className="w-full h-2 bg-[#ece7dd] dark:bg-[#243029] rounded-full overflow-hidden"
+        className="w-full h-2 bg-linen-105 dark:bg-moss-835 rounded-full overflow-hidden"
         role="progressbar"
         aria-valuenow={percent}
         aria-valuemin={0}

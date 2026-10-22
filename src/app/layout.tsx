@@ -27,16 +27,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[#faf8f5] dark:bg-[#111614] text-[#1c2420] dark:text-[#f3f5f4] selection:bg-[#134e3a]/15 selection:text-[#134e3a] dark:selection:bg-[#2dd4bf]/20 dark:selection:text-[#2dd4bf]">
+      <body className="min-h-full flex flex-col bg-sand-50 dark:bg-moss-915 text-moss-875 dark:text-moss-45 selection:bg-forest-700/15 selection:text-forest-700 dark:selection:bg-mint-285/20 dark:selection:text-mint-285">
         {/* Accessible Skip to Main Content Link */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#134e3a] focus:text-white focus:rounded-lg focus:shadow-elevated focus:outline-none"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-forest-700 focus:text-white focus:rounded-lg focus:shadow-elevated focus:outline-none"
         >
           Skip to main content
         </a>
         <Suspense
-          fallback={<div className="h-16 border-b border-[#e6e0d4] dark:border-[#2c3a33]" />}
+          fallback={<div className="h-16 border-b border-linen-135 dark:border-moss-810" />}
         >
           <Navbar />
         </Suspense>

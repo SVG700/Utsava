@@ -163,13 +163,13 @@ export function EventWizard() {
     <div className="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
       {/* Page Header */}
       <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
-        <span className="text-xs font-bold uppercase tracking-widest text-[#134e3a] dark:text-[#2dd4bf]">
+        <span className="text-xs font-bold uppercase tracking-widest text-forest-700 dark:text-mint-285">
           Step {step} of 3
         </span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1c2420] dark:text-[#f3f5f4] tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-moss-875 dark:text-moss-45 tracking-tight">
           Plan Your Next Celebration
         </h1>
-        <p className="text-xs sm:text-sm text-[#606d66] dark:text-[#94a19b]">
+        <p className="text-xs sm:text-sm text-moss-620 dark:text-moss-415">
           Provide your event details. Utsava’s GenAI will generate a customized blueprint with
           penny-perfect INR budgets, milestone timelines, and vendor requirements.
         </p>
@@ -189,10 +189,10 @@ export function EventWizard() {
                 }}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   step === s.num
-                    ? 'bg-[#134e3a] text-white shadow-soft dark:bg-[#2dd4bf] dark:text-[#042f2e]'
+                    ? 'bg-forest-700 text-white shadow-soft dark:bg-mint-285 dark:text-mint-850'
                     : step > s.num
-                      ? 'bg-[#e8f3ee] text-[#134e3a] dark:bg-[#1a2e26] dark:text-[#34d399]'
-                      : 'bg-[#f0ece3] text-[#4d5953] dark:bg-[#222d27] dark:text-[#94a19b]'
+                      ? 'bg-forest-50 text-forest-700 dark:bg-moss-850 dark:text-mint-295'
+                      : 'bg-linen-85 text-moss-695 dark:bg-moss-845 dark:text-moss-415'
                 }`}
               >
                 <span className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] bg-black/10 dark:bg-white/10 font-bold">
@@ -200,7 +200,7 @@ export function EventWizard() {
                 </span>
                 <span className="hidden sm:inline">{s.title}</span>
               </button>
-              {s.num < 3 && <div className="w-4 sm:w-8 h-0.5 bg-[#e6e0d4] dark:border-[#2f3f36]" />}
+              {s.num < 3 && <div className="w-4 sm:w-8 h-0.5 bg-linen-135 dark:border-moss-790" />}
             </React.Fragment>
           ))}
         </div>

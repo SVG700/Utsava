@@ -42,23 +42,23 @@ export function DashboardMetrics({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Metric 1: Budget Overview */}
-      <Card className="hover:border-[#134e3a]/40 dark:hover:border-[#2dd4bf]/40 transition-all duration-200">
+      <Card className="hover:border-forest-700/40 dark:hover:border-mint-285/40 transition-all duration-200">
         <CardContent className="p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-[#606d66] dark:text-[#94a19b] uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-moss-620 dark:text-moss-415 uppercase tracking-wider">
               Budget Utilisation
             </span>
-            <span className="p-2 rounded-xl bg-[#e8f3ee] dark:bg-[#152a22] text-[#134e3a] dark:text-[#34d399]">
+            <span className="p-2 rounded-xl bg-forest-50 dark:bg-moss-860 text-forest-700 dark:text-mint-295">
               <IndianRupee className="w-4 h-4" />
             </span>
           </div>
 
           <div>
             <div className="flex items-baseline justify-between">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#1c2420] dark:text-[#f3f5f4] tracking-tight">
+              <span className="text-2xl sm:text-3xl font-extrabold text-moss-875 dark:text-moss-45 tracking-tight">
                 {formatINR(spent)}
               </span>
-              <span className="text-xs text-[#606d66] dark:text-[#94a19b] font-medium">
+              <span className="text-xs text-moss-620 dark:text-moss-415 font-medium">
                 of {formatINR(totalBudget)}
               </span>
             </div>
@@ -70,7 +70,7 @@ export function DashboardMetrics({
               showPercent={false}
             />
 
-            <div className="flex justify-between items-center text-xs mt-2.5 text-[#606d66] dark:text-[#94a19b] font-medium">
+            <div className="flex justify-between items-center text-xs mt-2.5 text-moss-620 dark:text-moss-415 font-medium">
               <span>{utilPercent}% allocated</span>
               <span
                 className={
@@ -89,7 +89,7 @@ export function DashboardMetrics({
           <button
             type="button"
             onClick={() => onNavigateTab('budget')}
-            className="w-full text-xs font-semibold text-[#134e3a] dark:text-[#2dd4bf] hover:underline flex items-center justify-between pt-3 border-t border-[#f0ece2] dark:border-[#243029] cursor-pointer"
+            className="w-full text-xs font-semibold text-forest-700 dark:text-mint-285 hover:underline flex items-center justify-between pt-3 border-t border-linen-85 dark:border-moss-835 cursor-pointer"
           >
             <span>Manage Expenses & Ledger</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -98,10 +98,10 @@ export function DashboardMetrics({
       </Card>
 
       {/* Metric 2: Timeline Progress */}
-      <Card className="hover:border-[#134e3a]/40 dark:hover:border-[#2dd4bf]/40 transition-all duration-200">
+      <Card className="hover:border-forest-700/40 dark:hover:border-mint-285/40 transition-all duration-200">
         <CardContent className="p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-[#606d66] dark:text-[#94a19b] uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-moss-620 dark:text-moss-415 uppercase tracking-wider">
               Milestones & Timeline
             </span>
             <span className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300">
@@ -111,9 +111,9 @@ export function DashboardMetrics({
 
           <div>
             <div className="flex items-baseline justify-between">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#1c2420] dark:text-[#f3f5f4] tracking-tight">
+              <span className="text-2xl sm:text-3xl font-extrabold text-moss-875 dark:text-moss-45 tracking-tight">
                 {completedTasks}{' '}
-                <span className="text-base font-normal text-[#88968e]">/ {totalTasks}</span>
+                <span className="text-base font-normal text-moss-460">/ {totalTasks}</span>
               </span>
               {overdueTasksCount > 0 && (
                 <Badge variant="danger" className="text-[10px]">
@@ -129,7 +129,7 @@ export function DashboardMetrics({
               showPercent={false}
             />
 
-            <div className="flex justify-between items-center text-xs mt-2.5 text-[#606d66] dark:text-[#94a19b] font-medium">
+            <div className="flex justify-between items-center text-xs mt-2.5 text-moss-620 dark:text-moss-415 font-medium">
               <span>{taskProgress}% completed</span>
               <span>{totalTasks - completedTasks} tasks remaining</span>
             </div>
@@ -138,7 +138,7 @@ export function DashboardMetrics({
           <button
             type="button"
             onClick={() => onNavigateTab('timeline')}
-            className="w-full text-xs font-semibold text-[#134e3a] dark:text-[#2dd4bf] hover:underline flex items-center justify-between pt-3 border-t border-[#f0ece2] dark:border-[#243029] cursor-pointer"
+            className="w-full text-xs font-semibold text-forest-700 dark:text-mint-285 hover:underline flex items-center justify-between pt-3 border-t border-linen-85 dark:border-moss-835 cursor-pointer"
           >
             <span>View Milestone Schedule</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -147,24 +147,24 @@ export function DashboardMetrics({
       </Card>
 
       {/* Metric 3: Vendor Booking */}
-      <Card className="hover:border-[#134e3a]/40 dark:hover:border-[#2dd4bf]/40 transition-all duration-200">
+      <Card className="hover:border-forest-700/40 dark:hover:border-mint-285/40 transition-all duration-200">
         <CardContent className="p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-[#606d66] dark:text-[#94a19b] uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-moss-620 dark:text-moss-415 uppercase tracking-wider">
               Vendor Readiness
             </span>
-            <span className="p-2 rounded-xl bg-[#fbf4ea] dark:bg-[#281f13] text-[#ab7532] dark:text-[#f3c27a]">
+            <span className="p-2 rounded-xl bg-saffron-45 dark:bg-saffron-880 text-saffron-535 dark:text-saffron-230">
               <Users className="w-4 h-4" />
             </span>
           </div>
 
           <div>
             <div className="flex items-baseline justify-between">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#1c2420] dark:text-[#f3f5f4] tracking-tight">
+              <span className="text-2xl sm:text-3xl font-extrabold text-moss-875 dark:text-moss-45 tracking-tight">
                 {bookedVendors}{' '}
-                <span className="text-base font-normal text-[#88968e]">/ {totalVendors}</span>
+                <span className="text-base font-normal text-moss-460">/ {totalVendors}</span>
               </span>
-              <span className="text-xs text-[#606d66] dark:text-[#94a19b] font-medium">
+              <span className="text-xs text-moss-620 dark:text-moss-415 font-medium">
                 Categories
               </span>
             </div>
@@ -174,19 +174,19 @@ export function DashboardMetrics({
                 <span className="text-xs font-bold text-emerald-800 dark:text-emerald-400 block">
                   {bookedVendors}
                 </span>
-                <span className="text-[10px] text-[#606d66] dark:text-[#94a19b]">Booked</span>
+                <span className="text-[10px] text-moss-620 dark:text-moss-415">Booked</span>
               </div>
               <div className="p-2 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900">
                 <span className="text-xs font-bold text-amber-800 dark:text-amber-400 block">
                   {shortlistedVendors}
                 </span>
-                <span className="text-[10px] text-[#606d66] dark:text-[#94a19b]">Shortlisted</span>
+                <span className="text-[10px] text-moss-620 dark:text-moss-415">Shortlisted</span>
               </div>
-              <div className="p-2 rounded-xl bg-[#f0ece3] dark:bg-[#222d27] border border-[#e2ddd1] dark:border-[#2f3f36]">
-                <span className="text-xs font-bold text-[#2d3832] dark:text-[#d3ded8] block">
+              <div className="p-2 rounded-xl bg-linen-85 dark:bg-moss-845 border border-linen-150 dark:border-moss-790">
+                <span className="text-xs font-bold text-moss-810 dark:text-moss-155 block">
                   {notStartedVendors}
                 </span>
-                <span className="text-[10px] text-[#88968e]">Pending</span>
+                <span className="text-[10px] text-moss-460">Pending</span>
               </div>
             </div>
           </div>
@@ -194,7 +194,7 @@ export function DashboardMetrics({
           <button
             type="button"
             onClick={() => onNavigateTab('vendors')}
-            className="w-full text-xs font-semibold text-[#134e3a] dark:text-[#2dd4bf] hover:underline flex items-center justify-between pt-3 border-t border-[#f0ece2] dark:border-[#243029] cursor-pointer"
+            className="w-full text-xs font-semibold text-forest-700 dark:text-mint-285 hover:underline flex items-center justify-between pt-3 border-t border-linen-85 dark:border-moss-835 cursor-pointer"
           >
             <span>Manage Vendor Quotes</span>
             <ChevronRight className="w-3.5 h-3.5" />

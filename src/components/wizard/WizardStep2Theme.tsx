@@ -16,10 +16,10 @@ export function WizardStep2Theme({ formData, updateField, toggleSubEvent }: Wiza
       {formData.eventType === 'wedding' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[#1c2420] dark:text-[#f3f5f4]">
+            <h3 className="text-sm font-bold text-moss-875 dark:text-moss-45">
               Indian Wedding Sub-Events
             </h3>
-            <span className="text-xs text-[#606d66] dark:text-[#94a19b]">
+            <span className="text-xs text-moss-620 dark:text-moss-415">
               {(formData.subEvents || []).length} selected
             </span>
           </div>
@@ -47,8 +47,8 @@ export function WizardStep2Theme({ formData, updateField, toggleSubEvent }: Wiza
                   onClick={() => toggleSubEvent(sub.key as (typeof WEDDING_SUB_EVENTS)[number])}
                   className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                     isChecked
-                      ? 'border-[#134e3a] dark:border-[#2dd4bf] bg-[#e8f3ee]/60 dark:bg-[#152a22]/50 text-[#134e3a] dark:text-[#34d399]'
-                      : 'border-[#e6e0d4] dark:border-[#2f3f36] bg-white dark:bg-[#18201c] text-[#606d66] dark:text-[#94a19b]'
+                      ? 'border-forest-700 dark:border-mint-285 bg-forest-50/60 dark:bg-moss-860/50 text-forest-700 dark:text-mint-295'
+                      : 'border-linen-135 dark:border-moss-790 bg-white dark:bg-moss-885 text-moss-620 dark:text-moss-415'
                   }`}
                 >
                   <div className="flex items-center justify-between font-semibold text-xs">
@@ -56,14 +56,14 @@ export function WizardStep2Theme({ formData, updateField, toggleSubEvent }: Wiza
                     <span
                       className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] ${
                         isChecked
-                          ? 'bg-[#134e3a] text-white dark:bg-[#2dd4bf] dark:text-[#042f2e]'
-                          : 'border-[#dcd6c8] dark:border-[#2f3f36]'
+                          ? 'bg-forest-700 text-white dark:bg-mint-285 dark:text-mint-850'
+                          : 'border-linen-180 dark:border-moss-790'
                       }`}
                     >
                       {isChecked ? '✓' : ''}
                     </span>
                   </div>
-                  <span className="text-[10px] text-[#55635c] dark:text-[#94a19b] block mt-0.5 line-clamp-1">
+                  <span className="text-[10px] text-moss-660 dark:text-moss-415 block mt-0.5 line-clamp-1">
                     {sub.desc}
                   </span>
                 </button>
@@ -74,7 +74,7 @@ export function WizardStep2Theme({ formData, updateField, toggleSubEvent }: Wiza
       )}
 
       {/* Theme Concept */}
-      <div className="space-y-1.5 pt-2 border-t border-[#f0ece2] dark:border-[#243029]">
+      <div className="space-y-1.5 pt-2 border-t border-linen-85 dark:border-moss-835">
         <Input
           id="wizard-theme-input"
           label="Aesthetic Concept & Theme"
@@ -88,7 +88,7 @@ export function WizardStep2Theme({ formData, updateField, toggleSubEvent }: Wiza
           helperText="Gemini will design matching color palettes, floral suggestions, and styling rules."
         />
         <div className="flex flex-wrap gap-1.5 pt-1">
-          <span className="text-[10px] text-[#55635c] dark:text-[#94a19b] font-semibold uppercase tracking-wider self-center mr-1">
+          <span className="text-[10px] text-moss-660 dark:text-moss-415 font-semibold uppercase tracking-wider self-center mr-1">
             Suggestions:
           </span>
           {[
@@ -102,7 +102,7 @@ export function WizardStep2Theme({ formData, updateField, toggleSubEvent }: Wiza
               key={s}
               type="button"
               onClick={() => updateField('theme', s)}
-              className="text-[11px] px-2.5 py-1 rounded-lg border border-[#e6e0d4] dark:border-[#2f3f36] bg-[#faf8f5] dark:bg-[#18201c] hover:border-[#134e3a]/40 text-[#606d66] dark:text-[#94a19b] transition-colors cursor-pointer"
+              className="text-[11px] px-2.5 py-1 rounded-lg border border-linen-135 dark:border-moss-790 bg-sand-50 dark:bg-moss-885 hover:border-forest-700/40 text-moss-620 dark:text-moss-415 transition-colors cursor-pointer"
             >
               {s}
             </button>
@@ -111,10 +111,10 @@ export function WizardStep2Theme({ formData, updateField, toggleSubEvent }: Wiza
       </div>
 
       {/* Cultural Traditions & Regional Customs */}
-      <div className="space-y-1.5 pt-2 border-t border-[#f0ece2] dark:border-[#243029]">
+      <div className="space-y-1.5 pt-2 border-t border-linen-85 dark:border-moss-835">
         <label
           htmlFor="wizard-cultural-pref"
-          className="block text-xs sm:text-sm font-semibold text-[#1c2420] dark:text-[#f3f5f4]"
+          className="block text-xs sm:text-sm font-semibold text-moss-875 dark:text-moss-45"
         >
           Cultural Traditions & Regional Rituals (Optional)
         </label>
@@ -124,12 +124,12 @@ export function WizardStep2Theme({ formData, updateField, toggleSubEvent }: Wiza
           placeholder="e.g. Marwari customs with traditional Baithak, live Shehnai at dawn, and Jain midnight snack counter"
           value={formData.culturalPreferences || ''}
           onChange={(e) => updateField('culturalPreferences', e.target.value)}
-          className="w-full px-3.5 py-2.5 rounded-xl border border-[#dcd6c8] dark:border-[#2f3f36] bg-white dark:bg-[#18201c] text-[#1c2420] dark:text-[#f3f5f4] text-xs placeholder:text-[#596660] focus:outline-none focus:ring-2 focus:ring-[#134e3a]/15 focus:border-[#134e3a] dark:focus:border-[#2dd4bf] transition-all"
+          className="w-full px-3.5 py-2.5 rounded-xl border border-linen-180 dark:border-moss-790 bg-white dark:bg-moss-885 text-moss-875 dark:text-moss-45 text-xs placeholder:text-moss-645 focus:outline-none focus:ring-2 focus:ring-forest-700/15 focus:border-forest-700 dark:focus:border-mint-285 transition-all"
         />
       </div>
 
       {/* Accessibility & Senior Care */}
-      <div className="space-y-1.5 pt-2 border-t border-[#f0ece2] dark:border-[#243029]">
+      <div className="space-y-1.5 pt-2 border-t border-linen-85 dark:border-moss-835">
         <Input
           id="wizard-accessibility-input"
           label="Accessibility & Senior Care Needs (Optional)"
@@ -141,7 +141,7 @@ export function WizardStep2Theme({ formData, updateField, toggleSubEvent }: Wiza
       </div>
 
       {/* Special Requirements */}
-      <div className="space-y-1.5 pt-2 border-t border-[#f0ece2] dark:border-[#243029]">
+      <div className="space-y-1.5 pt-2 border-t border-linen-85 dark:border-moss-835">
         <Input
           id="wizard-special-req-input"
           label="Special Requirements or Constraints (Optional)"

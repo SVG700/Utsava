@@ -28,20 +28,20 @@ export function DashboardDeadlines({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-[#134e3a] dark:text-[#2dd4bf]" />
+            <Clock className="w-4 h-4 text-forest-700 dark:text-mint-285" />
             <CardTitle className="text-sm">Upcoming Deadlines</CardTitle>
           </div>
           <button
             type="button"
             onClick={() => onNavigateTab('timeline')}
-            className="text-xs text-[#134e3a] dark:text-[#2dd4bf] hover:underline cursor-pointer font-medium"
+            className="text-xs text-forest-700 dark:text-mint-285 hover:underline cursor-pointer font-medium"
           >
             View all ({totalTasks})
           </button>
         </CardHeader>
         <CardContent>
           {upcomingTasks.length === 0 ? (
-            <p className="text-xs text-[#88968e] text-center py-4">
+            <p className="text-xs text-moss-460 text-center py-4">
               {totalTasks === 0 ? 'No tasks created yet.' : 'All upcoming tasks completed!'}
             </p>
           ) : (
@@ -54,11 +54,11 @@ export function DashboardDeadlines({
                     className={`p-3 rounded-xl border text-xs space-y-1 ${
                       overdue
                         ? 'bg-rose-50/70 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900'
-                        : 'bg-[#faf8f5] dark:bg-[#1f2924] border-[#e8e2d7] dark:border-[#2b3a32]'
+                        : 'bg-sand-50 dark:bg-moss-865 border-sand-200 dark:border-moss-810'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-[#1c2420] dark:text-[#f3f5f4] line-clamp-1">
+                      <span className="font-semibold text-moss-875 dark:text-moss-45 line-clamp-1">
                         {t.title}
                       </span>
                       <Badge
@@ -74,7 +74,7 @@ export function DashboardDeadlines({
                         {t.priority}
                       </Badge>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-[#606d66] dark:text-[#94a19b]">
+                    <div className="flex items-center justify-between text-[11px] text-moss-620 dark:text-moss-415">
                       <span>Due: {formatDisplayDate(t.dueDate)}</span>
                       {overdue ? (
                         <span className="text-rose-600 font-bold">Overdue</span>
@@ -95,7 +95,7 @@ export function DashboardDeadlines({
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-[#ab7532] dark:text-[#eab368]" />
+              <ShieldAlert className="w-4 h-4 text-saffron-535 dark:text-saffron-290" />
               <CardTitle className="text-sm">Assumptions & Risks</CardTitle>
             </div>
           </CardHeader>
@@ -104,9 +104,9 @@ export function DashboardDeadlines({
               {blueprint.risksAndAssumptions.map((risk, i) => (
                 <li
                   key={i}
-                  className="p-2.5 rounded-xl bg-[#faf8f5] dark:bg-[#1f2924] text-[#2d3832] dark:text-[#d3ded8] border border-[#e8e2d7] dark:border-[#2b3a32] flex items-start gap-2"
+                  className="p-2.5 rounded-xl bg-sand-50 dark:bg-moss-865 text-moss-810 dark:text-moss-155 border border-sand-200 dark:border-moss-810 flex items-start gap-2"
                 >
-                  <span className="text-[#ab7532] font-bold">!</span>
+                  <span className="text-saffron-535 font-bold">!</span>
                   <span className="leading-relaxed">{risk}</span>
                 </li>
               ))}
@@ -116,9 +116,9 @@ export function DashboardDeadlines({
       )}
 
       {/* Quick Action Shortcuts */}
-      <Card className="bg-[#e8f3ee]/40 dark:bg-[#152a22]/30 border-[#cbe4d7] dark:border-[#1d4235]">
+      <Card className="bg-forest-50/40 dark:bg-moss-860/30 border-moss-145 dark:border-moss-795">
         <CardContent className="p-5 space-y-3">
-          <h4 className="text-xs font-bold text-[#134e3a] dark:text-[#34d399] uppercase tracking-wider flex items-center gap-1.5">
+          <h4 className="text-xs font-bold text-forest-700 dark:text-mint-295 uppercase tracking-wider flex items-center gap-1.5">
             <Sliders className="w-3.5 h-3.5" /> Quick Shortcuts
           </h4>
           <div className="grid grid-cols-2 gap-2 text-xs font-semibold">

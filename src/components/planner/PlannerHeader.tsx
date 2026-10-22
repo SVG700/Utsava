@@ -127,13 +127,13 @@ export function PlannerHeader({
   ];
 
   return (
-    <div className="border-b border-[#e8e2d7] dark:border-[#26332b] bg-[#faf8f5]/80 dark:bg-[#111614]/80 backdrop-blur-md">
+    <div className="border-b border-sand-200 dark:border-moss-830 bg-sand-50/80 dark:bg-moss-915/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-0">
         {/* Top Back Navigation Row */}
         <div className="flex items-center justify-between mb-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#606d66] hover:text-[#1c2420] dark:text-[#94a19b] dark:hover:text-[#f3f5f4] transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-moss-620 hover:text-moss-875 dark:text-moss-415 dark:hover:text-moss-45 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Celebrations</span>
@@ -148,7 +148,7 @@ export function PlannerHeader({
             disabled={isGeneratingBlueprint}
             className="gap-1.5 text-xs font-medium"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#134e3a] dark:text-[#2dd4bf]" />
+            <Sparkles className="w-3.5 h-3.5 text-forest-700 dark:text-mint-285" />
             <span>{hasBlueprint ? 'Regenerate Blueprint' : 'Generate Blueprint'}</span>
           </Button>
         </div>
@@ -214,10 +214,10 @@ export function PlannerHeader({
                   isToday
                     ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
                     : isPast
-                      ? 'bg-[#f0ece3] text-[#75837c] dark:bg-[#222d27] dark:text-[#94a19b]'
+                      ? 'bg-linen-85 text-moss-535 dark:bg-moss-845 dark:text-moss-415'
                       : daysLeft <= 14
                         ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300'
-                        : 'bg-[#e8f3ee] text-[#134e3a] dark:bg-[#152a22] dark:text-[#34d399]'
+                        : 'bg-forest-50 text-forest-700 dark:bg-moss-860 dark:text-mint-295'
                 }`}
               >
                 <Clock className="w-3 h-3" />
@@ -225,12 +225,12 @@ export function PlannerHeader({
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1c2420] dark:text-[#f3f5f4] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-moss-875 dark:text-moss-45 tracking-tight">
               {event.name}
             </h1>
 
             {/* Quick Metadata Bar */}
-            <div className="flex flex-wrap items-center gap-4 text-xs text-[#606d66] dark:text-[#94a19b] pt-0.5">
+            <div className="flex flex-wrap items-center gap-4 text-xs text-moss-620 dark:text-moss-415 pt-0.5">
               <button
                 type="button"
                 onClick={() => {
@@ -238,10 +238,10 @@ export function PlannerHeader({
                   setDateError(null);
                   setIsEditingDate(true);
                 }}
-                className="flex items-center gap-1.5 hover:text-[#134e3a] dark:hover:text-[#2dd4bf] transition-colors cursor-pointer group"
+                className="flex items-center gap-1.5 hover:text-forest-700 dark:hover:text-mint-285 transition-colors cursor-pointer group"
                 title="Change celebration date (auto-recalculates timeline)"
               >
-                <Calendar className="w-3.5 h-3.5 text-[#88968e] group-hover:text-[#134e3a] dark:group-hover:text-[#2dd4bf]" />
+                <Calendar className="w-3.5 h-3.5 text-moss-460 group-hover:text-forest-700 dark:group-hover:text-mint-285" />
                 <span className="underline decoration-dotted underline-offset-2 font-medium">
                   {formatDisplayDate(event.date)}
                 </span>
@@ -249,12 +249,12 @@ export function PlannerHeader({
               </button>
 
               <div className="flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#88968e]" />
+                <MapPin className="w-3.5 h-3.5 text-moss-460" />
                 <span>{event.city}</span>
               </div>
 
               <div className="flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5 text-[#88968e]" />
+                <Users className="w-3.5 h-3.5 text-moss-460" />
                 <span>{event.guestCount} Guests</span>
               </div>
 
@@ -266,7 +266,7 @@ export function PlannerHeader({
                   setBudgetError(null);
                   setIsEditingBudget(true);
                 }}
-                className="flex items-center gap-1.5 font-bold text-[#134e3a] dark:text-[#34d399] hover:underline cursor-pointer group"
+                className="flex items-center gap-1.5 font-bold text-forest-700 dark:text-mint-295 hover:underline cursor-pointer group"
                 title="Edit total celebration budget"
               >
                 <IndianRupee className="w-3.5 h-3.5" />
@@ -279,7 +279,7 @@ export function PlannerHeader({
 
         {/* Tab Navigation with Lucide Icons */}
         <nav
-          className="flex space-x-1 sm:space-x-2 overflow-x-auto border-t border-[#e8e2d7] dark:border-[#26332b] scrollbar-none"
+          className="flex space-x-1 sm:space-x-2 overflow-x-auto border-t border-sand-200 dark:border-moss-830 scrollbar-none"
           aria-label="Planner Tabs"
           role="tablist"
         >
@@ -311,12 +311,12 @@ export function PlannerHeader({
                 onClick={() => onTabChange(tab.id)}
                 className={`flex items-center gap-2 py-3.5 px-3.5 text-xs sm:text-sm font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   isActive
-                    ? 'border-[#134e3a] text-[#134e3a] dark:border-[#2dd4bf] dark:text-[#2dd4bf]'
-                    : 'border-transparent text-[#606d66] hover:text-[#1c2420] dark:text-[#94a19b] dark:hover:text-[#f3f5f4] hover:border-[#b8ad96]'
+                    ? 'border-forest-700 text-forest-700 dark:border-mint-285 dark:text-mint-285'
+                    : 'border-transparent text-moss-620 hover:text-moss-875 dark:text-moss-415 dark:hover:text-moss-45 hover:border-linen-350'
                 }`}
               >
                 <Icon
-                  className={`w-4 h-4 ${isActive ? 'text-[#134e3a] dark:text-[#2dd4bf]' : 'text-[#88968e]'}`}
+                  className={`w-4 h-4 ${isActive ? 'text-forest-700 dark:text-mint-285' : 'text-moss-460'}`}
                 />
                 <span>{tab.label}</span>
               </button>
@@ -351,7 +351,7 @@ export function PlannerHeader({
             <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">{dateError}</p>
           )}
 
-          <div className="p-3 rounded-xl bg-[#e8f3ee] dark:bg-[#152a22] border border-[#cbe4d7] dark:border-[#1d4235] text-xs text-[#134e3a] dark:text-[#34d399]">
+          <div className="p-3 rounded-xl bg-forest-50 dark:bg-moss-860 border border-moss-145 dark:border-moss-795 text-xs text-forest-700 dark:text-mint-295">
             All preparation timeline deadlines will be shifted based on their relative days before
             the event.
           </div>

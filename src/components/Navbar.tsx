@@ -96,24 +96,24 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#e8e2d7] dark:border-[#26332b] bg-[#faf8f5]/90 dark:bg-[#111614]/90 backdrop-blur-md transition-colors duration-200">
+    <header className="sticky top-0 z-40 w-full border-b border-sand-200 dark:border-moss-830 bg-sand-50/90 dark:bg-moss-915/90 backdrop-blur-md transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 group focus-visible:ring-2 focus-visible:ring-[#134e3a] dark:focus-visible:ring-[#2dd4bf] rounded-lg p-1"
+          className="flex items-center gap-2.5 group focus-visible:ring-2 focus-visible:ring-forest-700 dark:focus-visible:ring-mint-285 rounded-lg p-1"
         >
-          <div className="w-9 h-9 rounded-xl bg-[#134e3a] dark:bg-[#2dd4bf] flex items-center justify-center text-white dark:text-[#042f2e] shadow-xs group-hover:scale-105 transition-transform duration-200">
+          <div className="w-9 h-9 rounded-xl bg-forest-700 dark:bg-mint-285 flex items-center justify-center text-white dark:text-mint-850 shadow-xs group-hover:scale-105 transition-transform duration-200">
             <Sparkles className="w-4.5 h-4.5" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-lg tracking-tight text-[#1c2420] dark:text-[#f3f5f4] flex items-center gap-2">
+            <span className="font-bold text-lg tracking-tight text-moss-875 dark:text-moss-45 flex items-center gap-2">
               Utsava
-              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-[#e8f3ee] text-[#134e3a] dark:bg-[#152a22] dark:text-[#34d399] border border-[#cbe4d7] dark:border-[#1d4235]">
+              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-forest-50 text-forest-700 dark:bg-moss-860 dark:text-mint-295 border border-moss-145 dark:border-moss-795">
                 AI Planner
               </span>
             </span>
-            <span className="text-[10px] text-[#606d66] dark:text-[#94a19b] -mt-1 font-medium hidden sm:block">
+            <span className="text-[10px] text-moss-620 dark:text-moss-415 -mt-1 font-medium hidden sm:block">
               Celebration & Event Assistant
             </span>
           </div>
@@ -125,8 +125,8 @@ export function Navbar() {
             href="/"
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
               pathname === '/'
-                ? 'bg-[#f0ece3] text-[#1c2420] dark:bg-[#222d27] dark:text-[#f3f5f4]'
-                : 'text-[#606d66] hover:text-[#1c2420] hover:bg-[#f0ece3]/60 dark:text-[#94a19b] dark:hover:text-[#f3f5f4] dark:hover:bg-[#222d27]/60'
+                ? 'bg-linen-85 text-moss-875 dark:bg-moss-845 dark:text-moss-45'
+                : 'text-moss-620 hover:text-moss-875 hover:bg-linen-85/60 dark:text-moss-415 dark:hover:text-moss-45 dark:hover:bg-moss-845/60'
             }`}
           >
             <Calendar className="w-3.5 h-3.5" />
@@ -134,14 +134,14 @@ export function Navbar() {
           </Link>
           <Link
             href="/#categories"
-            className="px-3 py-1.5 text-xs font-medium text-[#606d66] hover:text-[#1c2420] hover:bg-[#f0ece3]/60 dark:text-[#94a19b] dark:hover:text-[#f3f5f4] dark:hover:bg-[#222d27]/60 rounded-lg transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 text-xs font-medium text-moss-620 hover:text-moss-875 hover:bg-linen-85/60 dark:text-moss-415 dark:hover:text-moss-45 dark:hover:bg-moss-845/60 rounded-lg transition-colors flex items-center gap-1.5"
           >
             <Compass className="w-3.5 h-3.5" />
             <span>Categories</span>
           </Link>
           <Link
             href="/#how-it-works"
-            className="px-3 py-1.5 text-xs font-medium text-[#606d66] hover:text-[#1c2420] hover:bg-[#f0ece3]/60 dark:text-[#94a19b] dark:hover:text-[#f3f5f4] dark:hover:bg-[#222d27]/60 rounded-lg transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 text-xs font-medium text-moss-620 hover:text-moss-875 hover:bg-linen-85/60 dark:text-moss-415 dark:hover:text-moss-45 dark:hover:bg-moss-845/60 rounded-lg transition-colors flex items-center gap-1.5"
           >
             <HelpCircle className="w-3.5 h-3.5" />
             <span>How It Works</span>
@@ -155,14 +155,14 @@ export function Navbar() {
             type="button"
             onClick={() => setIsKeyModalOpen(true)}
             title="Configure Gemini API Key"
-            className="p-2 rounded-xl text-[#606d66] hover:text-[#1c2420] hover:bg-[#f0ece3] dark:text-[#94a19b] dark:hover:text-[#f3f5f4] dark:hover:bg-[#222d27] transition-colors relative cursor-pointer"
+            className="p-2 rounded-xl text-moss-620 hover:text-moss-875 hover:bg-linen-85 dark:text-moss-415 dark:hover:text-moss-45 dark:hover:bg-moss-845 transition-colors relative cursor-pointer"
             aria-label="Configure Gemini API Key"
           >
             <KeyRound className="w-4 h-4" />
             {apiKeyInput ? (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-[#faf8f5] dark:ring-[#111614]" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-sand-50 dark:ring-moss-915" />
             ) : (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-[#faf8f5] dark:ring-[#111614]" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-sand-50 dark:ring-moss-915" />
             )}
           </button>
 
@@ -170,13 +170,13 @@ export function Navbar() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-2 rounded-xl text-[#606d66] hover:text-[#1c2420] hover:bg-[#f0ece3] dark:text-[#94a19b] dark:hover:text-[#f3f5f4] dark:hover:bg-[#222d27] transition-colors cursor-pointer"
+            className="p-2 rounded-xl text-moss-620 hover:text-moss-875 hover:bg-linen-85 dark:text-moss-415 dark:hover:text-moss-45 dark:hover:bg-moss-845 transition-colors cursor-pointer"
             aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {isDark ? (
               <Sun className="w-4 h-4 text-amber-400" />
             ) : (
-              <Moon className="w-4 h-4 text-[#4a5851]" />
+              <Moon className="w-4 h-4 text-moss-700" />
             )}
           </button>
 
@@ -192,7 +192,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 md:hidden rounded-xl text-[#606d66] hover:text-[#1c2420] hover:bg-[#f0ece3] dark:text-[#94a19b] dark:hover:text-[#f3f5f4] dark:hover:bg-[#222d27] transition-colors"
+            className="p-2 md:hidden rounded-xl text-moss-620 hover:text-moss-875 hover:bg-linen-85 dark:text-moss-415 dark:hover:text-moss-45 dark:hover:bg-moss-845 transition-colors"
             aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -202,29 +202,29 @@ export function Navbar() {
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-[#e8e2d7] dark:border-[#26332b] bg-[#faf8f5] dark:bg-[#111614] px-4 py-4 space-y-2 animate-in slide-in-from-top-2">
+        <div className="md:hidden border-t border-sand-200 dark:border-moss-830 bg-sand-50 dark:bg-moss-915 px-4 py-4 space-y-2 animate-in slide-in-from-top-2">
           <Link
             href="/"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-[#1c2420] dark:text-[#f3f5f4] rounded-lg hover:bg-[#f0ece3] dark:hover:bg-[#222d27]"
+            className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-moss-875 dark:text-moss-45 rounded-lg hover:bg-linen-85 dark:hover:bg-moss-845"
           >
-            <Calendar className="w-4 h-4 text-[#134e3a] dark:text-[#2dd4bf]" />
+            <Calendar className="w-4 h-4 text-forest-700 dark:text-mint-285" />
             <span>My Events</span>
           </Link>
           <Link
             href="/#categories"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-[#1c2420] dark:text-[#f3f5f4] rounded-lg hover:bg-[#f0ece3] dark:hover:bg-[#222d27]"
+            className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-moss-875 dark:text-moss-45 rounded-lg hover:bg-linen-85 dark:hover:bg-moss-845"
           >
-            <Compass className="w-4 h-4 text-[#134e3a] dark:text-[#2dd4bf]" />
+            <Compass className="w-4 h-4 text-forest-700 dark:text-mint-285" />
             <span>Event Categories</span>
           </Link>
           <Link
             href="/#how-it-works"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-[#1c2420] dark:text-[#f3f5f4] rounded-lg hover:bg-[#f0ece3] dark:hover:bg-[#222d27]"
+            className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-moss-875 dark:text-moss-45 rounded-lg hover:bg-linen-85 dark:hover:bg-moss-845"
           >
-            <HelpCircle className="w-4 h-4 text-[#134e3a] dark:text-[#2dd4bf]" />
+            <HelpCircle className="w-4 h-4 text-forest-700 dark:text-mint-285" />
             <span>How It Works</span>
           </Link>
           <div className="pt-2">

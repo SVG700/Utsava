@@ -45,7 +45,7 @@ import { GenerationProgressModal } from './GenerationProgressModal';
 function TabLoadingFallback({ label }: { label: string }) {
   return (
     <div className="max-w-7xl mx-auto px-4 py-20 text-center animate-pulse">
-      <div className="w-8 h-8 border-2 border-[#134e3a] dark:border-[#2dd4bf] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+      <div className="w-8 h-8 border-2 border-forest-700 dark:border-mint-285 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
       <p className="text-sm font-medium text-stone-500 dark:text-stone-400">{label}</p>
     </div>
   );

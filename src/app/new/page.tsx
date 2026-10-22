@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function NewEventPage() {
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-[#faf8f5] dark:bg-[#111614]">
+    <main className="min-h-[calc(100vh-4rem)] bg-sand-50 dark:bg-moss-915">
       <EventWizard />
     </main>
   );
